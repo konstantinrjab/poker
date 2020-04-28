@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  poker_php:
+    container_name: poker_php
+    build:
+      context: ./php-fpm
+#    image: konstantinrjab/poker
+    environment:
+      # host.docker.internal
+      XDEBUG_CONFIG: "remote_host=host.docker.internal"
+      PHP_IDE_CONFIG: "serverName=Docker"
+    volumes:
+      - ../:/var/www
+    user: ${DOCKER_USER}
+  poker_nginx:
+    container_name: poker_nginx
+    build:
+      context: ./nginx
+    volumes:
+      - ../:/var/www
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/sites/:/etc/nginx/sites-available
+      - ./nginx/conf.d/:/etc/nginx/conf.d
+    depends_on:
+      - poker_php
+    ports:
+      - "80:80"
+      - "443:443"
+  poker_mysql:
+    container_name: poker_mysql
+    image: mysql:8
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'poker'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+    ports:
+      - '3306:3306'
+    volumes:
+      - poker_mysql:/var/lib/mysql
+volumes:
+  poker_mysql:

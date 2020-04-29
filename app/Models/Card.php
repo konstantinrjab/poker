@@ -1,8 +1,8 @@
 <?php
 
-namespace app\Models;
+namespace App\Models;
 
-use app\Exceptions\InvalidCardPropertyException;
+use App\Exceptions\InvalidCardPropertyException;
 
 class Card
 {

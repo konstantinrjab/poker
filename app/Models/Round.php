@@ -1,20 +1,20 @@
 <?php
 
-namespace app\Models;
+namespace App\Models;
 
-use app\Collections\PlayersCollection;
+use App\Collections\PlayerCollection;
 
 class Round
 {
     private Deck $deck;
-    private PlayersCollection $playerCollection;
+    private PlayerCollection $playerCollection;
 
     public function __construct()
     {
         $this->deck = Deck::getFull();
     }
 
-    public function addPlayers(PlayersCollection $playerCollection): void
+    public function addPlayers(PlayerCollection $playerCollection): void
     {
         $this->playerCollection = $playerCollection;
     }
@@ -22,9 +22,18 @@ class Round
     public function getWinner(): Player
     {
         foreach ($this->playerCollection as $player) {
-            $playerStrengthDeck = new HandStrength($player->getDeck()->merge($this->deck)->values());
+            $playerStrengthDeck = new HandStrength($player->getHand(), $this->deck->values());
             $player->setStrength($playerStrengthDeck->getStrength());
         }
         return $this->playerCollection->max('strength');
+    }
+
+    public function start(): void
+    {
+        foreach ($this->playerCollection as $player) {
+            for ($cardCount = 1; $cardCount <= Hand::CARD_LIMIT; $cardCount++) {
+                $player->getHand()->add($this->deck->random());
+            }
+        }
     }
 }

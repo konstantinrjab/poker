@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use app\Models\Deck;
-use app\Models\Game;
-use app\Models\Player;
+use App\Models\Game;
+use App\Models\Player;
 use Illuminate\Http\Request;
 
 class PokerController extends Controller

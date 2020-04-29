@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Models;
+namespace App\Models;
 
 use Illuminate\Support\Str;
 
@@ -9,7 +9,7 @@ class Player
     private string $id;
     private int $userId;
     private int $money;
-    private Deck $deck;
+    private Hand $hand;
     private int $strength;
 
     public function __construct(int $userId)
@@ -28,9 +28,9 @@ class Player
         $this->money -= $amount;
     }
 
-    public function getDeck(): Deck
+    public function getHand(): Hand
     {
-        return $this->deck;
+        return $this->hand;
     }
 
     public function setStrength(int $strength): void

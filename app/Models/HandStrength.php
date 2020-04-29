@@ -1,15 +1,20 @@
 <?php
 
-namespace app\Models;
+namespace App\Models;
 
-class HandStrength extends Deck
+class HandStrength
 {
-    protected int $strength = 0;
-    protected Card $kicker;
-    protected $highEnd;
-    protected $flushSuit;
+    private int $strength = 0;
+    private Card $kicker;
+    private $highEnd;
+    private $flushSuit;
 
-    protected const HANDS = [
+    private Deck $playerDeck;
+    private Deck $roundDeck;
+    private Deck $mergedDeck;
+
+
+    private const HANDS = [
         'High Card',
         'Pair',
         'Two Pair',
@@ -22,9 +27,11 @@ class HandStrength extends Deck
         'Royal Flush'
     ];
 
-    public function getHeightCard(): int
+    public function __construct(Deck $playerDeck, Deck $roundDeck)
     {
-        return $this->max('value');
+        $this->playerDeck = $playerDeck;
+        $this->roundDeck = $roundDeck;
+        $this->mergedDeck = $playerDeck->merge($roundDeck);
     }
 
     public function getStrength(): int
@@ -69,9 +76,107 @@ class HandStrength extends Deck
         return $this->strength;
     }
 
-    public function isRoyalFlush()
+    public function getHeightCard(): int
     {
+        return $this->mergedDeck->max('value');
+    }
 
+    public function isPair(): bool
+    {
+        $countsByValues = [];
+
+        foreach ($this->mergedDeck as $card) {
+            if (!empty($countsByValues[$card->getValue()])) {
+                return true;
+            }
+            $countsByValues[$card->getValue()] = true;
+        }
+
+        return false;
+    }
+
+    public function isTwoPair(): bool
+    {
+        $countsByValues = [];
+        $pairsCount = 0;
+
+        foreach ($this->mergedDeck as $card) {
+            if (!isset($countsByValues[$card->getValue()])) {
+                $countsByValues[$card->getValue()] = 0;
+            }
+            $countsByValues[$card->getValue()]++;
+        }
+        foreach ($countsByValues as $value) {
+            if ($value >= 2) {
+                $pairsCount++;
+            }
+        }
+        return $pairsCount >= 2;
+    }
+
+    public function isThreeOfAKind(): bool
+    {
+        $countsByValues = [];
+
+        foreach ($this->mergedDeck as $card) {
+            if (!isset($countsByValues[$card->getValue()])) {
+                $countsByValues[$card->getValue()] = 0;
+            }
+            $countsByValues[$card->getValue()]++;
+        }
+        foreach ($countsByValues as $value) {
+            if ($value >= 3) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function findStraight(): bool
+    {
+        $consecutiveCount = 1;
+
+        $deck = $this->mergedDeck->sortBy(function (Card $card): int {
+            return $card->getValue();
+        });
+
+        foreach ($deck as $card) {
+            $consecutiveValues = [
+                $card->getValue() + 1,
+                $card->getValue() + 2,
+                $card->getValue() + 3,
+                $card->getValue() + 4,
+            ];
+            foreach ($consecutiveValues as $value) {
+                if ($deck->firstWhere('value', $value)) {
+                    $consecutiveCount++;
+                } else {
+                    $consecutiveCount = 0;
+                }
+            }
+            if ($consecutiveCount == 5) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function isFourOfAKind(): bool
+    {
+        $countsByValues = [];
+
+        foreach ($this->mergedDeck as $card) {
+            if (!isset($countsByValues[$card->getValue()])) {
+                $countsByValues[$card->getValue()] = 0;
+            }
+            $countsByValues[$card->getValue()]++;
+        }
+        foreach ($countsByValues as $value) {
+            if ($value >= 4) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function isStraightFlush()
@@ -93,28 +198,8 @@ class HandStrength extends Deck
         return false;
     }
 
-    public function isFourOfAKind()
+    public function isRoyalFlush(): bool
     {
-        // We always want to flip aces to high aces
-        // for any type of multiple card hand
-        $this->flipAces();
-
-        $valueTally = [];
-
-        foreach ($this->cards as $card) {
-            empty($valueTally[$card->getValue()]) ? $valueTally[$card->getValue()] = 1 : $valueTally[$card->getValue()]++;
-        }
-
-        foreach ($valueTally as $tally) {
-            if ($tally === 4) {
-                $this->flipAces();
-
-                return true;
-            }
-        }
-
-        $this->flipAces();
-
         return false;
     }
 
@@ -154,83 +239,6 @@ class HandStrength extends Deck
         $this->sortByDesc(function ($card) {
             return $card->getValue();
         });
-    }
-
-    public function findStraight(): bool
-    {
-        $consecutiveCount = 1;
-
-        $deck = $this->sortBy(function (Card $card): int {
-            return $card->getValue();
-        });
-
-        foreach ($deck as $card) {
-            $consecutiveValues = [
-                $card->getValue() + 1,
-                $card->getValue() + 2,
-                $card->getValue() + 3,
-                $card->getValue() + 4,
-            ];
-            foreach ($consecutiveValues as $value) {
-                $consecutive = $deck->filter(function (Card $card) use ($value): bool {
-                    return $card->getValue() == $value;
-                });
-                if ($consecutive->count()) {
-                    $consecutiveCount++;
-                }
-            }
-            if ($consecutiveCount == 5) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public function isThreeOfAKind(): bool
-    {
-        $values = [];
-
-        foreach ($this->cards as $card) {
-            $values[$card->getValue()] = $values[$card->getValue()] ?? 0;
-            $values[$card->getValue()]++;
-        }
-        foreach ($values as $value) {
-            if ($value >= 3) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public function isTwoPair(): bool
-    {
-        $values = [];
-        $pairsCount = 0;
-
-        foreach ($this->cards as $card) {
-            $values[$card->getValue()] = $values[$card->getValue()] ?? 0;
-            $values[$card->getValue()]++;
-        }
-        foreach ($values as $value) {
-            if ($value >= 2) {
-                $pairsCount++;
-            }
-        }
-        return $pairsCount >= 2;
-    }
-
-    public function isPair(): bool
-    {
-        $values = [];
-
-        foreach ($this->cards as $card) {
-            if (!empty($values[$card->getValue()])) {
-                return true;
-            }
-            $values[$card->getValue()] = true;
-        }
-
-        return false;
     }
 
     public function getKicker()

@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Collections;
 
+use App\Models\Card;
+use App\Models\Hand;
 use Illuminate\Support\Collection;
 
 class Deck extends Collection
@@ -14,7 +16,15 @@ class Deck extends Collection
                 $deck->add(new Card($suit, $value));
             }
         }
-        $deck->shuffle();
-        return $deck;
+        return $deck->shuffle();
+    }
+
+    public function getHand(): Hand
+    {
+        $cards = [];
+        for ($cardCount = 1; $cardCount <= Hand::CARD_LIMIT; $cardCount++) {
+            $cards[] = $this->shift();
+        }
+        return new Hand($cards);
     }
 }

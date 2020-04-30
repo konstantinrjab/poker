@@ -34,10 +34,8 @@ class Game
 
     public function start(): void
     {
-        $this->round = new Round();
-        $this->round->addPlayers($this->playerCollection);
+        $this->round = new Round($this->playerCollection);
         $this->state->setStatus(State::STATUS_STARTED);
-        $this->round->start();
     }
 
     public function end(): void

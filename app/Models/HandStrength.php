@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Collections\Deck;
+
 class HandStrength
 {
     private int $strength = 0;
@@ -9,7 +11,7 @@ class HandStrength
     private $highEnd;
     private $flushSuit;
 
-    private Deck $playerDeck;
+    private Hand $hand;
     private Deck $roundDeck;
     private Deck $mergedDeck;
 
@@ -27,17 +29,15 @@ class HandStrength
         'Royal Flush'
     ];
 
-    public function __construct(Deck $playerDeck, Deck $roundDeck)
+    public function __construct(Hand $hand, Deck $roundDeck)
     {
-        $this->playerDeck = $playerDeck;
+        $this->hand = $hand;
         $this->roundDeck = $roundDeck;
-        $this->mergedDeck = $playerDeck->merge($roundDeck);
+        $this->mergedDeck = $roundDeck->merge($hand);
     }
 
     public function getStrength(): int
     {
-        $this->sortCards();
-
         if ($this->isPair()) {
             $this->strength = 1;
         }
@@ -50,29 +50,29 @@ class HandStrength
             $this->strength = 3;
         }
 
-        if ($this->isStraight()) {
-            $this->strength = 4;
-        }
-
-        if ($this->isFlush()) {
-            $this->strength = 5;
-        }
-
-        if ($this->isFullHouse()) {
-            $this->strength = 6;
-        }
-
-        if ($this->isFourOfAKind()) {
-            $this->strength = 7;
-        }
-
-        if ($this->isStraightFlush()) {
-            $this->strength = 8;
-        }
-
-        if ($this->isRoyalFlush()) {
-            $this->strength = 9;
-        }
+//        if ($this->isStraight()) {
+//            $this->strength = 4;
+//        }
+//
+//        if ($this->isFlush()) {
+//            $this->strength = 5;
+//        }
+//
+//        if ($this->isFullHouse()) {
+//            $this->strength = 6;
+//        }
+//
+//        if ($this->isFourOfAKind()) {
+//            $this->strength = 7;
+//        }
+//
+//        if ($this->isStraightFlush()) {
+//            $this->strength = 8;
+//        }
+//
+//        if ($this->isRoyalFlush()) {
+//            $this->strength = 9;
+//        }
         return $this->strength;
     }
 
@@ -81,7 +81,7 @@ class HandStrength
         return $this->mergedDeck->max('value');
     }
 
-    public function isPair(): bool
+    private function isPair(): bool
     {
         $countsByValues = [];
 
@@ -95,7 +95,7 @@ class HandStrength
         return false;
     }
 
-    public function isTwoPair(): bool
+    private function isTwoPair(): bool
     {
         $countsByValues = [];
         $pairsCount = 0;
@@ -114,7 +114,7 @@ class HandStrength
         return $pairsCount >= 2;
     }
 
-    public function isThreeOfAKind(): bool
+    private function isThreeOfAKind(): bool
     {
         $countsByValues = [];
 
@@ -132,7 +132,7 @@ class HandStrength
         return false;
     }
 
-    public function findStraight(): bool
+    private function findStraight(): bool
     {
         $consecutiveCount = 1;
 
@@ -161,7 +161,7 @@ class HandStrength
         return false;
     }
 
-    public function isFourOfAKind(): bool
+    private function isFourOfAKind(): bool
     {
         $countsByValues = [];
 

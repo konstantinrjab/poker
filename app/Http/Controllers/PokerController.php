@@ -22,8 +22,8 @@ class PokerController extends Controller
             return response('Cannot start game')->send();
         }
         $game->start();
-        $winner = $game->getRound()->getWinner();
-        $t = 1;
+        $winners = $game->getRound()->getWinners();
+        $winners->dd();
     }
 
     /**

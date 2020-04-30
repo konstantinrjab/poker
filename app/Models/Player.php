@@ -28,6 +28,11 @@ class Player
         $this->money -= $amount;
     }
 
+    public function setHand(Hand $hand): void
+    {
+        $this->hand = $hand;
+    }
+
     public function getHand(): Hand
     {
         return $this->hand;
@@ -36,5 +41,10 @@ class Player
     public function setStrength(int $strength): void
     {
         $this->strength = $strength;
+    }
+
+    public function getStrength(): ?int
+    {
+        return $this->strength;
     }
 }

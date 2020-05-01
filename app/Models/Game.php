@@ -3,17 +3,27 @@
 namespace App\Models;
 
 use App\Collections\PlayerCollection;
+use Illuminate\Support\Str;
 
 class Game
 {
+    private int $creatorId;
+    private string $id;
     private Round $round;
     private State $state;
     private PlayerCollection $playerCollection;
 
-    public function __construct()
+    public function __construct(int $creatorId)
     {
+        $this->creatorId = $creatorId;
         $this->playerCollection = new PlayerCollection();
+        $this->id = Str::uuid();
         $this->state = new State();
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
     }
 
     public function addPlayer(Player $player): void

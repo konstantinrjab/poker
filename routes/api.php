@@ -17,3 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/poker', 'PokerController@index');
+Route::post('/poker', 'PokerController@store');
+Route::get('/poker/{id}', 'PokerController@show');

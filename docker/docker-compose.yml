@@ -40,5 +40,10 @@ services:
       - '3306:3306'
     volumes:
       - poker_mysql:/var/lib/mysql
+  poker_redis:
+    container_name: poker_redis
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
 volumes:
   poker_mysql:

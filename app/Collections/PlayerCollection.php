@@ -10,4 +10,9 @@ use Illuminate\Support\Collection;
  */
 class PlayerCollection extends Collection
 {
+    public function addUser($userId)
+    {
+        $player = new Player($userId);
+        parent::add($player);
+    }
 }

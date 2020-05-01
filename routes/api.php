@@ -18,6 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/poker', 'PokerController@index');
-Route::post('/poker', 'PokerController@store');
-Route::get('/poker/{id}', 'PokerController@show');
+Route::get('/game', 'PokerController@index');
+Route::post('/game', 'PokerController@store');
+Route::get('/game/{id}', 'PokerController@show');
+Route::put('/game/{id}/join', 'PokerController@join');

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateGameRequest;
+use App\Http\Requests\JoinGameRequest;
 use App\Http\Resources\GameResource;
 use App\Models\Game;
 use App\Models\Player;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
+use Auth;
 
-class PokerController extends Controller
+class GameController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -31,13 +32,15 @@ class PokerController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param CreateGameRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateGameRequest $request)
     {
-        $game = new Game(1);
-        Redis::set('game:' . $game->getId(), serialize($game));
+        $game = new Game(Auth::id());
+        $game->addPlayer(new Player(Auth::id()));
+        $game->save();
+
         return response([
             'gameId' => $game->getId()
         ]);
@@ -51,21 +54,22 @@ class PokerController extends Controller
      */
     public function show($id)
     {
-        $game = Redis::get('game:' . $id);
-        $resource = new GameResource(unserialize($game));
+        $resource = new GameResource(Game::get($id));
         return $resource;
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param JoinGameRequest $request
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function join(JoinGameRequest $request, $id)
     {
-        //
+        $game = Game::get($id);
+        $game->getPlayers()->add(Auth::id());
+        $game->save();
     }
 
     /**

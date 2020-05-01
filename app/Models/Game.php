@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Collections\PlayerCollection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
 class Game
@@ -12,6 +14,15 @@ class Game
     private Round $round;
     private State $state;
     private PlayerCollection $playerCollection;
+
+    public static function get(string $id, bool $throwOnNotFound = true): ?Game
+    {
+        $game = Redis::get('game:' . $id);
+        if (!$game && $throwOnNotFound) {
+            throw new ModelNotFoundException();
+        }
+        return $game ? unserialize($game) : null;
+    }
 
     public function __construct(int $creatorId)
     {
@@ -56,5 +67,10 @@ class Game
     public function getRound(): Round
     {
         return $this->round;
+    }
+
+    public function save()
+    {
+        Redis::set('game:' . $this->getId(), serialize($this));
     }
 }

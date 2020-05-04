@@ -7,8 +7,21 @@ use App\Collections\Deck;
 
 class Round
 {
+    private const TABLE_CARDS_COUNT = 5;
+    private const STATUS_PREFLOP = 1;
+    private const STATUS_FLOP = 2;
+    private const STATUS_TURN = 3;
+    private const STATUS_RIVER = 4;
+    private const STATUSES = [
+        self::STATUS_PREFLOP,
+        self::STATUS_FLOP,
+        self::STATUS_TURN,
+        self::STATUS_RIVER,
+    ];
+
     private Deck $deck;
     private PlayerCollection $playerCollection;
+    private int $status;
 
     public function __construct(PlayerCollection $playerCollection)
     {
@@ -17,8 +30,8 @@ class Round
         foreach ($this->playerCollection as $player) {
             $player->setHand($deck->getHand());
         }
-        // TODO: move it to const
-        $this->deck = $deck->take(5);
+        $this->deck = $deck->take(self::TABLE_CARDS_COUNT);
+        $this->status = self::STATUS_PREFLOP;
     }
 
     public function getWinners(): PlayerCollection

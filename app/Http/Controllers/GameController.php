@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\GameException;
 use App\Http\Requests\CreateGameRequest;
 use App\Http\Requests\JoinGameRequest;
 use App\Http\Resources\GameResource;
@@ -18,9 +19,9 @@ class GameController extends Controller
      */
     public function index()
     {
-        $game = new Game(1);
-        $game->addPlayer(new Player(1));
-        $game->addPlayer(new Player(2));
+        $game = new Game(uniqid());
+        $game->addPlayer(new Player(uniqid()));
+        $game->addPlayer(new Player(uniqid()));
         if (!$game->isReadyToStart()) {
             return response('Cannot start game')->send();
         }
@@ -33,15 +34,15 @@ class GameController extends Controller
      * Store a newly created resource in storage.
      *
      * @param CreateGameRequest $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(CreateGameRequest $request)
     {
-        $game = new Game(Auth::id());
+        $game = new Game($request->get('creatorId'));
         $game->addPlayer(new Player(Auth::id()));
         $game->save();
 
-        return response([
+        return response()->json([
             'gameId' => $game->getId()
         ]);
     }
@@ -49,13 +50,13 @@ class GameController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param string $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $resource = new GameResource(Game::get($id));
-        return $resource;
+        return response($resource);
     }
 
     /**
@@ -68,18 +69,19 @@ class GameController extends Controller
     public function join(JoinGameRequest $request, $id)
     {
         $game = Game::get($id);
-        $game->getPlayers()->add(Auth::id());
+        $game->getPlayers()->add($request->get('userId'));
         $game->save();
+        return response();
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function start($id)
     {
-        //
+        $game = Game::get($id);
+        try {
+            $game->start();
+        } catch (GameException $e) {
+            return response($e->getMessage());
+        }
+        return response();
     }
 }

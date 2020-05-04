@@ -24,7 +24,7 @@ class CreateGameRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'creatorId' => 'required'
         ];
     }
 }

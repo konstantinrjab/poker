@@ -2,20 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;
-
 class Player
 {
     private string $id;
-    private int $userId;
     private int $money;
     private Hand $hand;
     private int $strength;
 
-    public function __construct(int $userId)
+    public function __construct(string $id)
     {
-        $this->id = Str::uuid();
-        $this->userId = $userId;
+        $this->id = $id;
     }
 
     public function getId(): string

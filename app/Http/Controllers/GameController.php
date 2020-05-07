@@ -6,6 +6,7 @@ use App\Exceptions\GameException;
 use App\Http\Requests\CreateGameRequest;
 use App\Http\Requests\JoinGameRequest;
 use App\Http\Requests\StartGameRequest;
+use App\Http\Requests\UpdateGameRequest;
 use App\Http\Resources\GameResource;
 use App\Models\Game;
 use App\Models\Player;
@@ -38,8 +39,8 @@ class GameController extends Controller
      */
     public function store(CreateGameRequest $request)
     {
-        $game = new Game($request->get('creatorId'));
-        $game->addPlayer(new Player($request->get('creatorId')));
+        $game = new Game($request->get('userId'));
+        $game->addPlayer(new Player($request->get('userId')));
         $game->save();
 
         return response()->json([
@@ -51,22 +52,21 @@ class GameController extends Controller
      * Display the specified resource.
      *
      * @param string $id
-     * @return \Illuminate\Http\Response
+     * @return GameResource
      */
-    public function show($id)
+    public function show(string $id)
     {
-        $resource = new GameResource(Game::get($id));
-        return response($resource);
+        return GameResource::make(Game::get($id));
     }
 
-    public function join(JoinGameRequest $request, $id)
+    public function join(JoinGameRequest $request, string $id)
     {
         $game = Game::get($id);
         $game->getPlayers()->add($request->get('userId'));
         $game->save();
     }
 
-    public function start(StartGameRequest $request, $id)
+    public function start(StartGameRequest $request, string $id)
     {
         $game = Game::get($id);
         if ($game->getCreatorId() != $request->get('userId')) {
@@ -78,5 +78,16 @@ class GameController extends Controller
             return response($e->getMessage());
         }
         return response();
+    }
+
+    public function update(UpdateGameRequest $request, string $id)
+    {
+        $game = Game::get($id);
+        if ($game->getRound()->getActivePlayer()->getId() != $request->get('userId')) {
+            throw new GameException('It is not you turn');
+        }
+        $game->getRound()->passTurn();
+        $game->save();
+        return GameResource::make($game);
     }
 }

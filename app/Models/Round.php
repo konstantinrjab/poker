@@ -49,8 +49,13 @@ class Round
         return $winners;
     }
 
-    public function getActivePlayer(): string
+    public function getActivePlayer(): Player
     {
         return $this->playerCollection->getActivePlayer();
+    }
+
+    public function passTurn(): void
+    {
+        $this->playerCollection->setNextActivePlayer();
     }
 }

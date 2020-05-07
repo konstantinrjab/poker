@@ -14,7 +14,7 @@ class JoinGameRequest extends Request
     public function rules()
     {
         return [
-            'userId' => 'required'
+            'userId' => 'required|string'
         ];
     }
 }

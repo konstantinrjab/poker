@@ -13,7 +13,7 @@ class PlayerCollection extends Collection
 {
     private string $activePlayerId;
 
-    public function getActivePlayer(): string
+    public function getActivePlayer(): Player
     {
         if (!$this->activePlayerId) {
             $this->activePlayerId = $this->first->getId();

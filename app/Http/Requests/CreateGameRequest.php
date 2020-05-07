@@ -14,7 +14,7 @@ class CreateGameRequest extends Request
     public function rules()
     {
         return [
-            'creatorId' => 'required'
+            'userId' => 'required|string'
         ];
     }
 }

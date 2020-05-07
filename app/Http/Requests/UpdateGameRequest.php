@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Action;
 use Request;
 
-class StartGameRequest extends Request
+class UpdateGameRequest extends Request
 {
     /**
      * Get the validation rules that apply to the request.
@@ -14,7 +15,9 @@ class StartGameRequest extends Request
     public function rules()
     {
         return [
-            'userId' => 'required|string'
+            'userId' => 'required|string',
+            'action' => 'required|int|in:' . implode(',', Action::AVAILABLE_ACTIONS),
+            'value' => '',
         ];
     }
 }

@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 
 class Game
 {
+    private const MAX_PLAYERS = 8;
+
     private string $creatorId;
     private string $id;
     private Round $round;
@@ -38,8 +40,16 @@ class Game
         return $this->id;
     }
 
+    public function getCreatorId(): string
+    {
+        return $this->creatorId;
+    }
+
     public function addPlayer(Player $player): void
     {
+        if ($this->playerCollection->count() >= self::MAX_PLAYERS) {
+            throw new GameException('Cannot add more players, game is full');
+        }
         $this->playerCollection->add($player);
     }
 

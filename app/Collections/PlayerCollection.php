@@ -13,12 +13,13 @@ class PlayerCollection extends Collection
 {
     private string $activePlayerId;
 
-    public function getActivePlayerId(): string
+    public function getActivePlayer(): string
     {
         if (!$this->activePlayerId) {
             $this->activePlayerId = $this->first->getId();
         }
-        return $this->activePlayerId;
+        // TODO: make it work
+        return $this->firstWhere('id', null, $this->activePlayerId);
     }
 
     public function setNextActivePlayer(): void

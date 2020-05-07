@@ -2,16 +2,16 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Game;
+use App\Models\Round;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * Class GameResource
+ * Class RoundResource
  * @package App\Http\Resources
  *
- * @mixin Game
+ * @mixin Round
  */
-class GameResource extends JsonResource
+class RoundResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -22,9 +22,7 @@ class GameResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->getId(),
-            'players' => $this->getPlayers(),
-            'round' => RoundResource::make($this->getRound()),
+            'activePlayer' => $this->getActivePlayer(),
         ];
     }
 }

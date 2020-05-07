@@ -5,17 +5,16 @@ namespace App\Http\Controllers;
 use App\Exceptions\GameException;
 use App\Http\Requests\CreateGameRequest;
 use App\Http\Requests\JoinGameRequest;
+use App\Http\Requests\StartGameRequest;
 use App\Http\Resources\GameResource;
 use App\Models\Game;
 use App\Models\Player;
-use Auth;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 
 class GameController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @todo remove this method
      */
     public function index()
     {
@@ -28,6 +27,7 @@ class GameController extends Controller
         $game->start();
         $winners = $game->getRound()->getWinners();
         $winners->dd();
+        return response();
     }
 
     /**
@@ -39,7 +39,7 @@ class GameController extends Controller
     public function store(CreateGameRequest $request)
     {
         $game = new Game($request->get('creatorId'));
-        $game->addPlayer(new Player(Auth::id()));
+        $game->addPlayer(new Player($request->get('creatorId')));
         $game->save();
 
         return response()->json([
@@ -59,24 +59,19 @@ class GameController extends Controller
         return response($resource);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param JoinGameRequest $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function join(JoinGameRequest $request, $id)
     {
         $game = Game::get($id);
         $game->getPlayers()->add($request->get('userId'));
         $game->save();
-        return response();
     }
 
-    public function start($id)
+    public function start(StartGameRequest $request, $id)
     {
         $game = Game::get($id);
+        if ($game->getCreatorId() != $request->get('userId')) {
+            throw new AccessDeniedException();
+        }
         try {
             $game->start();
         } catch (GameException $e) {

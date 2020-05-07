@@ -48,4 +48,9 @@ class Round
         });
         return $winners;
     }
+
+    public function getActivePlayer(): string
+    {
+        return $this->playerCollection->getActivePlayer();
+    }
 }

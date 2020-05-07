@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Request;
 
-class JoinGameRequest extends Request
+class StartGameRequest extends Request
 {
     /**
      * Get the validation rules that apply to the request.

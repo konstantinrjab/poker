@@ -16,8 +16,8 @@ class UpdateGameRequest extends Request
     {
         return [
             'userId' => 'required|string',
-            'action' => 'required|int|in:' . implode(',', Action::AVAILABLE_ACTIONS),
-            'value' => '',
+            'action' => 'required|string|in:' . implode(',', Action::AVAILABLE_ACTIONS),
+            'value' => 'int',
         ];
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 class Game
 {
     private const MAX_PLAYERS = 8;
+    private const MINIMUM_PLAYERS_COUNT = 5;
 
     private string $creatorId;
     private string $id;
@@ -58,12 +59,6 @@ class Game
         return $this->playerCollection;
     }
 
-    public function isReadyToStart(): bool
-    {
-        return true;
-//        return count($this->players) == 5;
-    }
-
     public function start(): void
     {
         if ($this->state->getStatus() == State::STATUS_STARTED) {
@@ -72,8 +67,8 @@ class Game
         if ($this->state->getStatus() == State::STATUS_END) {
             throw new GameException('Game was ended');
         }
-        if (!$this->isReadyToStart()) {
-            throw new GameException('Game is not ready to start');
+        if (!$this->playerCollection->count() < self::MINIMUM_PLAYERS_COUNT) {
+            throw new GameException('There is not enough players to start the game');
         }
         $this->round = new Round($this->playerCollection);
         $this->state->setStatus(State::STATUS_STARTED);

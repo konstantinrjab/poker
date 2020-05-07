@@ -7,7 +7,6 @@ use App\Collections\Deck;
 
 class Round
 {
-    private const TABLE_CARDS_COUNT = 5;
     private const STATUS_PREFLOP = 1;
     private const STATUS_FLOP = 2;
     private const STATUS_TURN = 3;
@@ -18,6 +17,7 @@ class Round
         self::STATUS_TURN,
         self::STATUS_RIVER,
     ];
+    private const TABLE_CARDS_COUNT = 5;
 
     private Deck $deck;
     private PlayerCollection $playerCollection;

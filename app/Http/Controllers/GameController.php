@@ -8,6 +8,7 @@ use App\Http\Requests\JoinGameRequest;
 use App\Http\Requests\StartGameRequest;
 use App\Http\Requests\UpdateGameRequest;
 use App\Http\Resources\GameResource;
+use App\Models\Action;
 use App\Models\Game;
 use App\Models\Player;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
@@ -22,9 +23,8 @@ class GameController extends Controller
         $game = new Game(uniqid());
         $game->addPlayer(new Player(uniqid()));
         $game->addPlayer(new Player(uniqid()));
-        if (!$game->isReadyToStart()) {
-            return response('Cannot start game')->send();
-        }
+        $game->addPlayer(new Player(uniqid()));
+        $game->addPlayer(new Player(uniqid()));
         $game->start();
         $winners = $game->getRound()->getWinners();
         $winners->dd();
@@ -86,6 +86,8 @@ class GameController extends Controller
         if ($game->getRound()->getActivePlayer()->getId() != $request->get('userId')) {
             throw new GameException('It is not you turn');
         }
+        $action = new Action($request);
+        $action->updateRound($game->getRound());
         $game->getRound()->passTurn();
         $game->save();
         return GameResource::make($game);

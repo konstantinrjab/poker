@@ -33,8 +33,8 @@ class Card
     private const DIAMOND = 'Diamond';
     private const HEART = 'Heart';
 
-    protected int $value;
-    protected string $suit;
+    private int $value;
+    private string $suit;
 
     public function __construct(string $suit, int $value)
     {
@@ -75,12 +75,12 @@ class Card
         $this->suit = $suit;
     }
 
-    protected function isValidValue($value): bool
+    private function isValidValue($value): bool
     {
         return array_key_exists($value, self::VALUES);
     }
 
-    protected function isValidSuit($suit): bool
+    private function isValidSuit($suit): bool
     {
         return in_array($suit, self::SUITS);
     }

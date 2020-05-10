@@ -3,9 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Models\Action;
-use Request;
+use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateGameRequest extends Request
+class UpdateGameRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.

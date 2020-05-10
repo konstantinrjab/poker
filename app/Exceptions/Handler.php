@@ -2,7 +2,10 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -50,6 +53,33 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        if ($request->wantsJson() || $request->is('api/*')) {
+            $response['data'] = [
+                'message' => $exception->getMessage()
+            ];
+            if ($exception instanceof ValidationException && isset($exception->validator)) {
+                $response['data']['errors'] = $exception->validator->errors()->toArray();
+            }
+            if ($exception instanceof ModelNotFoundException) {
+                $response['data']['message'] = 'Model not found';
+            }
+
+            if (config('app.debug')) {
+                $response['exception'] = get_class($exception);
+                $response['message'] = $exception->getMessage();
+                $response['trace'] = $exception->getTrace();
+            }
+
+            $status = 400;
+
+            if ($this->isHttpException($exception)) {
+                /** @var HttpExceptionInterface $exception */
+                $status = $exception->getStatusCode();
+            }
+
+            return response()->json($response, $status);
+        }
+
         return parent::render($request, $exception);
     }
 }

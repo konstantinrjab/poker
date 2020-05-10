@@ -15,7 +15,7 @@ class Game
 
     private string $creatorId;
     private string $id;
-    private Round $round;
+    private ?Round $round = null;
     private State $state;
     private PlayerCollection $playerCollection;
 
@@ -80,7 +80,7 @@ class Game
         $this->state->setStatus(State::STATUS_END);
     }
 
-    public function getRound(): Round
+    public function getRound(): ?Round
     {
         return $this->round;
     }

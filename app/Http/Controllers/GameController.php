@@ -11,7 +11,7 @@ use App\Http\Resources\GameResource;
 use App\Models\Action;
 use App\Models\Game;
 use App\Models\Player;
-use Symfony\Component\Finder\Exception\AccessDeniedException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class GameController extends Controller
 {
@@ -70,13 +70,9 @@ class GameController extends Controller
     {
         $game = Game::get($id);
         if ($game->getCreatorId() != $request->get('userId')) {
-            throw new AccessDeniedException();
+            throw new AccessDeniedHttpException('Only creator of the game can start game');
         }
-        try {
-            $game->start();
-        } catch (GameException $e) {
-            return response($e->getMessage());
-        }
+        $game->start();
         return response();
     }
 

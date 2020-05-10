@@ -34,6 +34,7 @@ class Game
         $this->playerCollection = new PlayerCollection();
         $this->id = Str::uuid();
         $this->state = new State();
+        $this->state->setStatus(State::STATUS_WAIT_FOR_PLAYERS);
     }
 
     public function getId(): string

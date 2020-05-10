@@ -62,7 +62,7 @@ class GameController extends Controller
     public function join(JoinGameRequest $request, string $id)
     {
         $game = Game::get($id);
-        $game->getPlayers()->add($request->get('userId'));
+        $game->getPlayers()->add(new Player($request->get('userId')));
         $game->save();
     }
 

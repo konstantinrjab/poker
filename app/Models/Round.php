@@ -58,4 +58,10 @@ class Round
     {
         $this->playerCollection->setNextActivePlayer();
     }
+
+    public function shouldEnd(): bool
+    {
+        // TODO: finish this logic
+        return false && $this->status == self::TABLE_CARDS_COUNT;
+    }
 }

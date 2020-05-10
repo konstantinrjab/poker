@@ -84,7 +84,10 @@ class GameController extends Controller
         }
         $action = new Action($request);
         $action->updateRound($game->getRound());
-        $game->getRound()->passTurn();
+
+        if (!$game->getRound()->shouldEnd()) {
+            $game->getRound()->passTurn();
+        }
         $game->save();
         return GameResource::make($game);
     }

@@ -12,7 +12,7 @@ services:
       PHP_IDE_CONFIG: "serverName=Docker"
     volumes:
       - ../:/var/www
-    user: ${DOCKER_USER}
+#    user: ${DOCKER_USER}
   poker_nginx:
     container_name: poker_nginx
     build:

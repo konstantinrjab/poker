@@ -68,7 +68,7 @@ class Game
         if ($this->state->getStatus() == State::STATUS_END) {
             throw new GameException('Game was ended');
         }
-        if (!$this->playerCollection->count() < self::MINIMUM_PLAYERS_COUNT) {
+        if ($this->playerCollection->count() < self::MINIMUM_PLAYERS_COUNT) {
             throw new GameException('There is not enough players to start the game');
         }
         $this->round = new Round($this->playerCollection);

@@ -73,7 +73,6 @@ class GameController extends Controller
             throw new AccessDeniedHttpException('Only creator of the game can start game');
         }
         $game->start();
-        return response();
     }
 
     public function update(UpdateGameRequest $request, string $id)

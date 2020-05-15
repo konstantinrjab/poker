@@ -26,6 +26,7 @@ class ExampleTest extends TestCase
         $gameId = $this->create();
         $this->join($gameId);
         $this->start($gameId);
+        $this->update($gameId);
         $response = $this->get('/api/games/' . $gameId)->json();
     }
 
@@ -66,5 +67,13 @@ class ExampleTest extends TestCase
             'userId' => self::CREATOR_ID
         ]);
         $this->assertTrue($response->status() == 200);
+    }
+
+    private function update(string $gameId)
+    {
+        $response = $this->put('/api/games/' . $gameId, [
+            'userId' => 'testUserId2'
+        ]);
+        $this->assertTrue($response->status() == 403);
     }
 }

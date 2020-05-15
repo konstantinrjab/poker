@@ -8,7 +8,7 @@ use App\Http\Requests\JoinGameRequest;
 use App\Http\Requests\StartGameRequest;
 use App\Http\Requests\UpdateGameRequest;
 use App\Http\Resources\GameResource;
-use App\Models\Action;
+use App\Models\Actions\ActionFactory;
 use App\Models\Game;
 use App\Models\Player;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -78,10 +78,10 @@ class GameController extends Controller
     public function update(UpdateGameRequest $request, string $id)
     {
         $game = Game::get($id);
-        if ($game->getRound()->getActivePlayer()->getId() != $request->get('userId')) {
+        if ($game->getRound()->getPlayerCollection()->getActivePlayer()->getId() != $request->get('userId')) {
             throw new GameException('It is not you turn');
         }
-        $action = new Action($request);
+        $action = ActionFactory::get($request);
         $action->updateRound($game->getRound());
 
         if (!$game->getRound()->shouldEnd()) {

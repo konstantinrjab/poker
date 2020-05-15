@@ -14,12 +14,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+//Route::middleware('auth:api')->get('/user', function (Request $request) {
+//    return $request->user();
+//});
 
 Route::get('/games', 'GameController@index');
 Route::post('/games', 'GameController@store');
 Route::get('/games/{id}', 'GameController@show');
+Route::put('/games/{id}', 'GameController@update');
 Route::put('/games/{id}/join', 'GameController@join');
 Route::put('/games/{id}/start', 'GameController@start');

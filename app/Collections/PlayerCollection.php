@@ -31,14 +31,19 @@ class PlayerCollection extends Collection
         return $this;
     }
 
+    public function getById(string $id): Player
+    {
+        return $this->first(function (Player $player, $key) use ($id): bool {
+            return $player->getId() == $id;
+        });
+    }
+
     public function getActivePlayer(): Player
     {
         if (!isset($this->activeId)) {
             $this->activeId = $this->first()->getId();
         }
-        return $this->first(function (Player $player, $key): bool {
-            return $player->getId() == $this->activeId;
-        });
+        return $this->getById($this->activeId);
     }
 
     public function setNextActivePlayer(): void

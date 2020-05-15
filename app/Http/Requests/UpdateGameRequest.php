@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Action;
+use App\Models\Actions\ActionFactory;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateGameRequest extends FormRequest
@@ -15,9 +15,12 @@ class UpdateGameRequest extends FormRequest
     public function rules()
     {
         return [
-            'userId' => 'required|string',
-            'action' => 'required|string|in:' . implode(',', Action::AVAILABLE_ACTIONS),
-            'value' => 'int',
+            'playerId' => 'required|string',
+            'action' => 'required|string|in:' . implode(',', ActionFactory::AVAILABLE_ACTIONS),
+            'value' => 'int|required_if:action,' . implode(',', [
+                    ActionFactory::BET,
+                    ActionFactory::RAISE,
+                ]),
         ];
     }
 }

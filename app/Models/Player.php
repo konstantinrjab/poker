@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Exceptions\GameException;
+
 class Player
 {
     private string $id;
@@ -59,5 +61,14 @@ class Player
     public function getStrength(): ?int
     {
         return $this->strength;
+    }
+
+    public function bet(int $amount): void
+    {
+        if ($amount > $this->money) {
+            throw new GameException('Player ' . $this->id . 'doesn\'t have enough money');
+        }
+        $this->money -= $amount;
+        $this->bet += $amount;
     }
 }

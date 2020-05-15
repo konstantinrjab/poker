@@ -72,7 +72,8 @@ class Game
         if ($this->playerCollection->count() < self::MINIMUM_PLAYERS_COUNT) {
             throw new GameException('There is not enough players to start the game');
         }
-        $this->round = new Round($this->playerCollection);
+        // TODO: set big blind dynamically
+        $this->round = new Round($this->playerCollection, 10);
         $this->state->setStatus(State::STATUS_STARTED);
         $this->save();
     }

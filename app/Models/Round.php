@@ -22,9 +22,13 @@ class Round
     private Deck $deck;
     private PlayerCollection $playerCollection;
     private int $status;
+    private int $bigBlind;
 
-    public function __construct(PlayerCollection $playerCollection, bool $newGame = true)
-    {
+    public function __construct(
+        PlayerCollection $playerCollection,
+        int $bigBlind,
+        bool $newGame = true
+    ) {
         $deck = Deck::getFull();
         $this->playerCollection = $playerCollection;
         foreach ($this->playerCollection as $player) {
@@ -32,6 +36,7 @@ class Round
         }
         $this->deck = $deck->take(self::TABLE_CARDS_COUNT);
         $this->status = self::STATUS_PREFLOP;
+        $this->bigBlind = $bigBlind;
         if (!$newGame) {
             $this->playerCollection->setNextBigBlind();
             $this->playerCollection->setNextSmallBlind();
@@ -54,9 +59,9 @@ class Round
         return $winners;
     }
 
-    public function getActivePlayer(): Player
+    public function getPlayerCollection(): PlayerCollection
     {
-        return $this->playerCollection->getActivePlayer();
+        return $this->playerCollection;
     }
 
     public function passTurn(): void
@@ -68,5 +73,10 @@ class Round
     {
         // TODO: finish this logic
         return false && $this->status == self::TABLE_CARDS_COUNT;
+    }
+
+    public function getBigBlind(): int
+    {
+        return $this->bigBlind;
     }
 }

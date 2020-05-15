@@ -23,7 +23,7 @@ class Round
     private PlayerCollection $playerCollection;
     private int $status;
 
-    public function __construct(PlayerCollection $playerCollection)
+    public function __construct(PlayerCollection $playerCollection, bool $newGame = true)
     {
         $deck = Deck::getFull();
         $this->playerCollection = $playerCollection;
@@ -32,6 +32,11 @@ class Round
         }
         $this->deck = $deck->take(self::TABLE_CARDS_COUNT);
         $this->status = self::STATUS_PREFLOP;
+        if (!$newGame) {
+            $this->playerCollection->setNextBigBlind();
+            $this->playerCollection->setNextSmallBlind();
+            $this->playerCollection->setNextDealer();
+        }
     }
 
     public function getWinners(): PlayerCollection

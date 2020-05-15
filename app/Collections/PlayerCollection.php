@@ -8,7 +8,6 @@ use Illuminate\Support\Collection;
 
 /**
  * @method Player[] getIterator()
- * @property-read Player first
  */
 class PlayerCollection extends Collection
 {
@@ -44,10 +43,31 @@ class PlayerCollection extends Collection
 
     public function setNextActivePlayer(): void
     {
-        $activePlayerOffset = $this->search(function ($value, $key): bool {
-            return $value->id == $this->activeId;
+        $this->activeId = $this->getNextAfterId($this->activeId)->getId();
+    }
+
+    public function setNextBigBlind(): void
+    {
+        $this->bigBlindId = $this->getNextAfterId($this->bigBlindId)->getId();
+    }
+
+    public function setNextSmallBlind(): void
+    {
+        $this->smallBlindId = $this->getNextAfterId($this->smallBlindId)->getId();
+    }
+
+    public function setNextDealer(): void
+    {
+        $this->dealerId = $this->getNextAfterId($this->dealerId)->getId();
+    }
+
+    private function getNextAfterId(string $playerId): Player
+    {
+        $currentPlayerOffset = $this->search(function ($value, $key) use ($playerId): bool {
+            return $value->id == $playerId;
         });
-        $nextActivePlayer = $this->offsetGet($activePlayerOffset) ?: $this->first;
-        $this->activeId = $nextActivePlayer->getId();
+        // TODO: check this
+        $nextPlayer = $this->offsetGet($currentPlayerOffset) ?? $this->first()->getId();
+        return $nextPlayer;
     }
 }

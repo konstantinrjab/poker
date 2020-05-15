@@ -12,7 +12,10 @@ use Illuminate\Support\Collection;
  */
 class PlayerCollection extends Collection
 {
-    private string $activePlayerId;
+    private string $activeId;
+    private string $dealerId;
+    private string $smallBlindId;
+    private string $bigBlindId;
 
     public function add($item)
     {
@@ -31,19 +34,20 @@ class PlayerCollection extends Collection
 
     public function getActivePlayer(): Player
     {
-        if (!$this->activePlayerId) {
-            $this->activePlayerId = $this->first->getId();
+        if (!isset($this->activeId)) {
+            $this->activeId = $this->first()->getId();
         }
-        // TODO: make it work
-        return $this->firstWhere('id', null, $this->activePlayerId);
+        return $this->first(function (Player $player, $key): bool {
+            return $player->getId() == $this->activeId;
+        });
     }
 
     public function setNextActivePlayer(): void
     {
         $activePlayerOffset = $this->search(function ($value, $key): bool {
-            return $value->id == $this->activePlayerId;
+            return $value->id == $this->activeId;
         });
         $nextActivePlayer = $this->offsetGet($activePlayerOffset) ?: $this->first;
-        $this->activePlayerId = $nextActivePlayer->getId();
+        $this->activeId = $nextActivePlayer->getId();
     }
 }

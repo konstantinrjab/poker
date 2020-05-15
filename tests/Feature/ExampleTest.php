@@ -26,6 +26,7 @@ class ExampleTest extends TestCase
         $gameId = $this->create();
         $this->join($gameId);
         $this->start($gameId);
+        $response = $this->get('/api/games/' . $gameId)->json();
     }
 
     private function create(): string

@@ -18,6 +18,7 @@ class Game
     private ?Round $round = null;
     private State $state;
     private PlayerCollection $playerCollection;
+    private int $pot;
 
     public static function get(string $id, bool $throwOnNotFound = true): ?Game
     {

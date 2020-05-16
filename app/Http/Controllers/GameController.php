@@ -24,7 +24,12 @@ class GameController extends Controller
     public function store(CreateGameRequest $request)
     {
         $game = new Game($request->get('userId'));
-        $game->addPlayer(new Player($request->get('userId')));
+        $game->addPlayer(new Player(
+            $request->get('userId'),
+            $request->get('name'),
+            // TODO: make it dynamic
+            100
+        ));
         $game->save();
 
         return response()->json([
@@ -46,7 +51,12 @@ class GameController extends Controller
     public function join(JoinGameRequest $request, string $id)
     {
         $game = Game::get($id);
-        $game->getPlayers()->add(new Player($request->get('userId')));
+        $game->getPlayers()->add(new Player(
+            $request->get('userId'),
+            $request->get('name'),
+            // TODO: make it dynamic
+            100
+        ));
         $game->save();
     }
 

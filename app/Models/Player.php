@@ -11,9 +11,9 @@ class Player
     private Hand $hand;
     private int $strength;
     private string $name;
-    private int $bet;
-    private bool $isReadyToStart;
-    private bool $isFolded;
+    private int $bet = 0;
+    private bool $isReady = false;
+    private bool $isFolded = false;
 //    private AvailableActionCollection $availableActions;
 
 //'setReady' |
@@ -28,9 +28,11 @@ class Player
 //type: PlayerActionType;
 //options?: {min?: number; max?: number; value?: boolean};
 
-    public function __construct(string $id)
+    public function __construct(string $id, string $name, int $money)
     {
         $this->id = $id;
+        $this->name = $name;
+        $this->money = $money;
     }
 
     public function getId(): string
@@ -38,14 +40,19 @@ class Player
         return $this->id;
     }
 
-    public function makeBid(int $amount): void
+    public function getName(): string
     {
-        $this->money -= $amount;
+        return $this->name;
     }
 
-    public function setHand(Hand $hand): void
+    public function getIsReady(): bool
     {
-        $this->hand = $hand;
+        return $this->isReady;
+    }
+
+    public function setIsReady(bool $isReady): void
+    {
+        $this->isReady = $isReady;
     }
 
     public function getHand(): Hand
@@ -53,14 +60,29 @@ class Player
         return $this->hand;
     }
 
-    public function setStrength(int $strength): void
+    public function setHand(Hand $hand): void
     {
-        $this->strength = $strength;
+        $this->hand = $hand;
     }
 
     public function getStrength(): ?int
     {
         return $this->strength;
+    }
+
+    public function setStrength(int $strength): void
+    {
+        $this->strength = $strength;
+    }
+
+    public function getMoney(): int
+    {
+        return $this->money;
+    }
+
+    public function getBet(): int
+    {
+        return $this->bet;
     }
 
     public function bet(int $amount): void
@@ -70,5 +92,15 @@ class Player
         }
         $this->money -= $amount;
         $this->bet += $amount;
+    }
+
+    public function getIsFolded(): bool
+    {
+        return $this->isFolded;
+    }
+
+    public function fold(): void
+    {
+        $this->isFolded = true;
     }
 }

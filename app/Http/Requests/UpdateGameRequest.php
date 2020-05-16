@@ -15,7 +15,7 @@ class UpdateGameRequest extends FormRequest
     public function rules()
     {
         return [
-            'playerId' => 'required|string',
+            'userId' => 'required|string|max:50',
             'action' => 'required|string|in:' . implode(',', ActionFactory::AVAILABLE_ACTIONS),
             'value' => 'int|required_if:action,' . implode(',', [
                     ActionFactory::BET,

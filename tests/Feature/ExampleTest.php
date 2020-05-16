@@ -33,7 +33,8 @@ class ExampleTest extends TestCase
     private function create(): string
     {
         $response = $this->post('/api/games', [
-            'userId' => self::CREATOR_ID
+            'userId' => self::CREATOR_ID,
+            'name' => 'creator'
         ]);
         $gameId = $response->json()['gameId'];
         $this->assertIsString($gameId);
@@ -44,9 +45,12 @@ class ExampleTest extends TestCase
     private function join(string $gameId)
     {
         for ($userNumber = 2; $userNumber <= 5; $userNumber++) {
-            $this->put('/api/games/' . $gameId . '/join', [
-                'userId' => 'testUserId' . $userNumber
+            $response = $this->put('/api/games/' . $gameId . '/join', [
+                'userId' => 'testUserrId' . $userNumber,
+                'name' => 'player_' . $userNumber
             ]);
+            $this->assertTrue($response->status() == 200);
+
             if ($userNumber == 3) {
                 $response = $this->put('/api/games/' . $gameId . '/start', [
                     'userId' => self::CREATOR_ID
@@ -72,8 +76,15 @@ class ExampleTest extends TestCase
     private function update(string $gameId)
     {
         $response = $this->put('/api/games/' . $gameId, [
-            'userId' => 'testUserId2'
+            'userId' => 'testUserId2',
+            'action' => 'fold'
         ]);
-        $this->assertTrue($response->status() == 403);
+        $this->assertTrue($response->status() == 400);
+
+        $response = $this->put('/api/games/' . $gameId, [
+            'userId' => self::CREATOR_ID,
+            'action' => 'fold'
+        ]);
+        $this->assertTrue($response->status() == 200);
     }
 }

@@ -79,4 +79,9 @@ class Round
     {
         return $this->bigBlind;
     }
+
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
 }

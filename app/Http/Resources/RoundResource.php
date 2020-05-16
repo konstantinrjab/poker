@@ -22,7 +22,10 @@ class RoundResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'activePlayerId' => $this->getPlayerCollection()->getActivePlayer()->getId(),
+            'status' => $this->getStatus(),
+            'bigBlind' => $this->getBigBlind(),
+            'players' => PlayerResource::collection($this->getPlayerCollection()),
+            'activeUserId' => $this->getPlayerCollection()->getActivePlayer()->getId(),
         ];
     }
 }

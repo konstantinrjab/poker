@@ -23,12 +23,14 @@ class ActionFactory
 
     public static function get(UpdateGameRequest $request): Action
     {
-        switch ($request->get('type')) {
+        switch ($request->get('action')) {
             case self::RAISE:
                 return new RaiseAction($request);
-            // TODO: finish this
             case self::FOLD:
                 return new FoldAction($request);
+            // TODO: finish this
+            case self::CHECK:
+                return new CheckAction($request);
         }
         throw new Exception('Unknown action type: ' . $request->get('type'));
     }

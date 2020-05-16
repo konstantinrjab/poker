@@ -66,10 +66,10 @@ class PlayerCollection extends Collection
         $this->dealerId = $this->getNextAfterId($this->dealerId)->getId();
     }
 
-    private function getNextAfterId(string $playerId): Player
+    private function getNextAfterId(string $userId): Player
     {
-        $currentPlayerOffset = $this->search(function ($value, $key) use ($playerId): bool {
-            return $value->id == $playerId;
+        $currentPlayerOffset = $this->search(function (Player $value, $key) use ($userId): bool {
+            return $value->getId() == $userId;
         });
         // TODO: check this
         $nextPlayer = $this->offsetGet($currentPlayerOffset) ?? $this->first()->getId();

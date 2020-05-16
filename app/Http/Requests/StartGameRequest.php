@@ -14,7 +14,7 @@ class StartGameRequest extends FormRequest
     public function rules()
     {
         return [
-            'userId' => 'required|string'
+            'userId' => 'required|string|max:50',
         ];
     }
 }

@@ -23,6 +23,11 @@ class PlayerResource extends JsonResource
     {
         return [
             'id' => $this->getId(),
+            'name' => $this->getName(),
+            'isReady' => $this->getIsReady(),
+            'isFolded' => $this->getIsFolded(),
+            'bet' => $this->getBet(),
+            'money' => $this->getMoney(),
         ];
     }
 }

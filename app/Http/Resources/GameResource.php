@@ -23,6 +23,7 @@ class GameResource extends JsonResource
     {
         return [
             'id' => $this->getId(),
+            'status' => $this->getStatus(),
             'players' => PlayerResource::collection($this->getPlayers()),
             'round' => $this->getRound() ? RoundResource::make($this->getRound()) : null,
         ];

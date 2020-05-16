@@ -12,11 +12,14 @@ class Game
 {
     private const MAX_PLAYERS = 8;
     private const MINIMUM_PLAYERS_COUNT = 5;
+    private const STATUS_WAIT_FOR_PLAYERS = 1;
+    private const STATUS_STARTED = 2;
+    private const STATUS_END = 3;
 
-    private string $creatorId;
     private string $id;
+    private string $creatorId;
+    private int $status;
     private ?Round $round = null;
-    private State $state;
     private PlayerCollection $playerCollection;
     private int $pot;
 
@@ -34,8 +37,12 @@ class Game
         $this->creatorId = $creatorId;
         $this->playerCollection = new PlayerCollection();
         $this->id = Str::uuid();
-        $this->state = new State();
-        $this->state->setStatus(State::STATUS_WAIT_FOR_PLAYERS);
+        $this->status = self::STATUS_WAIT_FOR_PLAYERS;
+    }
+
+    public function getStatus(): int
+    {
+        return $this->status;
     }
 
     public function getId(): string
@@ -63,10 +70,10 @@ class Game
 
     public function start(): void
     {
-        if ($this->state->getStatus() == State::STATUS_STARTED) {
+        if ($this->status == self::STATUS_STARTED) {
             throw new GameException('Game already started');
         }
-        if ($this->state->getStatus() == State::STATUS_END) {
+        if ($this->status == self::STATUS_END) {
             throw new GameException('Game was ended');
         }
         if ($this->playerCollection->count() < self::MINIMUM_PLAYERS_COUNT) {
@@ -74,13 +81,13 @@ class Game
         }
         // TODO: set big blind dynamically
         $this->round = new Round($this->playerCollection, 10);
-        $this->state->setStatus(State::STATUS_STARTED);
+        $this->status = self::STATUS_STARTED;
         $this->save();
     }
 
     public function end(): void
     {
-        $this->state->setStatus(State::STATUS_END);
+        $this->status = self::STATUS_END;
     }
 
     public function getRound(): ?Round

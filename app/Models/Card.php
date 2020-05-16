@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Exceptions\InvalidCardPropertyException;
+use App\Exceptions\GameException;
 
 class Card
 {
@@ -60,7 +60,7 @@ class Card
     public function setValue($value): void
     {
         if (!$this->isValidValue($value)) {
-            throw new InvalidCardPropertyException("An invalid value was set for a card: $value");
+            throw new GameException("An invalid value was set for a card: $value");
         }
 
         $this->value = $value;
@@ -69,7 +69,7 @@ class Card
     public function setSuit($suit): void
     {
         if (!$this->isValidSuit($suit)) {
-            throw new InvalidCardPropertyException("An invalid suit was set for a card: $suit");
+            throw new GameException("An invalid suit was set for a card: $suit");
         }
 
         $this->suit = $suit;

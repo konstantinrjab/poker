@@ -16,22 +16,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 class GameController extends Controller
 {
     /**
-     * @todo remove this method
-     */
-    public function index()
-    {
-        $game = new Game(uniqid());
-        $game->addPlayer(new Player(uniqid()));
-        $game->addPlayer(new Player(uniqid()));
-        $game->addPlayer(new Player(uniqid()));
-        $game->addPlayer(new Player(uniqid()));
-        $game->start();
-        $winners = $game->getRound()->getWinners();
-        $winners->dd();
-        return response();
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param CreateGameRequest $request

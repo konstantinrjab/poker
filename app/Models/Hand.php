@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Exceptions\InvalidHandException;
+use App\Exceptions\GameException;
 use Illuminate\Support\Collection;
 
 class Hand extends Collection
@@ -12,16 +12,13 @@ class Hand extends Collection
     public function __construct($items = [])
     {
         if (count($items) > self::CARD_LIMIT) {
-            throw new InvalidHandException();
+            throw new GameException('Hand must have ' . self::CARD_LIMIT . ' cards');
         }
         parent::__construct($items);
     }
 
     public function add($card): void
     {
-        if ($this->count() == self::CARD_LIMIT) {
-            throw new InvalidHandException();
-        }
-        parent::add($card);
+        throw new GameException('Cannot add card to Hand');
     }
 }

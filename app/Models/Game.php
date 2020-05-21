@@ -4,14 +4,13 @@ namespace App\Models;
 
 use App\Collections\PlayerCollection;
 use App\Exceptions\GameException;
+use App\Http\Requests\CreateGameRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
 class Game
 {
-    private const MAX_PLAYERS = 8;
-    private const MINIMUM_PLAYERS_COUNT = 5;
     private const STATUS_WAIT_FOR_PLAYERS = 1;
     private const STATUS_STARTED = 2;
     private const STATUS_END = 3;
@@ -21,6 +20,7 @@ class Game
     private int $status;
     private ?Round $round = null;
     private PlayerCollection $playerCollection;
+    private GameConfig $config;
     private int $pot;
 
     public static function get(string $id, bool $throwOnNotFound = true): ?Game
@@ -32,12 +32,19 @@ class Game
         return $game ? unserialize($game) : null;
     }
 
-    public function __construct(string $creatorId)
+    public function __construct(CreateGameRequest $request)
     {
-        $this->creatorId = $creatorId;
+        $this->creatorId = $request->input('userId');
         $this->playerCollection = new PlayerCollection();
         $this->id = Str::uuid();
         $this->status = self::STATUS_WAIT_FOR_PLAYERS;
+        // TODO: make it dynamic
+        $this->pot = 1000;
+        $this->config = new GameConfig(
+            $request->input('smallBlind'),
+            $request->input('bigBlind'),
+            $request->input('initialMoney')
+        );
     }
 
     public function getStatus(): int
@@ -55,17 +62,27 @@ class Game
         return $this->creatorId;
     }
 
-    public function addPlayer(Player $player): void
+    public function getPot(): int
     {
-        if ($this->playerCollection->count() >= self::MAX_PLAYERS) {
-            throw new GameException('Cannot add more players, game is full');
-        }
-        $this->playerCollection->add($player);
+        return $this->pot;
+    }
+
+    public function getConfig(): GameConfig
+    {
+        return $this->config;
     }
 
     public function getPlayers(): PlayerCollection
     {
         return $this->playerCollection;
+    }
+
+    public function addPlayer(Player $player): void
+    {
+        if ($this->playerCollection->count() >= $this->config->getMaxPlayersCount()) {
+            throw new GameException('Cannot add more players, game is full');
+        }
+        $this->playerCollection->add($player);
     }
 
     public function start(): void
@@ -76,11 +93,10 @@ class Game
         if ($this->status == self::STATUS_END) {
             throw new GameException('Game was ended');
         }
-        if ($this->playerCollection->count() < self::MINIMUM_PLAYERS_COUNT) {
+        if ($this->playerCollection->count() < $this->config->getMinPlayersCount()) {
             throw new GameException('There is not enough players to start the game');
         }
-        // TODO: set big blind dynamically
-        $this->round = new Round($this->playerCollection, 10);
+        $this->round = new Round($this->playerCollection);
         $this->status = self::STATUS_STARTED;
         $this->save();
     }

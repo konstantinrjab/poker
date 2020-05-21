@@ -22,11 +22,9 @@ class Round
     private Deck $deck;
     private PlayerCollection $playerCollection;
     private int $status;
-    private int $bigBlind;
 
     public function __construct(
         PlayerCollection $playerCollection,
-        int $bigBlind,
         bool $newGame = true
     ) {
         $deck = Deck::getFull();
@@ -36,7 +34,6 @@ class Round
         }
         $this->deck = $deck->take(self::TABLE_CARDS_COUNT);
         $this->status = self::STATUS_PREFLOP;
-        $this->bigBlind = $bigBlind;
         if (!$newGame) {
             $this->playerCollection->setNextBigBlind();
             $this->playerCollection->setNextSmallBlind();
@@ -73,11 +70,6 @@ class Round
     {
         // TODO: finish this logic
         return false && $this->status == self::TABLE_CARDS_COUNT;
-    }
-
-    public function getBigBlind(): int
-    {
-        return $this->bigBlind;
     }
 
     public function getStatus(): int

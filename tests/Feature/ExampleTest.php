@@ -34,7 +34,10 @@ class ExampleTest extends TestCase
     {
         $response = $this->post('/api/games', [
             'userId' => self::CREATOR_ID,
-            'name' => 'creator'
+            'name' => 'creator',
+            'bigBlind' => 10,
+            'smallBlind' => 5,
+            'initialMoney' => 500,
         ]);
         $gameId = $response->json()['gameId'];
         $this->assertIsString($gameId);

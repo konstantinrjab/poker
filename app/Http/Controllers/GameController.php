@@ -23,7 +23,7 @@ class GameController extends Controller
      */
     public function store(CreateGameRequest $request)
     {
-        $game = new Game($request->get('userId'));
+        $game = new Game($request);
         $game->addPlayer(new Player(
             $request->get('userId'),
             $request->get('name'),

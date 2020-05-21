@@ -23,7 +23,6 @@ class RoundResource extends JsonResource
     {
         return [
             'status' => $this->getStatus(),
-            'bigBlind' => $this->getBigBlind(),
             'players' => PlayerResource::collection($this->getPlayerCollection()),
             'activeUserId' => $this->getPlayerCollection()->getActivePlayer()->getId(),
         ];

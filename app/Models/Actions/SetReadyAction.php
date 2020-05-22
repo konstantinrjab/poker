@@ -9,6 +9,6 @@ class SetReadyAction extends Action
 {
     public function updateRound(Round $round): void
     {
-        $round->getPlayerCollection()->getById($this->userId)->setIsReady($this->value);
+        $round->getPlayers()->getById($this->userId)->setIsReady($this->value);
     }
 }

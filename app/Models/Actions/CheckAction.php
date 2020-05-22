@@ -9,6 +9,6 @@ class CheckAction extends Action
 {
     public function updateRound(Round $round): void
     {
-        $round->getPlayerCollection()->setNextActivePlayer();
+        $round->getPlayers()->setNextActivePlayer();
     }
 }

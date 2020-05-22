@@ -17,14 +17,6 @@ class PlayerCollection extends Collection
     private string $smallBlindId;
     private string $bigBlindId;
 
-    public function __construct($items = [])
-    {
-        if ($items) {
-            throw new BadMethodCallException('You should use "add" method');
-        }
-        parent::__construct($items);
-    }
-
     public function add($item)
     {
         /** @var Player $item */

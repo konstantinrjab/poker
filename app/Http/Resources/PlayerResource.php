@@ -66,21 +66,21 @@ class PlayerResource extends JsonResource
 
     private function isDealer(): bool
     {
-        return $this->game->getRound() ? $this->getId() == $this->game->getRound()->getPlayerCollection()->getDealer()->getId() : false;
+        return $this->game->getRound() ? $this->getId() == $this->game->getRound()->getPlayers()->getDealer()->getId() : false;
     }
 
     private function isSmallBlind(): bool
     {
-        return $this->game->getRound() ? $this->getId() == $this->game->getRound()->getPlayerCollection()->getSmallBlind()->getId() : false;
+        return $this->game->getRound() ? $this->getId() == $this->game->getRound()->getPlayers()->getSmallBlind()->getId() : false;
     }
 
     private function isBigBlind(): bool
     {
-        return $this->game->getRound() ? $this->getId() == $this->game->getRound()->getPlayerCollection()->getBigBlind()->getId() : false;
+        return $this->game->getRound() ? $this->getId() == $this->game->getRound()->getPlayers()->getBigBlind()->getId() : false;
     }
 
     private function isActive(): bool
     {
-        return $this->game->getRound() ? $this->getId() == $this->game->getRound()->getPlayerCollection()->getActivePlayer()->getId() : false;
+        return $this->game->getRound() ? $this->getId() == $this->game->getRound()->getPlayers()->getActivePlayer()->getId() : false;
     }
 }

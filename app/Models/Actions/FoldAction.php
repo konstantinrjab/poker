@@ -9,6 +9,6 @@ class FoldAction extends Action
 {
     public function updateRound(Round $round): void
     {
-        $round->getPlayerCollection()->getById($this->userId)->fold();
+        $round->getPlayers()->getById($this->userId)->fold();
     }
 }

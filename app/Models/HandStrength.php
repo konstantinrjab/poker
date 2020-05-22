@@ -61,11 +61,11 @@ class HandStrength
 //        if ($this->isFullHouse()) {
 //            $this->strength = 6;
 //        }
-//
-//        if ($this->isFourOfAKind()) {
-//            $this->strength = 7;
-//        }
-//
+
+        if ($this->isFourOfAKind()) {
+            $this->strength = 7;
+        }
+
 //        if ($this->isStraightFlush()) {
 //            $this->strength = 8;
 //        }

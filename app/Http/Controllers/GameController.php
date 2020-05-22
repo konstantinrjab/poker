@@ -72,7 +72,7 @@ class GameController extends Controller
     public function update(UpdateGameRequest $request, string $id)
     {
         $game = Game::get($id);
-        if ($game->getRound()->getPlayerCollection()->getActivePlayer()->getId() != $request->get('userId')) {
+        if ($game->getRound()->getPlayers()->getActivePlayer()->getId() != $request->get('userId')) {
             throw new GameException('It is not you turn');
         }
         $action = ActionFactory::get($request);
@@ -80,6 +80,8 @@ class GameController extends Controller
 
         if (!$game->getRound()->shouldEnd()) {
             $game->getRound()->passTurn();
+        } else {
+            $game->getRound()->end();
         }
         $game->save();
         return GameResource::make($game);

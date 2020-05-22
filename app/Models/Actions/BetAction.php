@@ -9,6 +9,6 @@ class BetAction extends Action
 {
     public function updateRound(Round $round): void
     {
-        $round->getPlayerCollection()->getById($this->userId)->bet($this->value);
+        $round->getPlayers()->getById($this->userId)->bet($this->value);
     }
 }

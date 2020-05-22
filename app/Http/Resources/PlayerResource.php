@@ -46,14 +46,40 @@ class PlayerResource extends JsonResource
             'money' => $this->getMoney(),
             'bet' => $this->getBet(),
             'isReadyToStart' => $this->getIsReady(),
-            'availableActions' => $this->getActions(),
             'isFolded' => $this->getIsFolded(),
             'isCreator' => $this->isCreator(),
+            'isDealer' => $this->isDealer(),
+            'isBigBlind' => $this->isBigBlind(),
+            'isSmallBlind' => $this->isSmallBlind(),
+            'isActive' => $this->isActive(),
+            // TODO: finish this
+            'holeCards' => isset($this->hand) ? $this->getHand()->toArray() : [],
+            'availableActions' => $this->getActions(),
         ];
     }
 
     private function isCreator(): bool
     {
         return $this->getId() == $this->game->getCreatorId();
+    }
+
+    private function isDealer(): bool
+    {
+        return $this->game->getRound() ? $this->getId() == $this->game->getRound()->getPlayerCollection()->getDealer()->getId() : false;
+    }
+
+    private function isSmallBlind(): bool
+    {
+        return $this->game->getRound() ? $this->getId() == $this->game->getRound()->getPlayerCollection()->getSmallBlind()->getId() : false;
+    }
+
+    private function isBigBlind(): bool
+    {
+        return $this->game->getRound() ? $this->getId() == $this->game->getRound()->getPlayerCollection()->getBigBlind()->getId() : false;
+    }
+
+    private function isActive(): bool
+    {
+        return $this->game->getRound() ? $this->getId() == $this->game->getRound()->getPlayerCollection()->getActivePlayer()->getId() : false;
     }
 }

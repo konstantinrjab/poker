@@ -5,6 +5,7 @@ namespace App\Collections;
 use App\Exceptions\GameException;
 use App\Models\Player;
 use Illuminate\Support\Collection;
+use BadMethodCallException;
 
 /**
  * @method Player[] getIterator()
@@ -15,6 +16,14 @@ class PlayerCollection extends Collection
     private string $dealerId;
     private string $smallBlindId;
     private string $bigBlindId;
+
+    public function __construct($items = [])
+    {
+        if ($items) {
+            throw new BadMethodCallException('You should use "add" method');
+        }
+        parent::__construct($items);
+    }
 
     public function add($item)
     {
@@ -27,6 +36,14 @@ class PlayerCollection extends Collection
         }
 
         $this->items[] = $item;
+
+        if (!isset($this->dealerId)) {
+            $this->dealerId = $item->getId();
+        } else if (!isset($this->smallBlindId)) {
+            $this->smallBlindId = $item->getId();
+        } else if (!isset($this->bigBlindId)) {
+            $this->bigBlindId = $item->getId();
+        }
 
         return $this;
     }
@@ -49,6 +66,21 @@ class PlayerCollection extends Collection
     public function setNextActivePlayer(): void
     {
         $this->activeId = $this->getNextAfterId($this->activeId)->getId();
+    }
+
+    public function getDealer(): Player
+    {
+        return $this->getById($this->dealerId);
+    }
+
+    public function getBigBlind(): Player
+    {
+        return $this->getById($this->bigBlindId);
+    }
+
+    public function getSmallBlind(): Player
+    {
+        return $this->getById($this->smallBlindId);
     }
 
     public function setNextBigBlind(): void

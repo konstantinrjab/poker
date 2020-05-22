@@ -8,7 +8,7 @@ class Player
 {
     private string $id;
     private int $money;
-    private Hand $hand;
+    private ?Hand $hand;
     private int $strength;
     private string $name;
     private int $bet = 0;
@@ -42,9 +42,9 @@ class Player
         $this->isReady = $isReady;
     }
 
-    public function getHand(): Hand
+    public function getHand(): ?Hand
     {
-        return $this->hand;
+        return isset($this->hand) ? $this->hand : null;
     }
 
     public function setHand(Hand $hand): void

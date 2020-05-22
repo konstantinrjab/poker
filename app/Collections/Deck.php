@@ -10,7 +10,7 @@ class Deck extends Collection
 {
     public static function getFull(): self
     {
-        $deck = new self();
+        $deck = new static();
         foreach (array_keys(Card::VALUES) as $value) {
             foreach (Card::SUITS as $suit) {
                 $deck->add(new Card($suit, $value));

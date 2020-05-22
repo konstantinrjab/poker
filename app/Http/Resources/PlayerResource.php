@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Collections\PlayerResourceCollection;
+use App\Http\Adapters\CardAdapter;
 use App\Models\Game;
 use App\Models\Player;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -53,7 +54,7 @@ class PlayerResource extends JsonResource
             'isSmallBlind' => $this->isSmallBlind(),
             'isActive' => $this->isActive(),
             // TODO: finish this
-            'holeCards' => isset($this->hand) ? $this->getHand()->toArray() : [],
+            'holeCards' => $this->getHand() ? CardAdapter::hand($this->getHand()) : [],
             'availableActions' => $this->getActions(),
         ];
     }

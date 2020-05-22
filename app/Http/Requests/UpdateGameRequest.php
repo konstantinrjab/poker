@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Actions\ActionFactory;
+use App\Models\Actions\Factories\ActionFactory;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateGameRequest extends FormRequest

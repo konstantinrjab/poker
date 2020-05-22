@@ -22,6 +22,9 @@ class GameResource extends JsonResource
      */
     public function toArray($request)
     {
+        $players = PlayerResource::collection($this->getPlayers());
+        $players->setGame($this->resource);
+
         return [
             'id' => $this->getId(),
             'config' => [
@@ -34,7 +37,7 @@ class GameResource extends JsonResource
             ],
             'status' => $this->getStatus(),
             'pot' => $this->getPot(),
-            'players' => PlayerResource::collection($this->getPlayers()),
+            'players' => $players,
             'round' => $this->getRound() ? RoundResource::make($this->getRound()) : null,
         ];
     }

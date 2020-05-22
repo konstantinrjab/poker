@@ -8,7 +8,7 @@ use App\Http\Requests\JoinGameRequest;
 use App\Http\Requests\StartGameRequest;
 use App\Http\Requests\UpdateGameRequest;
 use App\Http\Resources\GameResource;
-use App\Models\Actions\ActionFactory;
+use App\Models\Actions\Factories\ActionFactory;
 use App\Models\Game;
 use App\Models\Player;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;

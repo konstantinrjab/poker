@@ -14,19 +14,6 @@ class Player
     private int $bet = 0;
     private bool $isReady = false;
     private bool $isFolded = false;
-//    private AvailableActionCollection $availableActions;
-
-//'setReady' |
-//'setNotReady' |
-//'check' |
-//'call' |
-//'bet' |
-//'raise' |
-//'fold';
-
-//id: string;
-//type: PlayerActionType;
-//options?: {min?: number; max?: number; value?: boolean};
 
     public function __construct(string $id, string $name, int $money)
     {
@@ -102,5 +89,22 @@ class Player
     public function fold(): void
     {
         $this->isFolded = true;
+    }
+
+    public function getActions(): array
+    {
+//'setReady' |
+//'setNotReady' |
+//'check' |
+//'call' |
+//'bet' |
+//'raise' |
+//'fold';
+
+//id: string;
+//type: PlayerActionType;
+//options?: {min?: number; max?: number; value?: boolean};
+
+        return ['setReady', 'fold'];
     }
 }

@@ -50,14 +50,14 @@ class HandStrength
             $this->strength = 3;
         }
 
-//        if ($this->isStraight()) {
-//            $this->strength = 4;
-//        }
-//
-//        if ($this->isFlush()) {
-//            $this->strength = 5;
-//        }
-//
+        if ($this->isStraight()) {
+            $this->strength = 4;
+        }
+
+        if ($this->isFlush()) {
+            $this->strength = 5;
+        }
+
 //        if ($this->isFullHouse()) {
 //            $this->strength = 6;
 //        }
@@ -132,8 +132,9 @@ class HandStrength
         return false;
     }
 
-    private function findStraight(): bool
+    private function isStraight(): bool
     {
+        // TODO: add starts from ace logic
         $consecutiveCount = 1;
 
         $deck = $this->mergedDeck->sortBy(function (Card $card): int {
@@ -210,28 +211,18 @@ class HandStrength
 
     public function isFlush()
     {
-        $suitTally = [];
+        $cardsBySuits = [];
 
-        foreach ($this->cards as $card) {
-            empty($suitTally[$card->getSuit()]) ? $suitTally[$card->getSuit()] = 1 : $suitTally[$card->getSuit()]++;
+        foreach ($this->mergedDeck as $card) {
+            /** @var Card $card */
+            $cardsBySuits[$card->getSuit()] = isset($cardsBySuits[$card->getSuit()]) ? $cardsBySuits[$card->getSuit()] + 1 : 1;
         }
-
-        foreach ($suitTally as $suit => $tally) {
-            if ($tally >= 5) {
-                $this->flushSuit = $suit;
+        foreach ($cardsBySuits as $cardsBySuit) {
+            if (count($cardsBySuit) == 5) {
                 return true;
             }
         }
-
         return false;
-    }
-
-    public function isStraight(): bool
-    {
-        $lowStraight = $this->findStraight();
-        $highStraight = $this->findStraight();
-
-        return $highStraight ?: $lowStraight;
     }
 
     public function sortCards()

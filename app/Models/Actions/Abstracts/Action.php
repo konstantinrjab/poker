@@ -3,7 +3,7 @@
 namespace App\Models\Actions\Abstracts;
 
 use App\Http\Requests\UpdateGameRequest;
-use App\Models\Round;
+use App\Models\Game;
 
 abstract class Action
 {
@@ -18,5 +18,5 @@ abstract class Action
         $this->value = $request->get('value');
     }
 
-    abstract public function updateRound(Round $round): void;
+    abstract public function updateGame(Game $game): void;
 }

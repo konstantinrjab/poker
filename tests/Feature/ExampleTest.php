@@ -25,6 +25,7 @@ class ExampleTest extends TestCase
     {
         $gameId = $this->create();
         $this->join($gameId);
+        $this->setReady($gameId);
         $this->start($gameId);
         $this->update($gameId);
         $response = $this->get('/api/games/' . $gameId)->json();
@@ -49,17 +50,27 @@ class ExampleTest extends TestCase
     {
         for ($userNumber = 2; $userNumber <= 5; $userNumber++) {
             $response = $this->put('/api/games/' . $gameId . '/join', [
-                'userId' => 'testUserrId' . $userNumber,
+                'userId' => 'testUserId' . $userNumber,
                 'name' => 'player_' . $userNumber
             ]);
             $this->assertTrue($response->status() == 200);
+        }
+    }
 
-            if ($userNumber == 3) {
-                $response = $this->put('/api/games/' . $gameId . '/start', [
-                    'userId' => self::CREATOR_ID
-                ]);
-                $this->assertTrue($response->status() == 400);
-            }
+    private function setReady(string $gameId)
+    {
+        $response = $this->put('/api/games/' . $gameId. '/ready', [
+            'userId' => self::CREATOR_ID,
+            'value' => true
+        ]);
+        $this->assertTrue($response->status() == 200);
+
+        for ($userNumber = 2; $userNumber <= 5; $userNumber++) {
+            $response = $this->put('/api/games/' . $gameId . '/ready', [
+                'userId' => 'testUserId' . $userNumber,
+                'value' => true
+            ]);
+            $this->assertTrue($response->status() == 200);
         }
     }
 

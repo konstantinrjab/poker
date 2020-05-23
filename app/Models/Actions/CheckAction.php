@@ -3,12 +3,12 @@
 namespace App\Models\Actions;
 
 use App\Models\Actions\Abstracts\Action;
-use App\Models\Round;
+use App\Models\Game;
 
 class CheckAction extends Action
 {
-    public function updateRound(Round $round): void
+    public function updateGame(Game $game): void
     {
-        $round->getPlayers()->setNextActivePlayer();
+        $game->getPlayers()->setNextActivePlayer();
     }
 }

@@ -44,11 +44,6 @@ class Round
         }
     }
 
-    public function getPlayers(): PlayerCollection
-    {
-        return $this->players;
-    }
-
     public function getWinners(): ?PlayerCollection
     {
         return isset($this->winners) ? $this->winners : null;

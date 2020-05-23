@@ -3,12 +3,12 @@
 namespace App\Models\Actions;
 
 use App\Models\Actions\Abstracts\Action;
-use App\Models\Round;
+use App\Models\Game;
 
 class BetAction extends Action
 {
-    public function updateRound(Round $round): void
+    public function updateGame(Game $game): void
     {
-        $round->getPlayers()->getById($this->userId)->bet($this->value);
+        $game->getPlayers()->getById($this->userId)->bet($this->value);
     }
 }

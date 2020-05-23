@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\GameException;
 use App\Http\Requests\CreateGameRequest;
 use App\Http\Requests\JoinGameRequest;
+use App\Http\Requests\ReadyRequest;
 use App\Http\Requests\StartGameRequest;
 use App\Http\Requests\UpdateGameRequest;
 use App\Http\Resources\GameResource;
@@ -60,6 +61,13 @@ class GameController extends Controller
         $game->save();
     }
 
+    public function ready(ReadyRequest $request, string $id)
+    {
+        $game = Game::get($id);
+        $game->getPlayers()->getById($request->input('userId'))->setIsReady($request->input('value'));
+        $game->save();
+    }
+
     public function start(StartGameRequest $request, string $id)
     {
         $game = Game::get($id);
@@ -72,11 +80,11 @@ class GameController extends Controller
     public function update(UpdateGameRequest $request, string $id)
     {
         $game = Game::get($id);
-        if ($game->getRound()->getPlayers()->getActivePlayer()->getId() != $request->get('userId')) {
+        if ($game->getPlayers()->getActivePlayer()->getId() != $request->get('userId')) {
             throw new GameException('It is not you turn');
         }
         $action = ActionFactory::get($request);
-        $action->updateRound($game->getRound());
+        $action->updateGame($game);
 
         if (!$game->getRound()->shouldEnd()) {
             $game->getRound()->passTurn();

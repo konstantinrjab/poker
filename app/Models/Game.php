@@ -19,7 +19,7 @@ class Game
     private string $creatorId;
     private int $status;
     private ?Round $round = null;
-    private PlayerCollection $playerCollection;
+    private PlayerCollection $players;
     private GameConfig $config;
     private int $pot;
 
@@ -35,7 +35,7 @@ class Game
     public function __construct(CreateGameRequest $request)
     {
         $this->creatorId = $request->input('userId');
-        $this->playerCollection = new PlayerCollection();
+        $this->players = new PlayerCollection();
         $this->id = Str::uuid();
         $this->status = self::STATUS_WAIT_FOR_PLAYERS;
         // TODO: make it dynamic
@@ -74,15 +74,15 @@ class Game
 
     public function getPlayers(): PlayerCollection
     {
-        return $this->playerCollection;
+        return $this->players;
     }
 
     public function addPlayer(Player $player): void
     {
-        if ($this->playerCollection->count() >= $this->config->getMaxPlayersCount()) {
+        if ($this->players->count() >= $this->config->getMaxPlayersCount()) {
             throw new GameException('Cannot add more players, game is full');
         }
-        $this->playerCollection->add($player);
+        $this->players->add($player);
     }
 
     public function start(): void
@@ -93,10 +93,15 @@ class Game
         if ($this->status == self::STATUS_END) {
             throw new GameException('Game was ended');
         }
-        if ($this->playerCollection->count() < $this->config->getMinPlayersCount()) {
+        if ($this->players->count() < $this->config->getMinPlayersCount()) {
             throw new GameException('There is not enough players to start the game');
         }
-        $this->round = new Round($this->playerCollection);
+        foreach ($this->players as $player) {
+            if (!$player->getIsReady()) {
+                throw new GameException('Player ' . $player->getId() . ' is not ready yet');
+            }
+        }
+        $this->round = new Round($this->players);
         $this->status = self::STATUS_STARTED;
         $this->save();
     }

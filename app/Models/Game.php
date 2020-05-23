@@ -101,7 +101,7 @@ class Game
                 throw new GameException('Player ' . $player->getId() . ' is not ready yet');
             }
         }
-        $this->round = new Round($this->players);
+        $this->round = new Round($this->players, $this->config, true);
         $this->status = self::STATUS_STARTED;
         $this->save();
     }

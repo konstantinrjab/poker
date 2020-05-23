@@ -28,7 +28,8 @@ class Round
 
     public function __construct(
         PlayerCollection $playerCollection,
-        bool $newGame = true
+        GameConfig $config,
+        bool $newGame
     ) {
         $deck = Deck::getFull();
         $this->players = $playerCollection;
@@ -42,6 +43,8 @@ class Round
             $this->players->setNextSmallBlind();
             $this->players->setNextDealer();
         }
+        $this->players->getSmallBlind()->bet($config->getSmallBlind());
+        $this->players->getBigBlind()->bet($config->getBigBlind());
     }
 
     public function getWinners(): ?PlayerCollection

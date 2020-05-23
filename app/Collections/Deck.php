@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 
 class Deck extends Collection
 {
-    public static function getFull(): self
+    public static function getFull(): Deck
     {
         $deck = new static();
         foreach (array_keys(Card::VALUES) as $value) {

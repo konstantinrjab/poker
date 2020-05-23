@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Collections\PlayerCollection;
 use App\Collections\Deck;
 
-class Round
+class Deal
 {
     private const STATUS_PREFLOP = 1;
     private const STATUS_FLOP = 2;

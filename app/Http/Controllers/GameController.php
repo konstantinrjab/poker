@@ -28,8 +28,7 @@ class GameController extends Controller
         $game->addPlayer(new Player(
             $request->get('userId'),
             $request->get('name'),
-            // TODO: make it dynamic
-            100
+            $game->getConfig()->getInitialMoney()
         ));
         $game->save();
 
@@ -85,10 +84,10 @@ class GameController extends Controller
         $action = ActionFactory::get($request);
         $action->updateGame($game);
 
-        if (!$game->getRound()->shouldEnd()) {
-            $game->getRound()->passTurn();
+        if (!$game->getDeal()->shouldEnd()) {
+            $game->getDeal()->passTurn();
         } else {
-            $game->getRound()->end();
+            $game->getDeal()->end();
         }
         $game->save();
         return GameResource::make($game);

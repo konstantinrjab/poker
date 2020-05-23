@@ -38,7 +38,7 @@ class GameResource extends JsonResource
             'status' => $this->getStatus(),
             'pot' => $this->getPot(),
             'players' => $players,
-            'round' => $this->getRound() ? RoundResource::make($this->getRound()) : null,
+            'deal' => $this->getDeal() ? DealResource::make($this->getDeal()) : null,
         ];
     }
 }

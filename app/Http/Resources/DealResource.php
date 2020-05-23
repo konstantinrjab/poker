@@ -2,16 +2,16 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Round;
+use App\Models\Deal;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * Class RoundResource
+ * Class DealResource
  * @package App\Http\Resources
  *
- * @mixin Round
+ * @mixin Deal
  */
-class RoundResource extends JsonResource
+class DealResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

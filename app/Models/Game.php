@@ -18,7 +18,7 @@ class Game
     private string $id;
     private string $creatorId;
     private int $status;
-    private ?Round $round = null;
+    private ?Deal $deal = null;
     private PlayerCollection $players;
     private GameConfig $config;
     private int $pot;
@@ -101,7 +101,7 @@ class Game
                 throw new GameException('Player ' . $player->getId() . ' is not ready yet');
             }
         }
-        $this->round = new Round($this->players, $this->config, true);
+        $this->deal = new Deal($this->players, $this->config, true);
         $this->status = self::STATUS_STARTED;
         $this->save();
     }
@@ -111,9 +111,9 @@ class Game
         $this->status = self::STATUS_END;
     }
 
-    public function getRound(): ?Round
+    public function getDeal(): ?Deal
     {
-        return $this->round;
+        return $this->deal;
     }
 
     public function save()

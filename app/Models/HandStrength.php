@@ -12,7 +12,7 @@ class HandStrength
     private $flushSuit;
 
     private Hand $hand;
-    private Deck $roundDeck;
+    private Deck $dealDeck;
     private Deck $mergedDeck;
 
 
@@ -29,11 +29,11 @@ class HandStrength
         'Royal Flush'
     ];
 
-    public function __construct(Hand $hand, Deck $roundDeck)
+    public function __construct(Hand $hand, Deck $deck)
     {
         $this->hand = $hand;
-        $this->roundDeck = $roundDeck;
-        $this->mergedDeck = $roundDeck->merge($hand);
+        $this->dealDeck = $deck;
+        $this->mergedDeck = $deck->merge($hand);
     }
 
     public function getStrength(): int

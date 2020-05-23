@@ -18,7 +18,6 @@ class UpdateGameRequest extends FormRequest
             'userId' => 'required|string|max:50',
             'action' => 'required|string|in:' . implode(',', ActionFactory::AVAILABLE_ACTIONS),
             'value' => 'int|required_if:action,' . implode(',', [
-                    ActionFactory::BET,
                     ActionFactory::RAISE,
                 ]),
         ];

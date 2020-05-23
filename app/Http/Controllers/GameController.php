@@ -55,8 +55,7 @@ class GameController extends Controller
         $game->getPlayers()->add(new Player(
             $request->get('userId'),
             $request->get('name'),
-            // TODO: make it dynamic
-            100
+            $game->getConfig()->getInitialMoney()
         ));
         $game->save();
     }

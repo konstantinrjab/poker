@@ -9,6 +9,12 @@ class CallAction extends Action
 {
     public function updateGame(Game $game): void
     {
-        $game->getPlayers()->getById($this->userId)->bet($this->value);
+        $maxBet = $game->getDeal()->getRound()->getMaxBet();
+        $amountToCall = $maxBet - $game->getDeal()->getRound()->getPlayerBet($this->userId);
+        if ($amountToCall) {
+            $game->getDeal()->getRound()->bet($this->userId, $amountToCall);
+            $game->getDeal()->addToPot($this->value);
+        }
+        $game->getDeal()->passTurn();
     }
 }

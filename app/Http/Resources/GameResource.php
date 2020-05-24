@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use App\Models\Game;
-use App\Models\GameConfig;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -36,7 +35,7 @@ class GameResource extends JsonResource
                 'bigBlind' => $this->getConfig()->getBigBlind(),
             ],
             'status' => $this->getStatus(),
-            'pot' => $this->getPot(),
+            'pot' => $this->getDeal() ? $this->getDeal()->getPot() : null,
             'players' => $players,
             'deal' => $this->getDeal() ? DealResource::make($this->getDeal()) : null,
         ];

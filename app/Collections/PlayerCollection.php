@@ -29,6 +29,9 @@ class PlayerCollection extends Collection
 
         $this->items[] = $item;
 
+        if (!isset($this->activeId)) {
+            $this->activeId = $item->getId();
+        }
         if (!isset($this->dealerId)) {
             $this->dealerId = $item->getId();
         } else if (!isset($this->smallBlindId)) {
@@ -95,8 +98,7 @@ class PlayerCollection extends Collection
         $currentPlayerOffset = $this->search(function (Player $value, $key) use ($userId): bool {
             return $value->getId() == $userId;
         });
-        // TODO: check this
-        $nextPlayer = $this->offsetGet($currentPlayerOffset) ?? $this->first()->getId();
+        $nextPlayer = $this->offsetExists($currentPlayerOffset + 1) ? $this->offsetGet($currentPlayerOffset + 1) : $this->first();
         return $nextPlayer;
     }
 }

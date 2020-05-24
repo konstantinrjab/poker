@@ -21,7 +21,6 @@ class Game
     private ?Deal $deal = null;
     private PlayerCollection $players;
     private GameConfig $config;
-    private int $pot;
 
     public static function get(string $id, bool $throwOnNotFound = true): ?Game
     {
@@ -38,8 +37,6 @@ class Game
         $this->players = new PlayerCollection();
         $this->id = Str::uuid();
         $this->status = self::STATUS_WAIT_FOR_PLAYERS;
-        // TODO: make it dynamic
-        $this->pot = 1000;
         $this->config = new GameConfig(
             $request->input('smallBlind'),
             $request->input('bigBlind'),
@@ -60,11 +57,6 @@ class Game
     public function getCreatorId(): string
     {
         return $this->creatorId;
-    }
-
-    public function getPot(): int
-    {
-        return $this->pot;
     }
 
     public function getConfig(): GameConfig

@@ -78,6 +78,7 @@ class GameController extends Controller
     public function update(UpdateGameRequest $request, string $id)
     {
         $game = Game::get($id);
+        // TODO: add timeout logic
         if ($game->getPlayers()->getActivePlayer()->getId() != $request->get('userId')) {
             throw new GameException('It is not you turn');
         }

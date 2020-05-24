@@ -7,11 +7,10 @@ use App\Exceptions\GameException;
 class Player
 {
     private string $id;
+    private string $name;
     private int $money;
     private ?Hand $hand;
     private int $strength;
-    private string $name;
-    private int $bet = 0;
     private bool $isReady = false;
     private bool $isFolded = false;
 
@@ -67,18 +66,12 @@ class Player
         return $this->money;
     }
 
-    public function getBet(): int
-    {
-        return $this->bet;
-    }
-
-    public function bet(int $amount): void
+    public function pay(int $amount): void
     {
         if ($amount > $this->money) {
             throw new GameException('Player ' . $this->id . 'doesn\'t have enough money');
         }
         $this->money -= $amount;
-        $this->bet += $amount;
     }
 
     public function getIsFolded(): bool

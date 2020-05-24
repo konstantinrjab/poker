@@ -11,7 +11,7 @@ class Deal
     private const STATUS_FLOP = 2;
     private const STATUS_TURN = 3;
     private const STATUS_RIVER = 4;
-    private const STATUS_END = 4;
+    private const STATUS_END = 5;
     private const STATUSES = [
         self::STATUS_PREFLOP,
         self::STATUS_FLOP,
@@ -21,16 +21,19 @@ class Deal
     ];
     private const TABLE_CARDS_COUNT = 5;
 
+    private Round $round;
     private Deck $deck;
     private PlayerCollection $players;
     private ?PlayerCollection $winners;
     private int $status;
+    private int $pot;
 
     public function __construct(
         PlayerCollection $playerCollection,
         GameConfig $config,
         bool $newGame
     ) {
+        $this->round = new Round($playerCollection);
         $deck = Deck::getFull();
         $this->players = $playerCollection;
         foreach ($this->players as $player) {
@@ -43,8 +46,33 @@ class Deal
             $this->players->setNextSmallBlind();
             $this->players->setNextDealer();
         }
-        $this->players->getSmallBlind()->bet($config->getSmallBlind());
-        $this->players->getBigBlind()->bet($config->getBigBlind());
+        $this->players->getSmallBlind()->pay($config->getSmallBlind());
+        $this->players->getBigBlind()->pay($config->getBigBlind());
+    }
+
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
+
+    public function getPlayers(): PlayerCollection
+    {
+        return $this->players;
+    }
+
+    public function getRound(): Round
+    {
+        return $this->round;
+    }
+
+    public function getPot(): ?int
+    {
+        return isset($this->pot) ? $this->pot : null;
+    }
+
+    public function addToPot(int $amount): void
+    {
+        $this->pot += $amount;
     }
 
     public function getWinners(): ?PlayerCollection
@@ -55,24 +83,21 @@ class Deal
     public function passTurn(): void
     {
         $this->players->setNextActivePlayer();
+        $this->players->setNextBigBlind();
+        $this->players->setNextSmallBlind();
+        $this->players->setNextDealer();
     }
 
     public function shouldEnd(): bool
     {
-//        return 1;
         // TODO: finish this logic
-        return false && $this->status == self::TABLE_CARDS_COUNT;
+        return $this->status == self::STATUS_RIVER;
     }
 
     public function end(): void
     {
         $this->status = self::STATUS_END;
         $this->calculateWinners();
-    }
-
-    public function getStatus(): int
-    {
-        return $this->status;
     }
 
     private function calculateWinners(): void

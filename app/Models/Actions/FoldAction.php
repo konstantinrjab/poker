@@ -10,6 +10,5 @@ class FoldAction extends Action
     public function updateGame(Game $game): void
     {
         $game->getPlayers()->getById($this->userId)->fold();
-        $game->getDeal()->passTurn();
     }
 }

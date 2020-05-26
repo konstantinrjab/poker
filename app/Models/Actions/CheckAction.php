@@ -9,6 +9,6 @@ class CheckAction extends Action
 {
     public function updateGame(Game $game): void
     {
-        $game->getDeal()->passTurn();
+
     }
 }

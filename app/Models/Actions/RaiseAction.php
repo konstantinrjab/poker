@@ -10,15 +10,11 @@ class RaiseAction extends Action
 {
     public function updateGame(Game $game): void
     {
-
-        $maxBet = $game->getDeal()->getRound()->getMaxBet();
-        // TODO: add raise amount validation
-        if (false && $maxBet) {
-            throw new GameException('Invalid raise amount');
+        if ($this->value < $game->getConfig()->getBigBlind()) {
+            throw new GameException('Raise has to be greater than ' . $game->getConfig()->getBigBlind());
         }
         $game->getDeal()->getRound()->bet($this->userId, $this->value);
         $game->getDeal()->addToPot($this->value);
         $game->getPlayers()->getById($this->userId)->pay($this->value);
-        $game->getDeal()->passTurn();
     }
 }

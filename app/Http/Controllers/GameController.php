@@ -85,12 +85,10 @@ class GameController extends Controller
         $action = ActionFactory::get($request);
         $action->updateGame($game);
 
-        if (!$game->getDeal()->shouldEnd()) {
-            $game->getDeal()->passTurn();
-        } else {
-            $game->getDeal()->end();
-        }
+        $game->getDeal()->onAfterUpdate();
+
         $game->save();
+
         return GameResource::make($game);
     }
 }

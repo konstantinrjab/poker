@@ -15,6 +15,5 @@ class CallAction extends Action
             $game->getDeal()->getRound()->bet($this->userId, $amountToCall);
             $game->getDeal()->addToPot($this->value);
         }
-        $game->getDeal()->passTurn();
     }
 }

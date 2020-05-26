@@ -12,13 +12,6 @@ class Deal
     private const STATUS_TURN = 3;
     private const STATUS_RIVER = 4;
     private const STATUS_END = 5;
-    private const STATUSES = [
-        self::STATUS_PREFLOP,
-        self::STATUS_FLOP,
-        self::STATUS_TURN,
-        self::STATUS_RIVER,
-        self::STATUS_END,
-    ];
     private const TABLE_CARDS_COUNT = 5;
 
     private Round $round;
@@ -32,7 +25,8 @@ class Deal
         PlayerCollection $playerCollection,
         GameConfig $config,
         bool $newGame
-    ) {
+    )
+    {
         $this->round = new Round($playerCollection);
         $deck = Deck::getFull();
         $this->players = $playerCollection;
@@ -80,24 +74,35 @@ class Deal
         return isset($this->winners) ? $this->winners : null;
     }
 
-    public function passTurn(): void
+    public function onAfterUpdate(): void
+    {
+        if ($this->shouldEnd()) {
+            $this->end();
+            return;
+        }
+        if ($this->status != self::STATUS_RIVER && $this->round->shouldEnd()) {
+            $this->round = new Round();
+        }
+        $this->passTurn();
+    }
+
+    private function shouldEnd(): bool
+    {
+        return $this->round->shouldEnd() && $this->status == self::STATUS_RIVER;
+    }
+
+    private function end(): void
+    {
+        $this->status = self::STATUS_END;
+        $this->calculateWinners();
+    }
+
+    private function passTurn(): void
     {
         $this->players->setNextActivePlayer();
         $this->players->setNextBigBlind();
         $this->players->setNextSmallBlind();
         $this->players->setNextDealer();
-    }
-
-    public function shouldEnd(): bool
-    {
-        // TODO: finish this logic
-        return $this->status == self::STATUS_RIVER;
-    }
-
-    public function end(): void
-    {
-        $this->status = self::STATUS_END;
-        $this->calculateWinners();
     }
 
     private function calculateWinners(): void

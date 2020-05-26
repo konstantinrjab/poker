@@ -74,6 +74,11 @@ class Player
         $this->money -= $amount;
     }
 
+    public function earn(int $amount): void
+    {
+        $this->money += $amount;
+    }
+
     public function getIsFolded(): bool
     {
         return $this->isFolded;

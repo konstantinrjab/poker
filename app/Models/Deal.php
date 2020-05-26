@@ -74,6 +74,20 @@ class Deal
         return isset($this->winners) ? $this->winners : null;
     }
 
+    public function showCards(): Deck
+    {
+        if ($this->status == self::STATUS_PREFLOP) {
+            $limit = 0;
+        } else if ($this->status == self::STATUS_FLOP) {
+            $limit = 3;
+        } else if ($this->status == self::STATUS_TURN) {
+            $limit = 4;
+        } else if ($this->status == self::STATUS_RIVER) {
+            $limit = 5;
+        }
+        return $this->deck->take($limit);
+    }
+
     public function onAfterUpdate(): void
     {
         if ($this->shouldEnd()) {
@@ -81,7 +95,8 @@ class Deal
             return;
         }
         if ($this->status != self::STATUS_RIVER && $this->round->shouldEnd()) {
-            $this->round = new Round();
+            $this->round = new Round($this->players);
+            $this->updateStatus();
         }
         $this->passTurn();
     }
@@ -93,8 +108,8 @@ class Deal
 
     private function end(): void
     {
-        $this->status = self::STATUS_END;
         $this->calculateWinners();
+        $this->splitPot();
     }
 
     private function passTurn(): void
@@ -123,5 +138,26 @@ class Deal
         }
         // TODO: finish logic using players heightCards
         $this->winners = $sameStrength;
+    }
+
+    private function splitPot(): void
+    {
+        $amount = $this->pot / $this->winners->count();
+        foreach ($this->winners as $winner) {
+            $winner->earn($amount);
+        }
+    }
+
+    private function updateStatus(): void
+    {
+        if ($this->status == self::STATUS_PREFLOP) {
+            $this->status = self::STATUS_FLOP;
+        } else if ($this->status == self::STATUS_FLOP) {
+            $this->status = self::STATUS_TURN;
+        } else if ($this->status == self::STATUS_TURN) {
+            $this->status = self::STATUS_RIVER;
+        } else if ($this->status == self::STATUS_RIVER) {
+            $this->status = self::STATUS_END;
+        }
     }
 }

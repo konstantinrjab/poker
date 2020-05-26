@@ -34,6 +34,7 @@ class GameResource extends JsonResource
                 'smallBlind' => $this->getConfig()->getSmallBlind(),
                 'bigBlind' => $this->getConfig()->getBigBlind(),
             ],
+            'communityCards' => $this->getDeal() ? $this->getDeal()->showCards() : null,
             'status' => $this->getStatus(),
             'pot' => $this->getDeal() ? $this->getDeal()->getPot() : null,
             'players' => $players,

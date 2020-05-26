@@ -27,7 +27,7 @@ class ExampleTest extends TestCase
         $this->join($gameId);
         $this->setReady($gameId);
         $this->start($gameId);
-        $this->update($gameId);
+        $this->preFlop($gameId);
         $response = $this->get('/api/games/' . $gameId)->json();
     }
 
@@ -87,16 +87,10 @@ class ExampleTest extends TestCase
         $this->assertTrue($response->status() == 200);
     }
 
-    private function update(string $gameId)
+    private function preFlop(string $gameId)
     {
         $response = $this->put('/api/games/' . $gameId, [
-            'userId' => 'testUserId2',
-            'action' => 'fold'
-        ]);
-        $this->assertTrue($response->status() == 400);
-
-        $response = $this->put('/api/games/' . $gameId, [
-            'userId' => self::CREATOR_ID,
+            'userId' => 'testUserId4',
             'action' => 'fold'
         ]);
         $this->assertTrue($response->status() == 200);

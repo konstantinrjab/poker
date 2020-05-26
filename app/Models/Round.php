@@ -32,6 +32,9 @@ class Round
 
     public function bet(string $playerId, int $amount): void
     {
+        if (!isset($this->maxBet)) {
+            $this->maxBet = $amount;
+        }
         if ($amount > $this->maxBet) {
             $this->maxBet = $amount;
         }
@@ -58,7 +61,7 @@ class Round
             if ($player->getIsFolded()) {
                 continue;
             }
-            if ($this->bets[$player->getId()] != $this->maxBet) {
+            if (!isset($this->bets[$player->getId()]) || $this->bets[$player->getId()] != $this->maxBet) {
                 return false;
             }
         }

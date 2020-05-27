@@ -67,11 +67,6 @@ class Deal
         return isset($this->pot) ? $this->pot : null;
     }
 
-    public function addToPot(int $amount): void
-    {
-        $this->pot += $amount;
-    }
-
     public function getWinners(): ?PlayerCollection
     {
         return isset($this->winners) ? $this->winners : null;
@@ -93,20 +88,15 @@ class Deal
 
     public function onAfterUpdate(): void
     {
-        if ($this->shouldEnd()) {
+        if ($this->round->shouldEnd() && $this->status == self::STATUS_RIVER) {
             $this->end();
             return;
-        }
-        if ($this->status != self::STATUS_RIVER && $this->round->shouldEnd()) {
+        } else if ($this->round->shouldEnd() && $this->status != self::STATUS_RIVER) {
+            $this->pot = isset($this->pot) ? $this->pot + $this->round->getPot() : $this->round->getPot();
             $this->round = new Round($this->players);
             $this->updateStatus();
         }
         $this->passTurn();
-    }
-
-    private function shouldEnd(): bool
-    {
-        return $this->round->shouldEnd() && $this->status == self::STATUS_RIVER;
     }
 
     private function end(): void

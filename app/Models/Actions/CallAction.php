@@ -13,7 +13,6 @@ class CallAction extends Action
         $amountToCall = $maxBet - $game->getDeal()->getRound()->getPlayerBet($this->userId);
         if ($amountToCall) {
             $game->getDeal()->getRound()->bet($this->userId, $amountToCall);
-            $game->getDeal()->addToPot($this->value);
         }
     }
 }

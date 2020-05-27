@@ -94,5 +94,15 @@ class ExampleTest extends TestCase
             'action' => 'fold'
         ]);
         $this->assertTrue($response->status() == 200);
+        $this->assertTrue($response->json()['data']['players'][3]['isFolded'] == true);
+        $this->assertTrue($response->json()['data']['players'][4]['money'] == 500);
+
+        $response = $this->put('/api/games/' . $gameId, [
+            'userId' => 'testUserId5',
+            'action' => 'call'
+        ]);
+        $this->assertTrue($response->status() == 200);
+        $this->assertTrue($response->json()['data']['players'][4]['money'] == 490);
+        $this->assertTrue($response->json()['data']['players'][4]['bet'] == 10);
     }
 }

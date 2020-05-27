@@ -7,7 +7,7 @@ use App\Models\Actions\Abstracts\Action;
 use App\Models\Actions\CheckAction;
 use App\Models\Actions\FoldAction;
 use App\Models\Actions\CallAction;
-use App\Models\Actions\RaiseAction;
+use App\Models\Actions\BetAction;
 use Exception;
 
 class ActionFactory
@@ -16,12 +16,12 @@ class ActionFactory
         self::FOLD,
         self::CHECK,
         self::CALL,
-        self::RAISE,
+        self::BET,
     ];
     public const FOLD = 'fold';
     public const CHECK = 'check';
     public const CALL = 'call';
-    public const RAISE = 'raise';
+    public const BET = 'bet';
 
     public static function get(UpdateGameRequest $request): Action
     {
@@ -32,8 +32,8 @@ class ActionFactory
                 return new CheckAction($request);
             case self::CALL:
                 return new CallAction($request);
-            case self::RAISE:
-                return new RaiseAction($request);
+            case self::BET:
+                return new BetAction($request);
         }
         throw new Exception('Unknown action type: ' . $request->get('type'));
     }

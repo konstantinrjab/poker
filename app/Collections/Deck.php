@@ -22,7 +22,7 @@ class Deck extends Collection
     public function getHand(): Hand
     {
         $cards = [];
-        for ($cardCount = 1; $cardCount <= Hand::CARD_LIMIT; $cardCount++) {
+        foreach (range(1, Hand::CARD_LIMIT) as $cardCount) {
             $cards[] = $this->shift();
         }
         return new Hand($cards);

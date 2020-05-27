@@ -40,11 +40,13 @@ class Deal
             $this->players->setNextSmallBlind();
             $this->players->setNextDealer();
         }
-        $this->round->bet($this->players->getSmallBlind()->getId(), $config->getSmallBlind());
-        $this->round->bet($this->players->getBigBlind()->getId(), $config->getBigBlind());
-        for ($playerNumber = 1; $playerNumber <= 3; $playerNumber++) {
-            $this->players->setNextActivePlayer();
-        }
+        $bigBlindId = $this->players->getBigBlind()->getId();
+        $smallBlindId = $this->players->getSmallBlind()->getId();
+
+        $this->round->bet($smallBlindId, $config->getSmallBlind());
+        $this->round->bet($bigBlindId, $config->getBigBlind());
+
+        $this->players->setActivePlayer($this->players->getNextAfterId($bigBlindId)->getId());
     }
 
     public function getStatus(): int

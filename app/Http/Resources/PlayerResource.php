@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Collections\PlayerResourceCollection;
-use App\Http\Adapters\CardAdapter;
+use Facades\App\Http\Adapters\CardAdapter;
 use App\Models\Game;
 use App\Models\Player;
 use Illuminate\Http\Resources\Json\JsonResource;

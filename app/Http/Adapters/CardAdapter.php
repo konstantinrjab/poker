@@ -4,10 +4,11 @@ namespace App\Http\Adapters;
 
 use App\Models\Card;
 use Illuminate\Support\Collection;
+use Exception;
 
 class CardAdapter
 {
-    public static function handle(Collection $cardCollection): array
+    public function handle(Collection $cardCollection): array
     {
         $cards = [];
         foreach ($cardCollection as $card) {
@@ -17,7 +18,7 @@ class CardAdapter
         return $cards;
     }
 
-    private static function getValue(Card $card): string
+    private function getValue(Card $card): string
     {
         if ($card->getValue() <= 10) {
             return $card->getValue();
@@ -34,5 +35,6 @@ class CardAdapter
         if ($card->getValue() == 14) {
             return 'A';
         }
+        throw new Exception('Invalid card value: ' . $card->getValue());
     }
 }

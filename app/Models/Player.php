@@ -88,21 +88,4 @@ class Player
     {
         $this->isFolded = true;
     }
-
-    public function getActions(): array
-    {
-//'setReady' |
-//'setNotReady' |
-//'check' |
-//'call' |
-//'bet' |
-//'raise' |
-//'fold';
-
-//id: string;
-//type: PlayerActionType;
-//options?: {min?: number; max?: number; value?: boolean};
-
-        return ['setReady', 'fold'];
-    }
 }

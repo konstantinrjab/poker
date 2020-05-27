@@ -55,7 +55,7 @@ class PlayerResource extends JsonResource
             'isActive' => $this->isActive(),
             // TODO: finish this
             'holeCards' => $this->getHand() ? CardAdapter::handle($this->getHand()) : [],
-            'availableActions' => $this->getActions(),
+            'availableActions' => $this->game->getDeal() && $this->game->getDeal()->getRound() ? $this->game->getDeal()->getRound()->getAvailableActions($this->resource) : null,
         ];
     }
 

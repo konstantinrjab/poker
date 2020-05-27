@@ -67,4 +67,27 @@ class Round
         }
         return true;
     }
+
+    public function getAvailableActions(Player $player): array
+    {
+        //type: PlayerActionType;
+        //options?: {min?: number; max?: number; value?: boolean};
+
+        // TODO: finish this
+        if (!isset($this->maxBet)) {
+            return [];
+        }
+        if ($player->getIsFolded()) {
+            return [];
+        }
+        $actions = [];
+        if ($player->getMoney() >= $this->maxBet) {
+            $actions[] = 'bet';
+        }
+        if ($this->getPlayerBet($player->getId()) == $this->maxBet) {
+            $actions[] = 'check';
+        }
+
+        return $actions;
+    }
 }

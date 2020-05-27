@@ -42,11 +42,6 @@ class Card
         $this->setValue($value);
     }
 
-    public function getDescription()
-    {
-        return self::VALUES[$this->getValue()] . ' of ' . $this->getSuit() . 's';
-    }
-
     public function getValue(): int
     {
         return $this->value;

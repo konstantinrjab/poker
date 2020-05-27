@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Adapters\CardAdapter;
 use App\Models\Game;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -34,7 +35,7 @@ class GameResource extends JsonResource
                 'smallBlind' => $this->getConfig()->getSmallBlind(),
                 'bigBlind' => $this->getConfig()->getBigBlind(),
             ],
-            'communityCards' => $this->getDeal() ? $this->getDeal()->showCards() : null,
+            'communityCards' => $this->getDeal() ? CardAdapter::handle($this->getDeal()->showCards()) : null,
             'status' => $this->getStatus(),
             'pot' => $this->getDeal() ? $this->getDeal()->getPot() : null,
             'players' => $players,

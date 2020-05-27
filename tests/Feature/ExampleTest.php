@@ -93,7 +93,6 @@ class ExampleTest extends TestCase
             'userId' => 'testUserId4',
             'action' => 'fold'
         ]);
-        $this->assertTrue($response->status() == 200);
         $this->assertTrue($response->json()['data']['players'][3]['isFolded'] == true);
         $this->assertTrue($response->json()['data']['players'][4]['money'] == 500);
 
@@ -101,8 +100,23 @@ class ExampleTest extends TestCase
             'userId' => 'testUserId5',
             'action' => 'call'
         ]);
-        $this->assertTrue($response->status() == 200);
         $this->assertTrue($response->json()['data']['players'][4]['money'] == 490);
         $this->assertTrue($response->json()['data']['players'][4]['bet'] == 10);
+
+        $response = $this->put('/api/games/' . $gameId, [
+            'userId' => self::CREATOR_ID,
+            'action' => 'call'
+        ]);
+        $this->assertTrue($response->json()['data']['players'][0]['money'] == 490);
+        $this->assertTrue($response->json()['data']['players'][0]['bet'] == 10);
+
+        $response = $this->put('/api/games/' . $gameId, [
+            'userId' => 'testUserId2',
+            'action' => 'call'
+        ]);
+        $this->assertTrue($response->json()['data']['players'][0]['money'] == 490);
+        // round ends, all bets resets to zero
+        $this->assertTrue($response->json()['data']['players'][0]['bet'] == 0);
+        $this->assertTrue($response->json()['data']['pot'] == 40);
     }
 }

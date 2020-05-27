@@ -54,7 +54,7 @@ class PlayerResource extends JsonResource
             'isSmallBlind' => $this->isSmallBlind(),
             'isActive' => $this->isActive(),
             // TODO: finish this
-            'holeCards' => $this->getHand() ? CardAdapter::hand($this->getHand()) : [],
+            'holeCards' => $this->getHand() ? CardAdapter::handle($this->getHand()) : [],
             'availableActions' => $this->getActions(),
         ];
     }

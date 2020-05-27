@@ -2,12 +2,13 @@
 
 namespace App\Events;
 
+use App\Http\Resources\GameResource;
 use App\Models\Game;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 class GameUpdated implements ShouldBroadcast
 {
@@ -24,5 +25,10 @@ class GameUpdated implements ShouldBroadcast
     public function broadcastOn()
     {
         return new Channel('game.' . $this->game->getId());
+    }
+
+    public function broadcastWith()
+    {
+        return GameResource::make($this->game)->resolve();
     }
 }

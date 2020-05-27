@@ -19,7 +19,7 @@ class Game
     private string $id;
     private string $creatorId;
     private int $status;
-    private ?Deal $deal = null;
+    private Deal $deal;
     private PlayerCollection $players;
     private GameConfig $config;
 
@@ -106,12 +106,12 @@ class Game
 
     public function getDeal(): ?Deal
     {
-        return $this->deal;
+        return isset($this->deal) ? $this->deal : null;
     }
 
     public function save()
     {
         Redis::set('game:' . $this->getId(), serialize($this));
-        GameUpdated::dispatch($this);
+        GameUpdated::dispatchIf(!empty($this->getDeal()), $this);
     }
 }

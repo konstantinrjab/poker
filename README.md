@@ -10,6 +10,7 @@ DOCKER_USER=$(id -u):$(id -g) docker-compose -f "./docker/docker-compose.yml" up
 DOCKER_USER=$(id -u):$(id -g) docker-compose -f "./docker/docker-compose.yml" down
 
 ###Run BE locally (Win)
-1. docker run --rm --interactive --tty --volume ${PWD}:/app composer install --ignore-platform-reqs --no-scripts
-2. docker-compose -f "./docker/docker-compose.yml" up -d --build
-3. api url http://localhost:80/
+1. Copy .env.example to .env
+2. docker run --rm --interactive --tty --volume ${PWD}:/app composer install --ignore-platform-reqs --no-scripts
+3. docker-compose -f "./docker/docker-compose.yml" up -d --build
+4. api url http://localhost:80/

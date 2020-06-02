@@ -98,21 +98,13 @@ class Deal
             $this->round = new Round($this->players);
             $this->updateStatus();
         }
-        $this->passTurn();
+        $this->players->setNextActivePlayer();
     }
 
     private function end(): void
     {
         $this->calculateWinners();
         $this->splitPot();
-    }
-
-    private function passTurn(): void
-    {
-        $this->players->setNextActivePlayer();
-        $this->players->setNextBigBlind();
-        $this->players->setNextSmallBlind();
-        $this->players->setNextDealer();
     }
 
     private function calculateWinners(): void

@@ -94,8 +94,9 @@ class ExampleTest extends TestCase
             'action' => 'fold'
         ]);
         $this->assertTrue($response->json()['data']['players'][3]['isFolded'] == true);
-        $this->assertTrue($response->json()['data']['players'][4]['money'] == 500);
+        $this->assertTrue($response->json()['data']['players'][3]['money'] == 500);
 
+        $this->assertTrue($response->json()['data']['players'][4]['money'] == 500);
         $response = $this->put('/api/games/' . $gameId, [
             'userId' => 'testUserId5',
             'action' => 'call'
@@ -103,6 +104,7 @@ class ExampleTest extends TestCase
         $this->assertTrue($response->json()['data']['players'][4]['money'] == 490);
         $this->assertTrue($response->json()['data']['players'][4]['bet'] == 10);
 
+        $this->assertTrue($response->json()['data']['players'][0]['money'] == 500);
         $response = $this->put('/api/games/' . $gameId, [
             'userId' => self::CREATOR_ID,
             'action' => 'call'

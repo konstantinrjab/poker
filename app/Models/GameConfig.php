@@ -2,16 +2,9 @@
 
 namespace App\Models;
 
-use App\Collections\PlayerCollection;
-use App\Exceptions\GameException;
-use App\Http\Requests\CreateGameRequest;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Str;
-
 class GameConfig
 {
-    private const MIN_PLAYERS_COUNT = 4;
+    private const MIN_PLAYERS_COUNT = 3;
     private const MAX_PLAYERS_COUNT = 8;
 
     private int $bigBlind;

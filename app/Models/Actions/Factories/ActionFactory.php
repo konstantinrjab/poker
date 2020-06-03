@@ -25,7 +25,7 @@ class ActionFactory
 
     public static function get(UpdateGameRequest $request): Action
     {
-        switch ($request->get('action')) {
+        switch ($request->input('action')) {
             case self::FOLD:
                 return new FoldAction($request);
             case self::CHECK:
@@ -35,6 +35,6 @@ class ActionFactory
             case self::BET:
                 return new BetAction($request);
         }
-        throw new Exception('Unknown action type: ' . $request->get('type'));
+        throw new Exception('Unknown action type: ' . $request->input('type'));
     }
 }

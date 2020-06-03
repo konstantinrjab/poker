@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Collections\PlayerCollection;
 use App\Events\GameUpdated;
 use App\Exceptions\GameException;
-use App\Http\Requests\CreateGameRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
@@ -32,17 +31,13 @@ class Game
         return $game ? unserialize($game) : null;
     }
 
-    public function __construct(CreateGameRequest $request)
+    public function __construct(GameConfig $config, string $creatorId)
     {
-        $this->creatorId = $request->input('userId');
+        $this->creatorId = $creatorId;
         $this->players = new PlayerCollection();
         $this->id = Str::uuid();
         $this->status = self::STATUS_WAIT_FOR_PLAYERS;
-        $this->config = new GameConfig(
-            $request->input('smallBlind'),
-            $request->input('bigBlind'),
-            $request->input('initialMoney')
-        );
+        $this->config = $config;
     }
 
     public function getStatus(): int

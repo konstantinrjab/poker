@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateGameRequest;
 use App\Http\Resources\GameResource;
 use App\Models\Actions\Factories\ActionFactory;
 use App\Models\Game;
+use App\Models\GameConfig;
 use App\Models\Player;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -21,13 +22,19 @@ class GameController extends Controller
      *
      * @param CreateGameRequest $request
      * @return \Illuminate\Http\JsonResponse
+     * @throws GameException
      */
     public function store(CreateGameRequest $request)
     {
-        $game = new Game($request);
+        $config = new GameConfig(
+            $request->input('smallBlind'),
+            $request->input('bigBlind'),
+            $request->input('initialMoney')
+        );
+        $game = new Game($config, $request->input('userId'));
         $game->addPlayer(new Player(
-            $request->get('userId'),
-            $request->get('name'),
+            $request->input('userId'),
+            $request->input('name'),
             $game->getConfig()->getInitialMoney()
         ));
         $game->save();
@@ -48,12 +55,17 @@ class GameController extends Controller
         return GameResource::make(Game::get($id));
     }
 
+    /**
+     * @param JoinGameRequest $request
+     * @param string $id
+     * @throws GameException
+     */
     public function join(JoinGameRequest $request, string $id)
     {
         $game = Game::get($id);
         $game->getPlayers()->add(new Player(
-            $request->get('userId'),
-            $request->get('name'),
+            $request->input('userId'),
+            $request->input('name'),
             $game->getConfig()->getInitialMoney()
         ));
         $game->save();
@@ -62,24 +74,37 @@ class GameController extends Controller
     public function ready(ReadyRequest $request, string $id)
     {
         $game = Game::get($id);
-        $game->getPlayers()->getById($request->input('userId'))->setIsReady($request->input('value'));
+        $game->getPlayers()
+            ->getById($request->input('userId'))
+            ->setIsReady($request->input('value'));
         $game->save();
     }
 
+    /**
+     * @param StartGameRequest $request
+     * @param string $id
+     * @throws GameException
+     */
     public function start(StartGameRequest $request, string $id)
     {
         $game = Game::get($id);
-        if ($game->getCreatorId() != $request->get('userId')) {
+        if ($game->getCreatorId() != $request->input('userId')) {
             throw new AccessDeniedHttpException('Only creator of the game can start game');
         }
         $game->start();
     }
 
+    /**
+     * @param UpdateGameRequest $request
+     * @param string $id
+     * @return GameResource
+     * @throws GameException
+     */
     public function update(UpdateGameRequest $request, string $id)
     {
         $game = Game::get($id);
         // TODO: add timeout logic
-        if ($game->getPlayers()->getActivePlayer()->getId() != $request->get('userId')) {
+        if ($game->getPlayers()->getActivePlayer()->getId() != $request->input('userId')) {
             throw new GameException('It is not you turn');
         }
         $action = ActionFactory::get($request);

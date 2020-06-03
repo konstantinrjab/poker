@@ -13,9 +13,9 @@ abstract class Action
 
     public function __construct(UpdateGameRequest $request)
     {
-        $this->userId = $request->get('userId');
-        $this->type = $request->get('action');
-        $this->value = $request->get('value');
+        $this->userId = $request->input('userId');
+        $this->type = $request->input('action');
+        $this->value = $request->input('value');
     }
 
     abstract public function updateGame(Game $game): void;

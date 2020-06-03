@@ -218,7 +218,7 @@ class HandStrength
             $cardsBySuits[$card->getSuit()] = isset($cardsBySuits[$card->getSuit()]) ? $cardsBySuits[$card->getSuit()] + 1 : 1;
         }
         foreach ($cardsBySuits as $cardsBySuit) {
-            if (count($cardsBySuit) == 5) {
+            if ($cardsBySuit == 5) {
                 return true;
             }
         }

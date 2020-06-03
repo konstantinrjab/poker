@@ -13,6 +13,8 @@ class Round
     public function __construct(PlayerCollection $players)
     {
         $this->players = $players;
+        $this->players->setActivePlayer($this->players->getBigBlind()->getId());
+        $this->players->setNextActivePlayer();
     }
 
     public function getPlayerBet(string $playerId): int
@@ -23,11 +25,6 @@ class Round
     public function getMaxBet(): int
     {
         return $this->maxBet;
-    }
-
-    public function setMaxBet(int $amount): void
-    {
-        $this->maxBet = $amount;
     }
 
     public function bet(string $playerId, int $amount): void

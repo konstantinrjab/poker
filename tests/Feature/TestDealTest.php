@@ -77,5 +77,7 @@ class TestDealTest extends TestCase
             ],
             'users' => $users
         ])->json();
+
+        $this->assertNotEmpty($response['winners']);
     }
 }

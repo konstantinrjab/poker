@@ -45,18 +45,11 @@ class Deal
 
         $this->round->bet($smallBlindId, $config->getSmallBlind());
         $this->round->bet($bigBlindId, $config->getBigBlind());
-
-        $this->players->setActivePlayer($this->players->getNextAfterId($bigBlindId)->getId());
     }
 
     public function getStatus(): int
     {
         return $this->status;
-    }
-
-    public function getPlayers(): PlayerCollection
-    {
-        return $this->players;
     }
 
     public function getRound(): Round
@@ -97,6 +90,7 @@ class Deal
             $this->pot = isset($this->pot) ? $this->pot + $this->round->getPot() : $this->round->getPot();
             $this->round = new Round($this->players);
             $this->updateStatus();
+            return;
         }
         $this->players->setNextActivePlayer();
     }

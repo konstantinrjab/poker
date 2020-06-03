@@ -29,9 +29,6 @@ class PlayerCollection extends Collection
 
         $this->items[] = $item;
 
-        if (!isset($this->activeId)) {
-            $this->activeId = $item->getId();
-        }
         if (!isset($this->dealerId)) {
             $this->dealerId = $item->getId();
         } else if (!isset($this->smallBlindId)) {
@@ -58,16 +55,6 @@ class PlayerCollection extends Collection
         return $this->getById($this->activeId);
     }
 
-    public function setNextActivePlayer(): void
-    {
-        $this->activeId = $this->getNextAfterId($this->activeId)->getId();
-    }
-
-    public function setActivePlayer(string $playerId): void
-    {
-        $this->activeId = $playerId;
-    }
-
     public function getDealer(): Player
     {
         return $this->getById($this->dealerId);
@@ -81,6 +68,25 @@ class PlayerCollection extends Collection
     public function getSmallBlind(): Player
     {
         return $this->getById($this->smallBlindId);
+    }
+
+    public function setActivePlayer(string $playerId): void
+    {
+        $this->activeId = $playerId;
+    }
+
+    public function setNextActivePlayer(): void
+    {
+        $nextPlayer = $this->getNextAfterId($this->activeId);
+        foreach (range(0, $this->count()) as $playerNumber) {
+            if ($nextPlayer->getIsFolded()) {
+                $nextPlayer = $this->getNextAfterId($nextPlayer->getId());
+                continue;
+            }
+            $this->activeId = $nextPlayer->getId();
+            return;
+        }
+        throw new GameException('Cannot resolve next active player');
     }
 
     public function setNextBigBlind(): void

@@ -76,7 +76,7 @@ class Round
         if ($player->getIsFolded()) {
             return [];
         }
-        $actions = ['type' => ActionFactory::FOLD];
+        $actions[] = ['type' => ActionFactory::FOLD];
         if ($player->getMoney() >= $this->maxBet) {
             $actions[] = [
                 'type' => ActionFactory::BET,

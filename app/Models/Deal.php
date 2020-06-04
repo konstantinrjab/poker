@@ -20,6 +20,7 @@ class Deal
     private ?PlayerCollection $winners;
     private int $status;
     private int $pot;
+    private GameConfig $config;
 
     public function __construct(
         PlayerCollection $playerCollection,
@@ -27,7 +28,8 @@ class Deal
         bool $newGame
     )
     {
-        $this->round = new Round($playerCollection);
+        $this->config = $config;
+        $this->round = new Round($playerCollection, $config->getBigBlind());
         $deck = Deck::getFull();
         $this->players = $playerCollection;
         foreach ($this->players as $player) {
@@ -88,7 +90,7 @@ class Deal
             return;
         } else if ($this->round->shouldEnd() && $this->status != self::STATUS_RIVER) {
             $this->pot = isset($this->pot) ? $this->pot + $this->round->getPot() : $this->round->getPot();
-            $this->round = new Round($this->players);
+            $this->round = new Round($this->players, $this->config->getBigBlind());
             $this->updateStatus();
             return;
         }

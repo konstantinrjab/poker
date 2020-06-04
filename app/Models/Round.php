@@ -3,18 +3,21 @@
 namespace App\Models;
 
 use App\Collections\PlayerCollection;
+use App\Models\Actions\Factories\ActionFactory;
 
 class Round
 {
     private int $maxBet;
+    private int $bigBlind;
     private PlayerCollection $players;
     private array $bets;
 
-    public function __construct(PlayerCollection $players)
+    public function __construct(PlayerCollection $players, int $bigBlind)
     {
         $this->players = $players;
         $this->players->setActivePlayer($this->players->getBigBlind()->getId());
         $this->players->setNextActivePlayer();
+        $this->bigBlind = $bigBlind;
     }
 
     public function getPlayerBet(string $playerId): int
@@ -67,22 +70,26 @@ class Round
 
     public function getAvailableActions(Player $player): array
     {
-        //type: PlayerActionType;
-        //options?: {min?: number; max?: number; value?: boolean};
-
-        // TODO: finish this
         if (!isset($this->maxBet)) {
             return [];
         }
         if ($player->getIsFolded()) {
             return [];
         }
-        $actions = [];
+        $actions = ['type' => ActionFactory::FOLD];
         if ($player->getMoney() >= $this->maxBet) {
-            $actions[] = 'bet';
+            $actions[] = [
+                'type' => ActionFactory::BET,
+                'options' => [
+                    'min' => $this->bigBlind,
+                    'max' => $player->getMoney()
+                ]
+            ];
         }
         if ($this->getPlayerBet($player->getId()) == $this->maxBet) {
-            $actions[] = 'check';
+            $actions[] = [
+                'type' => ActionFactory::CHECK
+            ];
         }
 
         return $actions;

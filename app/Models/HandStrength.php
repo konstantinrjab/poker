@@ -38,33 +38,23 @@ class HandStrength
 
     public function getStrength(): int
     {
-        if ($this->isPair()) {
-            $this->strength = 1;
-        }
-
-        if ($this->isTwoPair()) {
-            $this->strength = 2;
-        }
-
-        if ($this->isThreeOfAKind()) {
-            $this->strength = 3;
-        }
+        $this->checkPair();
+        $this->checkTwoPair();
+        $this->checkThreeOfAKind();
 
         if ($this->isStraight()) {
-            $this->strength = 4;
+//            $this->strength = 4;
         }
 
         if ($this->isFlush()) {
-            $this->strength = 5;
+//            $this->strength = 5;
         }
 
 //        if ($this->isFullHouse()) {
 //            $this->strength = 6;
 //        }
 
-        if ($this->isFourOfAKind()) {
-            $this->strength = 7;
-        }
+        $this->checkFourOfAKind();
 
 //        if ($this->isStraightFlush()) {
 //            $this->strength = 8;
@@ -81,55 +71,71 @@ class HandStrength
         return $this->mergedDeck->max('value');
     }
 
-    private function isPair(): bool
+    private function checkPair(): void
     {
+        $baseStrength = 100;
         $countsByValues = [];
 
         foreach ($this->mergedDeck as $card) {
-            if (!empty($countsByValues[$card->getValue()])) {
-                return true;
+            $pairStrength = $baseStrength + $card->getValue();
+            if (!empty($countsByValues[$card->getValue()]) && $this->strength < $pairStrength) {
+                $this->strength = $pairStrength;
             }
             $countsByValues[$card->getValue()] = true;
         }
-
-        return false;
     }
 
-    private function isTwoPair(): bool
+    private function checkTwoPair(): void
     {
+        $baseStrength = 200;
         $countsByValues = [];
         $pairsCount = 0;
 
         foreach ($this->mergedDeck as $card) {
             if (!isset($countsByValues[$card->getValue()])) {
-                $countsByValues[$card->getValue()] = 0;
+                $countsByValues[$card->getValue()] = 1;
+            } else {
+                $countsByValues[$card->getValue()]++;
             }
-            $countsByValues[$card->getValue()]++;
         }
         foreach ($countsByValues as $value) {
             if ($value >= 2) {
                 $pairsCount++;
             }
         }
-        return $pairsCount >= 2;
+        if ($pairsCount < 2) {
+            return;
+        }
+
+        foreach ($countsByValues as $value => $count) {
+            if ($count < 2) {
+                continue;
+            }
+            $pairStrength = $baseStrength + $value;
+            if ($value >= 2 && $this->strength < $pairStrength) {
+                $this->strength = $pairStrength;
+            }
+        }
     }
 
-    private function isThreeOfAKind(): bool
+    private function checkThreeOfAKind(): void
     {
+        $baseStrength = 300;
         $countsByValues = [];
 
         foreach ($this->mergedDeck as $card) {
             if (!isset($countsByValues[$card->getValue()])) {
-                $countsByValues[$card->getValue()] = 0;
-            }
-            $countsByValues[$card->getValue()]++;
-        }
-        foreach ($countsByValues as $value) {
-            if ($value >= 3) {
-                return true;
+                $countsByValues[$card->getValue()] = 1;
+            } else {
+                $countsByValues[$card->getValue()]++;
             }
         }
-        return false;
+        foreach ($countsByValues as $value => $count) {
+            $combinationStrength = $baseStrength + $value;
+            if ($count >= 3 && $this->strength < $combinationStrength) {
+                $this->strength = $combinationStrength;
+            }
+        }
     }
 
     private function isStraight(): bool
@@ -162,22 +168,24 @@ class HandStrength
         return false;
     }
 
-    private function isFourOfAKind(): bool
+    private function checkFourOfAKind(): void
     {
+        $baseStrength = 600;
         $countsByValues = [];
 
         foreach ($this->mergedDeck as $card) {
             if (!isset($countsByValues[$card->getValue()])) {
-                $countsByValues[$card->getValue()] = 0;
-            }
-            $countsByValues[$card->getValue()]++;
-        }
-        foreach ($countsByValues as $value) {
-            if ($value >= 4) {
-                return true;
+                $countsByValues[$card->getValue()] = 1;
+            } else {
+                $countsByValues[$card->getValue()]++;
             }
         }
-        return false;
+        foreach ($countsByValues as $value => $count) {
+            $combinationStrength = $baseStrength + $value;
+            if ($count >= 4 && $this->strength < $combinationStrength) {
+                $this->strength = $combinationStrength;
+            }
+        }
     }
 
     public function isStraightFlush()
@@ -206,7 +214,7 @@ class HandStrength
 
     public function isFullHouse()
     {
-        return $this->isPair() && $this->isThreeOfAKind();
+        return $this->checkPair() && $this->isThreeOfAKind();
     }
 
     public function isFlush()

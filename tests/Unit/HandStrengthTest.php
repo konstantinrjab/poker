@@ -112,4 +112,21 @@ class HandStrengthTest extends TestCase
         $strength = new HandStrength($hand, $deck);
         $this->assertTrue($strength->getStrength() == 610);
     }
+
+
+    public function testStraightFlush()
+    {
+        $hand = new Hand([
+            new Card('Club', 4),
+            new Card('Club', 5)
+        ]);
+        $deck = new Deck();
+        $deck->add(new Card('Club', 6));
+        $deck->add(new Card('Club', 7));
+        $deck->add(new Card('Club', 8));
+        $deck->add(new Card('Diamond', 2));
+        $deck->add(new Card('Heart', 11));
+        $strength = new HandStrength($hand, $deck);
+        $this->assertTrue($strength->getStrength() == 804);
+    }
 }

@@ -7,9 +7,6 @@ use App\Collections\Deck;
 class HandStrength
 {
     private int $strength = 0;
-    private Card $kicker;
-    private $highEnd;
-    private $flushSuit;
 
     private Hand $hand;
     private Deck $dealDeck;
@@ -37,31 +34,27 @@ class HandStrength
 
     public function getStrength(): int
     {
+        $this->checkHeightCard();
         $this->checkPair();
         $this->checkTwoPair();
         $this->checkThreeOfAKind();
         $this->checkStraight();
         $this->checkFlush();
-
-//        if ($this->isFullHouse()) {
-//            $this->strength = 6;
-//        }
-
+        $this->checkFullHouse();
         $this->checkFourOfAKind();
+        $this->checkStraightFlush();
 
-//        if ($this->isStraightFlush()) {
-//            $this->strength = 8;
-//        }
-//
-//        if ($this->isRoyalFlush()) {
-//            $this->strength = 9;
-//        }
+//        $this->checkRoyalFlush();
+
         return $this->strength;
     }
 
-    public function getHeightCard(): int
+    public function checkHeightCard(): void
     {
-        return $this->mergedDeck->max('value');
+        $maxValue = $this->mergedDeck->max(function (Card $card): int {
+            return $card->getValue();
+        });
+        $this->strength = $maxValue;
     }
 
     private function checkPair(): void
@@ -156,7 +149,7 @@ class HandStrength
                 if ($cardWithNextValue) {
                     $consecutiveCount++;
                 } else {
-                    $consecutiveCount = 0;
+                    $consecutiveCount = 1;
                     break;
                 }
             }
@@ -164,55 +157,6 @@ class HandStrength
                 $this->strength = $baseStrength + $card->getValue();
             }
         }
-    }
-
-    private function checkFourOfAKind(): void
-    {
-        $baseStrength = 600;
-        $countsByValues = [];
-
-        foreach ($this->mergedDeck as $card) {
-            if (!isset($countsByValues[$card->getValue()])) {
-                $countsByValues[$card->getValue()] = 1;
-            } else {
-                $countsByValues[$card->getValue()]++;
-            }
-        }
-        foreach ($countsByValues as $value => $count) {
-            $combinationStrength = $baseStrength + $value;
-            if ($count >= 4 && $this->strength < $combinationStrength) {
-                $this->strength = $combinationStrength;
-            }
-        }
-    }
-
-    public function isStraightFlush()
-    {
-        if ($this->isFlush()) {
-            $flushCards = [];
-            foreach ($this->cards as $card) {
-                if ($card->getSuit() == $this->flushSuit) {
-                    $flushCards[] = clone $card;
-                }
-            }
-            $handStrength = new HandStrength($flushCards);
-            $handStrength->sortCards();
-            if ($handStrength->isStraight()) {
-                $this->highEnd = $handStrength->getHighEnd();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public function isRoyalFlush(): bool
-    {
-        return false;
-    }
-
-    public function isFullHouse()
-    {
-        return $this->checkPair() && $this->isThreeOfAKind();
     }
 
     public function checkFlush(): void
@@ -238,37 +182,90 @@ class HandStrength
         }
     }
 
-    public function sortCards()
+    public function checkFullHouse(): void
     {
-        $this->sortByDesc(function ($card) {
+//        return $this->checkPair() && $this->isThreeOfAKind();
+
+        return;
+
+        // TODO: finish this
+//        $baseStrength = 600;
+//        $countsByValues = [];
+//
+//        foreach ($this->mergedDeck as $card) {
+//            if (!isset($countsByValues[$card->getValue()])) {
+//                $countsByValues[$card->getValue()] = 1;
+//            } else {
+//                $countsByValues[$card->getValue()]++;
+//            }
+//        }
+//        foreach ($countsByValues as $value => $count) {
+//            $combinationStrength = $baseStrength + $value;
+//            if ($count >= 2 && $this->strength < $combinationStrength) {
+//                $this->strength = $combinationStrength;
+//            }
+//        }
+    }
+
+    private function checkFourOfAKind(): void
+    {
+        $baseStrength = 700;
+        $countsByValues = [];
+
+        foreach ($this->mergedDeck as $card) {
+            if (!isset($countsByValues[$card->getValue()])) {
+                $countsByValues[$card->getValue()] = 1;
+            } else {
+                $countsByValues[$card->getValue()]++;
+            }
+        }
+        foreach ($countsByValues as $value => $count) {
+            $combinationStrength = $baseStrength + $value;
+            if ($count >= 4 && $this->strength < $combinationStrength) {
+                $this->strength = $combinationStrength;
+            }
+        }
+    }
+
+    public function checkStraightFlush(): void
+    {
+        $baseStrength = 800;
+
+        // TODO: add starts from ace logic
+        $consecutiveCount = 1;
+
+        $deck = $this->mergedDeck->sortBy(function (Card $card): int {
             return $card->getValue();
         });
-    }
 
-    public function getKicker()
-    {
-        return $this->kicker;
-    }
-
-    public function getKickerDescription()
-    {
-        if ($kicker = $this->getKicker()) {
-            return ' ' . $this->kicker . ' Kicker';
+        foreach ($deck as $card) {
+            $suit = $card->getSuit();
+            $consecutiveValues = [
+                $card->getValue() + 1,
+                $card->getValue() + 2,
+                $card->getValue() + 3,
+                $card->getValue() + 4,
+            ];
+            foreach ($consecutiveValues as $value) {
+                $nextCard = $deck->first(function (Card $card) use ($suit, $value): bool {
+                    return $card->getValue() == $value && $card->getSuit() == $suit;
+                });
+                if ($nextCard) {
+                    $consecutiveCount++;
+                } else {
+                    $consecutiveCount = 1;
+                    break;
+                }
+            }
+            if ($consecutiveCount == 5) {
+                $this->strength = $baseStrength + $card->getValue();
+            }
         }
-
-        if ($high = $this->getHighEndWord()) {
-            return ' ' . $high . ' High';
-        }
     }
 
-    protected function getHighEnd()
+    public function checkRoyalFlush(): void
     {
-        return $this->highEnd;
-    }
-
-    public function getHandType()
-    {
-        $this->getStrength();
-        return self::HANDS[$this->strength];
+        $base = 900;
+        return;
     }
 }

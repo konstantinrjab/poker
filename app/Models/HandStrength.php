@@ -15,7 +15,6 @@ class HandStrength
     private Deck $dealDeck;
     private Deck $mergedDeck;
 
-
     private const HANDS = [
         'High Card',
         'Pair',
@@ -41,14 +40,8 @@ class HandStrength
         $this->checkPair();
         $this->checkTwoPair();
         $this->checkThreeOfAKind();
-
-        if ($this->isStraight()) {
-//            $this->strength = 4;
-        }
-
-        if ($this->isFlush()) {
-//            $this->strength = 5;
-        }
+        $this->checkStraight();
+        $this->checkFlush();
 
 //        if ($this->isFullHouse()) {
 //            $this->strength = 6;
@@ -138,8 +131,10 @@ class HandStrength
         }
     }
 
-    private function isStraight(): bool
+    private function checkStraight(): void
     {
+        $baseStrength = 400;
+
         // TODO: add starts from ace logic
         $consecutiveCount = 1;
 
@@ -155,17 +150,20 @@ class HandStrength
                 $card->getValue() + 4,
             ];
             foreach ($consecutiveValues as $value) {
-                if ($deck->firstWhere('value', $value)) {
+                $cardWithNextValue = $deck->first(function (Card $card) use ($value): bool {
+                    return $card->getValue() == $value;
+                });
+                if ($cardWithNextValue) {
                     $consecutiveCount++;
                 } else {
                     $consecutiveCount = 0;
+                    break;
                 }
             }
             if ($consecutiveCount == 5) {
-                return true;
+                $this->strength = $baseStrength + $card->getValue();
             }
         }
-        return false;
     }
 
     private function checkFourOfAKind(): void
@@ -217,20 +215,27 @@ class HandStrength
         return $this->checkPair() && $this->isThreeOfAKind();
     }
 
-    public function isFlush()
+    public function checkFlush(): void
     {
+        $baseStrength = 500;
         $cardsBySuits = [];
 
-        foreach ($this->mergedDeck as $card) {
+        $deck = $this->mergedDeck->sortByDesc(function (Card $card): int {
+            return $card->getValue();
+        });
+        foreach ($deck as $card) {
             /** @var Card $card */
             $cardsBySuits[$card->getSuit()] = isset($cardsBySuits[$card->getSuit()]) ? $cardsBySuits[$card->getSuit()] + 1 : 1;
         }
-        foreach ($cardsBySuits as $cardsBySuit) {
+        foreach ($cardsBySuits as $suit => $cardsBySuit) {
             if ($cardsBySuit == 5) {
-                return true;
+                // TODO: add logic to compare values by highest value by desc
+                $highestValueWithSuit = $deck->first(function (Card $card) use ($suit): bool {
+                    return $card->getSuit() == $suit;
+                });
+                $this->strength = $baseStrength + $highestValueWithSuit->getValue();
             }
         }
-        return false;
     }
 
     public function sortCards()

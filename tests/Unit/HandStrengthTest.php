@@ -58,6 +58,45 @@ class HandStrengthTest extends TestCase
         $this->assertTrue($strength->getStrength() == 302);
     }
 
+    public function testSimpleStraight()
+    {
+        $hand = new Hand([
+            new Card('Club', 2),
+            new Card('Club', 3)
+        ]);
+        $deck = new Deck();
+        $deck->add(new Card('Spade', 4));
+        $deck->add(new Card('Spade', 5));
+        $deck->add(new Card('Heart', 6));
+        $deck->add(new Card('Diamond', 2));
+        $deck->add(new Card('Heart', 11));
+        $strength = new HandStrength($hand, $deck);
+        $this->assertTrue($strength->getStrength() == 402);
+    }
+
+//    public function testStraightFromAce()
+//    {
+//        // TODO: add this method
+//    }
+
+
+    public function testFlush()
+    {
+        // TODO: add logic to compare values by highest value by desc
+        $hand = new Hand([
+            new Card('Club', 2),
+            new Card('Club', 6)
+        ]);
+        $deck = new Deck();
+        $deck->add(new Card('Spade', 12));
+        $deck->add(new Card('Club', 5));
+        $deck->add(new Card('Heart', 6));
+        $deck->add(new Card('Club', 9));
+        $deck->add(new Card('Club', 11));
+        $strength = new HandStrength($hand, $deck);
+        $this->assertTrue($strength->getStrength() == 511);
+    }
+
     public function testFourOfAKind()
     {
         $hand = new Hand([

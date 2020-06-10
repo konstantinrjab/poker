@@ -184,27 +184,34 @@ class HandStrength
 
     public function checkFullHouse(): void
     {
-//        return $this->checkPair() && $this->isThreeOfAKind();
+        $baseStrength = 600;
+        $countsByValues = [];
 
-        return;
-
-        // TODO: finish this
-//        $baseStrength = 600;
-//        $countsByValues = [];
-//
-//        foreach ($this->mergedDeck as $card) {
-//            if (!isset($countsByValues[$card->getValue()])) {
-//                $countsByValues[$card->getValue()] = 1;
-//            } else {
-//                $countsByValues[$card->getValue()]++;
-//            }
-//        }
-//        foreach ($countsByValues as $value => $count) {
-//            $combinationStrength = $baseStrength + $value;
-//            if ($count >= 2 && $this->strength < $combinationStrength) {
-//                $this->strength = $combinationStrength;
-//            }
-//        }
+        foreach ($this->mergedDeck as $card) {
+            if (!isset($countsByValues[$card->getValue()])) {
+                $countsByValues[$card->getValue()] = 1;
+            } else {
+                $countsByValues[$card->getValue()]++;
+            }
+        }
+        $firstPart = false;
+        $nextCount = 7;
+        foreach ($countsByValues as $value => $count) {
+            if ($count >= $nextCount && $firstPart) {
+                // TODO: add logic for different values in combination
+                $combinationStrength = $baseStrength + $value;
+                if ($this->strength < $combinationStrength) {
+                    $this->strength = $combinationStrength;
+                }
+            }
+            if ($count == 2) {
+                $nextCount = 3;
+                $firstPart = true;
+            } elseif ($count >= 3) {
+                $nextCount = 2;
+                $firstPart = true;
+            }
+        }
     }
 
     private function checkFourOfAKind(): void

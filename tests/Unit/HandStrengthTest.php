@@ -50,7 +50,7 @@ class HandStrengthTest extends TestCase
         ]);
         $deck = new Deck();
         $deck->add(new Card('Spade', 2));
-        $deck->add(new Card('Spade', 4));
+        $deck->add(new Card('Spade', 10));
         $deck->add(new Card('Heart', 5));
         $deck->add(new Card('Diamond', 2));
         $deck->add(new Card('Heart', 11));
@@ -110,7 +110,23 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Diamond', 10));
         $deck->add(new Card('Heart', 11));
         $strength = new HandStrength($hand, $deck);
-        $this->assertTrue($strength->getStrength() == 610);
+        $this->assertTrue($strength->getStrength() == 710);
+    }
+
+    public function testFullHouse()
+    {
+        $hand = new Hand([
+            new Card('Club', 2),
+            new Card('Club', 3)
+        ]);
+        $deck = new Deck();
+        $deck->add(new Card('Heart', 2));
+        $deck->add(new Card('Spade', 3));
+        $deck->add(new Card('Heart', 3));
+        $deck->add(new Card('Diamond', 10));
+        $deck->add(new Card('Heart', 11));
+        $strength = new HandStrength($hand, $deck);
+        $this->assertTrue($strength->getStrength() == 603);
     }
 
 

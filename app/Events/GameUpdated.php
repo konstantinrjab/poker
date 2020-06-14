@@ -29,6 +29,7 @@ class GameUpdated implements ShouldBroadcast
 
     public function broadcastWith()
     {
+        // TODO: broadcast game with users cards to each user directly, hide card for another players
         return GameResource::make($this->game)->resolve();
     }
 }

@@ -77,7 +77,7 @@ class FlowTest extends TestCase
 
     private function preFlop(string $gameId)
     {
-        $game = $this->get('/api/games/' . $gameId)->json()['data'];
+        $game = $this->get('/api/games/' . $gameId . '?userId=testUserId4')->json()['data'];
         $this->assertCount(0, $game['communityCards']);
 
         $response = $this->put('/api/games/' . $gameId, [
@@ -112,12 +112,17 @@ class FlowTest extends TestCase
 
     private function flop(string $gameId)
     {
-        $game = $this->get('/api/games/' . $gameId)->json()['data'];
+        $game = $this->get('/api/games/' . $gameId . '?userId=testUserId3')->json()['data'];
         $this->assertCount(3, $game['communityCards']);
         $this->assertTrue($game['players'][4]['isActive']);
 
         // round ends, all bets resets to zero
         $this->assertTrue($game['players'][0]['bet'] == 0);
         $this->assertTrue($game['pot'] == 40);
+    }
+
+    private function turn()
+    {
+
     }
 }

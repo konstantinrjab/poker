@@ -6,6 +6,7 @@ use App\Exceptions\GameException;
 use App\Http\Requests\CreateGameRequest;
 use App\Http\Requests\JoinGameRequest;
 use App\Http\Requests\ReadyRequest;
+use App\Http\Requests\ShowGameRequest;
 use App\Http\Requests\StartGameRequest;
 use App\Http\Requests\UpdateGameRequest;
 use App\Http\Resources\GameResource;
@@ -14,6 +15,7 @@ use App\Models\Game;
 use App\Models\GameConfig;
 use App\Models\Player;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class GameController extends Controller
 {
@@ -48,11 +50,21 @@ class GameController extends Controller
      * Display the specified resource.
      *
      * @param string $id
+     * @param ShowGameRequest $request
      * @return GameResource
      */
-    public function show(string $id)
+    public function show(string $id, ShowGameRequest $request)
     {
-        return GameResource::make(Game::get($id));
+        $game = Game::get($id);
+        $playerId = $request->input('userId');
+        $exists = $game->getPlayers()->first(function (Player $player) use ($playerId) {
+            return $player->getId() == $playerId;
+        });
+        if (!$exists) {
+            throw new NotFoundHttpException();
+        }
+
+        return GameResource::make($game);
     }
 
     /**

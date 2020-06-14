@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Events\GameUpdated;
+use App\Models\Game;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -29,6 +31,10 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        //
+        Event::listen(GameUpdated::NAME, function (Game $game) {
+            foreach ($game->getPlayers() as $player) {
+                GameUpdated::dispatch($game, $player->getId());
+            }
+        });
     }
 }

@@ -14,22 +14,30 @@ class GameUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private Game $game;
+    public const NAME = 'game.updated';
 
-    public function __construct(Game $game)
+    private Game $game;
+    private string $userId;
+
+    public function __construct(Game $game, string $userId)
     {
         $this->game = $game;
-        $this->dontBroadcastToCurrentUser();
-    }
+        $this->userId = $userId;
+        $this->dontBroadcastToCurrentUser();}
 
     public function broadcastOn()
     {
-        return new Channel('game.' . $this->game->getId());
+        // TODO: make channel private
+        return new Channel('game.' . $this->game->getId() . '.' . $this->userId);
+    }
+
+    public function broadcastAs()
+    {
+        return self::NAME;
     }
 
     public function broadcastWith()
     {
-        // TODO: broadcast game with users cards to each user directly, hide card for another players
-        return GameResource::make($this->game)->resolve();
+        return GameResource::make($this->game)->additional(['userId' => $this->userId])->resolve();
     }
 }

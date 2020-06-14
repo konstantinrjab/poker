@@ -64,7 +64,7 @@ class GameController extends Controller
             throw new NotFoundHttpException();
         }
 
-        return GameResource::make($game);
+        return GameResource::make($game)->additional(['userId' => $request->input('userId')]);
     }
 
     /**
@@ -126,6 +126,6 @@ class GameController extends Controller
 
         $game->save();
 
-        return GameResource::make($game);
+        return GameResource::make($game)->additional(['userId' => $request->input('userId')]);
     }
 }

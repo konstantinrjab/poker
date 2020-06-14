@@ -22,8 +22,11 @@ class GameResource extends JsonResource
      */
     public function toArray($request)
     {
-        $players = PlayerResource::collection($this->getPlayers());
-        $players->setGame($this->resource);
+        if (!isset($this->additional['userId'])) {
+            throw new \Exception('no userId specified');
+        }
+        $players = PlayerResource::collection($this->getPlayers())
+            ->additional(['game' => $this->resource, 'userId' => $this->additional['userId']]);
 
         return [
             'id' => $this->getId(),

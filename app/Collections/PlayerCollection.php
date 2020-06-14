@@ -60,14 +60,14 @@ class PlayerCollection extends Collection
         return $this->getById($this->dealerId);
     }
 
-    public function getBigBlind(): Player
+    public function getBigBlind(): ?Player
     {
-        return $this->getById($this->bigBlindId);
+        return isset($this->bigBlindId) ? $this->getById($this->bigBlindId) : null;
     }
 
-    public function getSmallBlind(): Player
+    public function getSmallBlind(): ?Player
     {
-        return $this->getById($this->smallBlindId);
+        return isset($this->smallBlindId) ? $this->getById($this->smallBlindId) : null;
     }
 
     public function setActivePlayer(string $playerId): void

@@ -16,14 +16,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class PlayerResource extends JsonResource
 {
-    private Game $game;
-
-    public function setGame(Game $game)
-    {
-        $this->game = $game;
-        return $this;
-    }
-
     public static function collection($playerCollection): PlayerResourceCollection
     {
         $players = [];
@@ -41,11 +33,14 @@ class PlayerResource extends JsonResource
      */
     public function toArray($request)
     {
+        $game = $this->getGame();
+        $userId = $this->additional['userId'];
+
         return [
             'id' => $this->getId(),
             'name' => $this->getName(),
             'money' => $this->getMoney(),
-            'bet' => $this->game->getDeal() ? $this->game->getDeal()->getRound()->getPlayerBet($this->getId()) : null,
+            'bet' => $game->getDeal() ? $game->getDeal()->getRound()->getPlayerBet($this->getId()) : null,
             'isReadyToStart' => $this->getIsReady(),
             'isFolded' => $this->getIsFolded(),
             'isCreator' => $this->isCreator(),
@@ -53,34 +48,40 @@ class PlayerResource extends JsonResource
             'isBigBlind' => $this->isBigBlind(),
             'isSmallBlind' => $this->isSmallBlind(),
             'isActive' => $this->isActive(),
-            // TODO: finish this
-            'holeCards' => $this->getId() == $request->input('userId') && $this->getHand() ? CardAdapter::handle($this->getHand()) : [],
-            'availableActions' => $this->game->getDeal() && $this->game->getDeal()->getRound() ? $this->game->getDeal()->getRound()->getAvailableActions($this->resource) : null,
+            'holeCards' => $this->getId() == $userId && $this->getHand() ? CardAdapter::handle($this->getHand()) : [],
+            'availableActions' => $game->getDeal() && $game->getDeal()->getRound() ? $game->getDeal()->getRound()->getAvailableActions($this->resource) : null,
         ];
     }
 
     private function isCreator(): bool
     {
-        return $this->getId() == $this->game->getCreatorId();
+        return $this->getId() == $this->getGame()->getCreatorId();
     }
 
     private function isDealer(): bool
     {
-        return $this->getId() == $this->game->getPlayers()->getDealer()->getId();
+        return $this->getId() == $this->getGame()->getPlayers()->getDealer()->getId();
     }
 
     private function isSmallBlind(): bool
     {
-        return $this->getId() == $this->game->getPlayers()->getSmallBlind()->getId();
+        $smallBlind = $this->getGame()->getPlayers()->getSmallBlind();
+        return $smallBlind && $this->getId() == $smallBlind->getId();
     }
 
     private function isBigBlind(): bool
     {
-        return $this->getId() == $this->game->getPlayers()->getBigBlind()->getId();
+        $bigBlind = $this->getGame()->getPlayers()->getBigBlind();
+        return $bigBlind && $this->getId() == $bigBlind->getId();
     }
 
     private function isActive(): bool
     {
-        return $this->getId() == $this->game->getPlayers()->getActivePlayer()->getId();
+        return $this->getId() == $this->getGame()->getPlayers()->getActivePlayer()->getId();
+    }
+
+    private function getGame(): Game
+    {
+        return $this->additional['game'];
     }
 }

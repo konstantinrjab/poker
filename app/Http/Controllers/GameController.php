@@ -23,7 +23,7 @@ class GameController extends Controller
      * Store a newly created resource in storage.
      *
      * @param CreateGameRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return GameResource
      * @throws GameException
      */
     public function store(CreateGameRequest $request)
@@ -41,9 +41,7 @@ class GameController extends Controller
         ));
         $game->save();
 
-        return response()->json([
-            'gameId' => $game->getId()
-        ]);
+        return GameResource::make($game)->additional(['userId' => $request->input('userId')]);
     }
 
     /**
@@ -71,6 +69,7 @@ class GameController extends Controller
      * @param JoinGameRequest $request
      * @param string $id
      * @throws GameException
+     * @return GameResource
      */
     public function join(JoinGameRequest $request, string $id)
     {
@@ -81,6 +80,8 @@ class GameController extends Controller
             $game->getConfig()->getInitialMoney()
         ));
         $game->save();
+
+        return GameResource::make($game)->additional(['userId' => $request->input('userId')]);
     }
 
     public function ready(ReadyRequest $request, string $id)
@@ -96,6 +97,7 @@ class GameController extends Controller
      * @param StartGameRequest $request
      * @param string $id
      * @throws GameException
+     * @return GameResource
      */
     public function start(StartGameRequest $request, string $id)
     {
@@ -104,6 +106,8 @@ class GameController extends Controller
             throw new AccessDeniedHttpException('Only creator of the game can start game');
         }
         $game->start();
+
+        return GameResource::make($game)->additional(['userId' => $request->input('userId')]);
     }
 
     /**

@@ -23,7 +23,8 @@ class GameUpdated implements ShouldBroadcast
     {
         $this->game = $game;
         $this->userId = $userId;
-        $this->dontBroadcastToCurrentUser();}
+        $this->dontBroadcastToCurrentUser();
+    }
 
     public function broadcastOn()
     {

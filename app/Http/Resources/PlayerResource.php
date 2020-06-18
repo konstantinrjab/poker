@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Collections\PlayerResourceCollection;
 use Facades\App\Http\Adapters\CardAdapter;
 use App\Models\Game;
 use App\Models\Player;
@@ -16,15 +15,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class PlayerResource extends JsonResource
 {
-    public static function collection($playerCollection): PlayerResourceCollection
-    {
-        $players = [];
-        foreach ($playerCollection as $player) {
-            $players[] = PlayerResource::make($player);
-        }
-        return new PlayerResourceCollection($players);
-    }
-
     /**
      * Transform the resource into an array.
      *
@@ -34,10 +24,11 @@ class PlayerResource extends JsonResource
     public function toArray($request)
     {
         $game = $this->getGame();
-        $userId = $this->additional['userId'];
+        $userId = $this->getUserId();
 
         return [
-            'id' => $this->getId(),
+            // TODO: discuss should id be displayed since it can be security issue with listening other users socket messages
+//            'id' => $this->getId(),
             'name' => $this->getName(),
             'money' => $this->getMoney(),
             'bet' => $game->getDeal() ? $game->getDeal()->getRound()->getPlayerBet($this->getId()) : null,
@@ -82,6 +73,11 @@ class PlayerResource extends JsonResource
 
     private function getGame(): Game
     {
-        return $this->additional['game'];
+        return app()->get('game.instance');
+    }
+
+    private function getUserId(): string
+    {
+        return app()->get('game.userId');
     }
 }

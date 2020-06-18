@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\GameUpdated;
 use App\Exceptions\GameException;
 use App\Http\Requests\CreateGameRequest;
 use App\Http\Requests\JoinGameRequest;
@@ -16,6 +17,7 @@ use App\Models\GameConfig;
 use App\Models\Player;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Event;
 
 class GameController extends Controller
 {
@@ -40,8 +42,10 @@ class GameController extends Controller
             $game->getConfig()->getInitialMoney()
         ));
         $game->save();
+        $this->configureApp($game, $request->input('userId'));
+        Event::dispatch(GameUpdated::NAME, $game);
 
-        return GameResource::make($game)->additional(['userId' => $request->input('userId')]);
+        return GameResource::make($game);
     }
 
     /**
@@ -62,7 +66,10 @@ class GameController extends Controller
             throw new NotFoundHttpException();
         }
 
-        return GameResource::make($game)->additional(['userId' => $request->input('userId')]);
+        $this->configureApp($game, $request->input('userId'));
+        Event::dispatch(GameUpdated::NAME, $game);
+
+        return GameResource::make($game);
     }
 
     /**
@@ -71,7 +78,7 @@ class GameController extends Controller
      * @throws GameException
      * @return GameResource
      */
-    public function join(JoinGameRequest $request, string $id)
+    public function join(string $id, JoinGameRequest $request)
     {
         $game = Game::get($id);
         $game->getPlayers()->add(new Player(
@@ -81,16 +88,24 @@ class GameController extends Controller
         ));
         $game->save();
 
-        return GameResource::make($game)->additional(['userId' => $request->input('userId')]);
+        $this->configureApp($game, $request->input('userId'));
+        Event::dispatch(GameUpdated::NAME, $game);
+
+        return GameResource::make($game);
     }
 
-    public function ready(ReadyRequest $request, string $id)
+    public function ready(string $id, ReadyRequest $request)
     {
         $game = Game::get($id);
         $game->getPlayers()
             ->getById($request->input('userId'))
             ->setIsReady($request->input('value'));
         $game->save();
+
+        $this->configureApp($game, $request->input('userId'));
+        Event::dispatch(GameUpdated::NAME, $game);
+
+        return GameResource::make($game);
     }
 
     /**
@@ -99,7 +114,7 @@ class GameController extends Controller
      * @throws GameException
      * @return GameResource
      */
-    public function start(StartGameRequest $request, string $id)
+    public function start(string $id, StartGameRequest $request)
     {
         $game = Game::get($id);
         if ($game->getCreatorId() != $request->input('userId')) {
@@ -107,7 +122,10 @@ class GameController extends Controller
         }
         $game->start();
 
-        return GameResource::make($game)->additional(['userId' => $request->input('userId')]);
+        $this->configureApp($game, $request->input('userId'));
+        Event::dispatch(GameUpdated::NAME, $game);
+
+        return GameResource::make($game);
     }
 
     /**
@@ -116,7 +134,7 @@ class GameController extends Controller
      * @return GameResource
      * @throws GameException
      */
-    public function update(UpdateGameRequest $request, string $id)
+    public function update(string $id, UpdateGameRequest $request)
     {
         $game = Game::get($id);
         // TODO: add timeout logic
@@ -130,6 +148,16 @@ class GameController extends Controller
 
         $game->save();
 
-        return GameResource::make($game)->additional(['userId' => $request->input('userId')]);
+        $this->configureApp($game, $request->input('userId'));
+        Event::dispatch(GameUpdated::NAME, $game);
+
+        return GameResource::make($game);
+    }
+
+    // TODO: move it to service provider if possible
+    private function configureApp(Game $game, string $userId)
+    {
+        app()->instance('game.instance', $game);
+        app()->instance('game.userId', $userId);
     }
 }

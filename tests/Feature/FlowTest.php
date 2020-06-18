@@ -28,7 +28,7 @@ class FlowTest extends TestCase
             'smallBlind' => 5,
             'initialMoney' => 500,
         ]);
-        $gameId = $response->json()['gameId'];
+        $gameId = $response->json()['data']['id'];
         $this->assertIsString($gameId);
 
         return $gameId;

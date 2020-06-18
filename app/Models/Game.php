@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use App\Collections\PlayerCollection;
-use Event;
-use App\Events\GameUpdated;
 use App\Exceptions\GameException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Redis;
@@ -108,6 +106,5 @@ class Game
     public function save()
     {
         Redis::set('game:' . $this->getId(), serialize($this));
-        Event::dispatch(GameUpdated::NAME, $this);
     }
 }

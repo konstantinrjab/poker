@@ -27,8 +27,7 @@ class PlayerResource extends JsonResource
         $userId = $this->getUserId();
 
         return [
-            // TODO: discuss should id be displayed since it can be security issue with listening other users socket messages
-//            'id' => $this->getId(),
+            'id' => $this->when($this->getId() == app('game.userId'), $this->getId()),
             'name' => $this->getName(),
             'money' => $this->getMoney(),
             'bet' => $game->getDeal() ? $game->getDeal()->getRound()->getPlayerBet($this->getId()) : null,

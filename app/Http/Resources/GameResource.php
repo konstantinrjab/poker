@@ -22,8 +22,6 @@ class GameResource extends JsonResource
      */
     public function toArray($request)
     {
-        $players = PlayerResource::collection($this->getPlayers());
-
         return [
             'id' => $this->getId(),
             'config' => [
@@ -37,7 +35,7 @@ class GameResource extends JsonResource
             'communityCards' => $this->getDeal() ? CardAdapter::handle($this->getDeal()->showCards()) : null,
             'status' => $this->getStatus(),
             'pot' => $this->getDeal() ? $this->getDeal()->getPot() : null,
-            'players' => $players,
+            'players' => PlayerResource::collection($this->getPlayers()),
             'deal' => $this->getDeal() ? DealResource::make($this->getDeal()) : null,
         ];
     }

@@ -39,11 +39,6 @@ class Game
         $this->config = $config;
     }
 
-    public function getStatus(): int
-    {
-        return $this->status;
-    }
-
     public function getId(): string
     {
         return $this->id;

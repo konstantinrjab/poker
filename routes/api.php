@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-Route::get('/games', 'GameController@index');
 Route::post('/games', 'GameController@store');
 Route::get('/games/{id}', 'GameController@show');
 Route::put('/games/{id}', 'GameController@update');

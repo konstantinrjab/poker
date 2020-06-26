@@ -45,6 +45,9 @@ class Round
     public function getPot(): int
     {
         $total = 0;
+        if (!isset($this->bets)) {
+            return $total;
+        }
         foreach ($this->bets as $bet) {
             $total += $bet;
         }

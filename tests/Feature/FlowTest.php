@@ -16,7 +16,8 @@ class FlowTest extends TestCase
         $this->start($gameId);
         $this->preFlop($gameId);
         $this->flop($gameId);
-        $response = $this->get('/api/games/' . $gameId)->json();
+//        $this->turn($gameId);
+        $response = $this->get('/api/games/' . $gameId . '?userId=' . self::CREATOR_ID)->json();
     }
 
     private function create(): string
@@ -47,7 +48,7 @@ class FlowTest extends TestCase
 
     private function setReady(string $gameId)
     {
-        $response = $this->put('/api/games/' . $gameId. '/ready', [
+        $response = $this->put('/api/games/' . $gameId . '/ready', [
             'userId' => self::CREATOR_ID,
             'value' => true
         ]);
@@ -75,6 +76,12 @@ class FlowTest extends TestCase
         $this->assertTrue($response->status() == 200);
     }
 
+    /*
+     * player 4 - fold
+     * player 5 - call
+     * player 1 - call
+     * player 2 - call
+     */
     private function preFlop(string $gameId)
     {
         $game = $this->get('/api/games/' . $gameId . '?userId=testUserId4')->json()['data'];
@@ -110,6 +117,12 @@ class FlowTest extends TestCase
         $this->assertTrue($response->json()['data']['players'][0]['money'] == 490);
     }
 
+    /*
+     * player 5 - check
+     * player 1 - bet
+     * player 2 - call
+     * player 5 - call
+     */
     private function flop(string $gameId)
     {
         $game = $this->get('/api/games/' . $gameId . '?userId=testUserId3')->json()['data'];
@@ -119,10 +132,23 @@ class FlowTest extends TestCase
         // round ends, all bets resets to zero
         $this->assertTrue($game['players'][0]['bet'] == 0);
         $this->assertTrue($game['pot'] == 40);
+
+        $response = $this->put('/api/games/' . $gameId, [
+            'userId' => 'testUserId5',
+            'action' => 'check'
+        ]);
+        $response = $this->put('/api/games/' . $gameId, [
+            'userId' => self::CREATOR_ID,
+            'action' => 'bet',
+            'value' => 50
+        ]);
+        $game = $response->json()['data'];
+        $this->assertTrue($game['pot'] == 90);
     }
 
-    private function turn()
+    private function turn(string $gameId)
     {
-
+        $game = $this->get('/api/games/' . $gameId . '?userId=testUserId3')->json()['data'];
+        $this->assertCount(4, $game['communityCards']);
     }
 }

@@ -61,7 +61,7 @@ class Deal
 
     public function getPot(): ?int
     {
-        return isset($this->pot) ? $this->pot : null;
+        return isset($this->pot) ? $this->pot + $this->round->getPot() : null;
     }
 
     public function getWinners(): ?PlayerCollection

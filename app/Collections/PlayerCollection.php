@@ -5,7 +5,6 @@ namespace App\Collections;
 use App\Exceptions\GameException;
 use App\Models\Player;
 use Illuminate\Support\Collection;
-use BadMethodCallException;
 
 /**
  * @method Player[] getIterator()
@@ -17,30 +16,27 @@ class PlayerCollection extends Collection
     private string $smallBlindId;
     private string $bigBlindId;
 
-    public function add($item)
+    public function add($player)
     {
-        /** @var Player $item */
-        $duplicatesById = $this->filter(function (Player $player) use ($item) {
-            return $player->getId() == $item->getId();
-        });
-        if (!$duplicatesById->isEmpty()) {
-            throw new GameException('Player with this id has already been added');
+        if (!$player instanceof Player) {
+            throw new GameException('$player should be instance of Player');
         }
-        $duplicatesByName = $this->filter(function (Player $player) use ($item) {
-            return $player->getName() == $item->getName();
+
+        $duplicatesByName = $this->filter(function (Player $existedPlayer) use ($player) {
+            return $existedPlayer->getName() == $player->getName();
         });
         if (!$duplicatesByName->isEmpty()) {
             throw new GameException('Player with this name has already been added');
         }
 
-        $this->items[] = $item;
+        $this->items[] = $player;
 
         if (!isset($this->dealerId)) {
-            $this->dealerId = $item->getId();
+            $this->dealerId = $player->getId();
         } else if (!isset($this->smallBlindId)) {
-            $this->smallBlindId = $item->getId();
+            $this->smallBlindId = $player->getId();
         } else if (!isset($this->bigBlindId)) {
-            $this->bigBlindId = $item->getId();
+            $this->bigBlindId = $player->getId();
         }
 
         return $this;
@@ -61,9 +57,9 @@ class PlayerCollection extends Collection
         return $this->getById($this->activeId);
     }
 
-    public function getDealer(): Player
+    public function getDealer(): ?Player
     {
-        return $this->getById($this->dealerId);
+        return isset($this->dealerId) ? $this->getById($this->dealerId) : null;
     }
 
     public function getBigBlind(): ?Player

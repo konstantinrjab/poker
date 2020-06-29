@@ -50,7 +50,8 @@ class PlayerResource extends JsonResource
 
     private function isDealer(): bool
     {
-        return $this->getId() == $this->getGame()->getPlayers()->getDealer()->getId();
+        $dealer = $this->getGame()->getPlayers()->getDealer();
+        return $dealer && $this->getId() == $dealer->getId();
     }
 
     private function isSmallBlind(): bool

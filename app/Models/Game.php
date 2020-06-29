@@ -59,14 +59,6 @@ class Game
         return $this->players;
     }
 
-    public function addPlayer(Player $player): void
-    {
-        if ($this->players->count() >= $this->config->getMaxPlayersCount()) {
-            throw new GameException('Cannot add more players, game is full');
-        }
-        $this->players->add($player);
-    }
-
     public function start(): void
     {
         if ($this->status == self::STATUS_STARTED) {

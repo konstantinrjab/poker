@@ -18,6 +18,7 @@ use App\Models\Player;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Event;
+use Str;
 
 class GameController extends Controller
 {
@@ -34,8 +35,12 @@ class GameController extends Controller
             $request->input('bigBlind'),
             $request->input('initialMoney')
         );
-        $game = new Game($config, $request->input('userId'));
+        $player = new Player(Str::uuid(), $request->input('name'), $config->getInitialMoney());
+        $game = new Game($config, $player->getId());
+        $game->getPlayers()->add($player);
         $game->save();
+
+        $this->configureApp($game, $player->getId());
 
         return GameResource::make($game);
     }
@@ -73,14 +78,12 @@ class GameController extends Controller
     public function join(string $id, JoinGameRequest $request)
     {
         $game = Game::get($id);
-        $game->getPlayers()->add(new Player(
-            $request->input('userId'),
-            $request->input('name'),
-            $game->getConfig()->getInitialMoney()
-        ));
+
+        $player = new Player(Str::uuid(), $request->input('name'), $game->getConfig()->getInitialMoney());
+        $game->getPlayers()->add($player);
         $game->save();
 
-        $this->configureApp($game, $request->input('userId'));
+        $this->configureApp($game, $player->getId());
         Event::dispatch(GameUpdated::NAME, $game);
 
         return GameResource::make($game);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Collections\Deck;
+use App\Exceptions\GameException;
 use App\Http\Requests\CreateTestDealRequest;
 use App\Models\Card;
 use App\Models\Deal;
@@ -28,7 +29,12 @@ class TestDealController extends Controller
                 $game->getConfig()->getInitialMoney()
             );
             $player->setIsReady(true);
-            $game->addPlayer($player);
+
+            // TODO: refactor this if needed
+            if ($game->players->count() >= $game->config->getMaxPlayersCount()) {
+                throw new GameException('Cannot add more players, game is full');
+            }
+            $game->players->add($player);
         }
 
         $game->start();

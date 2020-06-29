@@ -26,7 +26,6 @@ class GameController extends Controller
      *
      * @param CreateGameRequest $request
      * @return GameResource
-     * @throws GameException
      */
     public function store(CreateGameRequest $request)
     {
@@ -36,14 +35,7 @@ class GameController extends Controller
             $request->input('initialMoney')
         );
         $game = new Game($config, $request->input('userId'));
-        $game->addPlayer(new Player(
-            $request->input('userId'),
-            $request->input('name'),
-            $game->getConfig()->getInitialMoney()
-        ));
         $game->save();
-        $this->configureApp($game, $request->input('userId'));
-        Event::dispatch(GameUpdated::NAME, $game);
 
         return GameResource::make($game);
     }

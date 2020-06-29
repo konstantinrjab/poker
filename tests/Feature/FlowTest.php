@@ -37,7 +37,7 @@ class FlowTest extends TestCase
 
     private function join(string $gameId)
     {
-        for ($userNumber = 2; $userNumber <= 5; $userNumber++) {
+        for ($userNumber = 1; $userNumber <= 5; $userNumber++) {
             $response = $this->put('/api/games/' . $gameId . '/join', [
                 'userId' => 'testUserId' . $userNumber,
                 'name' => 'player_' . $userNumber

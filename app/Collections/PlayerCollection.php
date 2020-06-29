@@ -20,11 +20,17 @@ class PlayerCollection extends Collection
     public function add($item)
     {
         /** @var Player $item */
-        $duplicates = $this->filter(function ($player) use ($item) {
+        $duplicatesById = $this->filter(function (Player $player) use ($item) {
             return $player->getId() == $item->getId();
         });
-        if (!$duplicates->isEmpty()) {
-            throw new GameException('This player has already been added');
+        if (!$duplicatesById->isEmpty()) {
+            throw new GameException('Player with this id has already been added');
+        }
+        $duplicatesByName = $this->filter(function (Player $player) use ($item) {
+            return $player->getName() == $item->getName();
+        });
+        if (!$duplicatesByName->isEmpty()) {
+            throw new GameException('Player with this name has already been added');
         }
 
         $this->items[] = $item;

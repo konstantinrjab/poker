@@ -14,7 +14,7 @@ class CreateGameRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:50',
+            'userId' => 'required|string|max:50',
             'bigBlind' => 'required|int|gte:smallBlind',
             'smallBlind' => 'required|int',
             'maxPlayers' => 'required|int|min:4|max:10',

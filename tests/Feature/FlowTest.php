@@ -25,8 +25,11 @@ class FlowTest extends TestCase
 
     private function create(): string
     {
-        $response = $this->post('/api/games', [
+        $response = $this->post('/api/register', [
             'name' => 'creatorName',
+        ]);
+        $response = $this->post('/api/games', [
+            'userId' => $response->json()['data']['id'],
             'maxPlayers' => 5,
             'bigBlind' => 10,
             'smallBlind' => 5,
@@ -42,8 +45,11 @@ class FlowTest extends TestCase
     private function join(string $gameId): void
     {
         for ($userNumber = 1; $userNumber <= 4; $userNumber++) {
+            $response = $this->post('/api/register', [
+                'name' => 'player_' . $userNumber,
+            ]);
             $response = $this->put('/api/games/' . $gameId . '/join', [
-                'name' => 'player_' . $userNumber
+                'userId' => $response->json()['data']['id'],
             ]);
             $this->assertTrue($response->status() == 200);
             $this->playersIds[$userNumber] = $response->json()['data']['players'][$userNumber]['id'];

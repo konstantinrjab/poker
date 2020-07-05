@@ -15,6 +15,7 @@ use App\Models\Actions\Factories\ActionFactory;
 use App\Models\Game;
 use App\Models\GameConfig;
 use App\Models\Player;
+use App\Models\User;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Event;
@@ -36,7 +37,10 @@ class GameController extends Controller
             $request->input('initialMoney'),
             $request->input('maxPlayers')
         );
-        $player = new Player(Str::uuid(), $request->input('name'), $config->getInitialMoney());
+
+        $user = User::get($request->input('userId'));
+
+        $player = new Player($user->getId(), $user->getName(), $config->getInitialMoney());
         $game = new Game($config, $player->getId());
         $game->getPlayers()->add($player);
         $game->save();
@@ -84,7 +88,9 @@ class GameController extends Controller
             throw new GameException('Game is full');
         }
 
-        $player = new Player(Str::uuid(), $request->input('name'), $game->getConfig()->getInitialMoney());
+        $user = User::get($request->input('userId'));
+
+        $player = new Player($user->getId(), $user->getName(), $game->getConfig()->getInitialMoney());
         $game->getPlayers()->add($player);
         $game->save();
 

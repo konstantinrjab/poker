@@ -14,7 +14,7 @@ class JoinGameRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:50'
+            'userId' => 'required|string|max:50'
         ];
     }
 }

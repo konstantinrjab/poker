@@ -24,4 +24,4 @@ Route::put('/games/{id}/join', 'GameController@join');
 Route::put('/games/{id}/start', 'GameController@start');
 Route::put('/games/{id}/ready', 'GameController@ready');
 
-Route::post('/test', 'TestDealController');
+Route::post('/register', 'UsersController@register');

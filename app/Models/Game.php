@@ -4,11 +4,10 @@ namespace App\Models;
 
 use App\Collections\PlayerCollection;
 use App\Exceptions\GameException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Redis;
+use App\Models\Abstracts\RedisORM;
 use Illuminate\Support\Str;
 
-class Game
+class Game extends RedisORM
 {
     private const STATUS_WAIT_FOR_PLAYERS = 1;
     private const STATUS_STARTED = 2;
@@ -20,15 +19,6 @@ class Game
     private Deal $deal;
     private PlayerCollection $players;
     private GameConfig $config;
-
-    public static function get(string $id, bool $throwOnNotFound = true): ?Game
-    {
-        $game = Redis::get('game:' . $id);
-        if (!$game && $throwOnNotFound) {
-            throw new ModelNotFoundException();
-        }
-        return $game ? unserialize($game) : null;
-    }
 
     public function __construct(GameConfig $config, string $creatorId)
     {
@@ -90,8 +80,8 @@ class Game
         return isset($this->deal) ? $this->deal : null;
     }
 
-    public function save()
+    protected static function getKey(): string
     {
-        Redis::set('game:' . $this->getId(), serialize($this));
+        return 'game';
     }
 }

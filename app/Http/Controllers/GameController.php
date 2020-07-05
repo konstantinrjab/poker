@@ -33,7 +33,8 @@ class GameController extends Controller
         $config = new GameConfig(
             $request->input('smallBlind'),
             $request->input('bigBlind'),
-            $request->input('initialMoney')
+            $request->input('initialMoney'),
+            $request->input('maxPlayers')
         );
         $player = new Player(Str::uuid(), $request->input('name'), $config->getInitialMoney());
         $game = new Game($config, $player->getId());
@@ -78,6 +79,10 @@ class GameController extends Controller
     public function join(string $id, JoinGameRequest $request)
     {
         $game = Game::get($id);
+
+        if ($game->getPlayers()->count() >= $game->getConfig()->getMaxPlayersCount()) {
+            throw new GameException('Game is full');
+        }
 
         $player = new Player(Str::uuid(), $request->input('name'), $game->getConfig()->getInitialMoney());
         $game->getPlayers()->add($player);

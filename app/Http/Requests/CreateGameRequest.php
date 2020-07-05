@@ -17,6 +17,7 @@ class CreateGameRequest extends FormRequest
             'name' => 'required|string|max:50',
             'bigBlind' => 'required|int|gte:smallBlind',
             'smallBlind' => 'required|int',
+            'maxPlayers' => 'required|int|min:4|max:10',
             // TODO: write custom validator based on bigBlind
             'initialMoney' => 'required|int|gt:bigBlind',
         ];

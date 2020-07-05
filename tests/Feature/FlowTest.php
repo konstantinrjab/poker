@@ -27,6 +27,7 @@ class FlowTest extends TestCase
     {
         $response = $this->post('/api/games', [
             'name' => 'creatorName',
+            'maxPlayers' => 5,
             'bigBlind' => 10,
             'smallBlind' => 5,
             'initialMoney' => 500,

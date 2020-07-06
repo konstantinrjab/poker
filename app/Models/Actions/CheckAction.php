@@ -2,12 +2,18 @@
 
 namespace App\Models\Actions;
 
+use App\Http\Requests\UpdateGameRequest;
 use App\Models\Actions\Abstracts\Action;
 use App\Models\Game;
 
 class CheckAction extends Action
 {
-    public function updateGame(Game $game): void
+    public static function getName(): string
+    {
+        return 'check';
+    }
+
+    public function updateGame(Game $game, UpdateGameRequest $request): void
     {
 
     }

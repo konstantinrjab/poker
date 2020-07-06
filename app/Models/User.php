@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Abstracts\RedisORM;
+use App\Database\RedisORM;
 use Illuminate\Support\Str;
 
 class User extends RedisORM

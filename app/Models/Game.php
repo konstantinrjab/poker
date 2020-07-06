@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Collections\PlayerCollection;
+use App\Database\RedisORM;
 use App\Exceptions\GameException;
-use App\Models\Abstracts\RedisORM;
 use Illuminate\Support\Str;
 
 class Game extends RedisORM

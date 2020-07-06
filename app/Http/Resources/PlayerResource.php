@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Actions\BetAction;
 use Facades\App\Http\Adapters\CardAdapter;
 use App\Models\Game;
 use App\Models\Player;
@@ -39,7 +40,7 @@ class PlayerResource extends JsonResource
             'isSmallBlind' => $this->isSmallBlind(),
             'isActive' => $this->isActive(),
             'holeCards' => $this->getId() == $userId && $this->getHand() ? CardAdapter::handle($this->getHand()) : [],
-            'availableActions' => $game->getDeal() && $game->getDeal()->getRound() ? $game->getDeal()->getRound()->getAvailableActions($this->resource) : null,
+            'availableActions' => $this->getAvailableActions(),
         ];
     }
 
@@ -69,6 +70,29 @@ class PlayerResource extends JsonResource
     private function isActive(): bool
     {
         return $this->getId() == $this->getGame()->getPlayers()->getActivePlayer()->getId();
+    }
+
+    private function getAvailableActions(): ?array
+    {
+        $game = $this->getGame();
+        $actions = $game->getDeal() && $game->getDeal()->getRound() ? $game->getDeal()->getRound()->getAvailableActions($this->resource) : null;
+        if (!$actions) {
+            return null;
+        }
+
+        $result = [];
+        foreach ($actions as $action) {
+            $arrayActon['type'] = $action::getName();
+            if ($actions instanceof BetAction) {
+                $arrayActon['options'] = [
+                    'min' => $game->getConfig()->getBigBlind(),
+                    'max' => $this->resource->getMoney()
+                ];
+            }
+            $result[] = $arrayActon;
+        }
+
+        return $result;
     }
 
     private function getGame(): Game

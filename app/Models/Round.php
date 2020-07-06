@@ -3,21 +3,31 @@
 namespace App\Models;
 
 use App\Collections\PlayerCollection;
-use App\Models\Actions\Factories\ActionFactory;
+use App\Models\Actions\Abstracts\Action;
+use App\Models\Actions\BetAction;
+use App\Models\Actions\CallAction;
+use App\Models\Actions\CheckAction;
+use App\Models\Actions\FoldAction;
 
 class Round
 {
     private int $maxBet;
-    private int $bigBlind;
+    private GameConfig $config;
     private PlayerCollection $players;
     private array $bets;
 
-    public function __construct(PlayerCollection $players, int $bigBlind)
+    public function __construct(PlayerCollection $players, GameConfig $config)
     {
         $this->players = $players;
         $this->players->setActivePlayer($this->players->getBigBlind()->getId());
         $this->players->setNextActivePlayer();
-        $this->bigBlind = $bigBlind;
+        $this->config = $config;
+
+        $bigBlindId = $this->players->getBigBlind()->getId();
+        $smallBlindId = $this->players->getSmallBlind()->getId();
+
+        $this->bet($smallBlindId, $config->getSmallBlind());
+        $this->bet($bigBlindId, $config->getBigBlind());
     }
 
     public function getPlayerBet(string $playerId): int
@@ -71,6 +81,10 @@ class Round
         return true;
     }
 
+    /**
+     * @param Player $player
+     * @return Action[]
+     */
     public function getAvailableActions(Player $player): array
     {
         if (!isset($this->maxBet)) {
@@ -79,20 +93,21 @@ class Round
         if ($player->getIsFolded()) {
             return [];
         }
-        $actions[] = ['type' => ActionFactory::FOLD];
-        if ($player->getMoney() >= $this->maxBet) {
-            $actions[] = [
-                'type' => ActionFactory::BET,
-                'options' => [
-                    'min' => $this->bigBlind,
-                    'max' => $player->getMoney()
-                ]
-            ];
-        }
+        $actions[] = new FoldAction();
+
         if ($this->getPlayerBet($player->getId()) == $this->maxBet) {
-            $actions[] = [
-                'type' => ActionFactory::CHECK
-            ];
+            $actions[] = new CheckAction();
+        }
+
+        $amountToCall = $this->maxBet - $this->getPlayerBet($player->getId());
+
+        // TODO: test with all in
+        if ($player->getMoney() >= ($amountToCall + $this->config->getBigBlind())) {
+            $actions[] = new BetAction();
+        }
+
+        if ($player->getMoney() >= $amountToCall) {
+            $actions[] = new CallAction();
         }
 
         return $actions;

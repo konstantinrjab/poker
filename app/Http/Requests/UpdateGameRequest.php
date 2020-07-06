@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Actions\BetAction;
 use App\Models\Actions\Factories\ActionFactory;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -16,9 +17,9 @@ class UpdateGameRequest extends FormRequest
     {
         return [
             'userId' => 'required|string|max:50',
-            'action' => 'required|string|in:' . implode(',', ActionFactory::AVAILABLE_ACTIONS),
+            'action' => 'required|string|in:' . implode(',', ActionFactory::getAvailableActions()),
             'value' => 'int|required_if:action,' . implode(',', [
-                    ActionFactory::BET,
+                    BetAction::getName(),
                 ]),
         ];
     }

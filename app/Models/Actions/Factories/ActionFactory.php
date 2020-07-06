@@ -2,39 +2,56 @@
 
 namespace App\Models\Actions\Factories;
 
+use App\Exceptions\GameException;
 use App\Http\Requests\UpdateGameRequest;
 use App\Models\Actions\Abstracts\Action;
+use App\Models\Actions\BetAction;
+use App\Models\Actions\CallAction;
 use App\Models\Actions\CheckAction;
 use App\Models\Actions\FoldAction;
-use App\Models\Actions\CallAction;
-use App\Models\Actions\BetAction;
-use Exception;
+use App\Models\Game;
 
 class ActionFactory
 {
-    public const AVAILABLE_ACTIONS = [
-        self::FOLD,
-        self::CHECK,
-        self::CALL,
-        self::BET,
-    ];
-    public const FOLD = 'fold';
     public const CHECK = 'check';
-    public const CALL = 'call';
     public const BET = 'bet';
 
-    public static function get(UpdateGameRequest $request): Action
+    public static function getAvailableActions(): array
     {
-        switch ($request->input('action')) {
-            case self::FOLD:
-                return new FoldAction($request);
-            case self::CHECK:
-                return new CheckAction($request);
-            case self::CALL:
-                return new CallAction($request);
-            case self::BET:
-                return new BetAction($request);
+        return [
+            FoldAction::getName(),
+            CheckAction::getName(),
+            CallAction::getName(),
+            BetAction::getName(),
+        ];
+    }
+
+    public static function get(UpdateGameRequest $request, Game $game): Action
+    {
+        $player = $game->getPlayers()->getById($request->input('userId'));
+        $availableActions = $game->getDeal()->getRound()->getAvailableActions($player);
+        $actionName = $request->input('action');
+        $availableActionNames = [];
+        foreach ($availableActions as $action) {
+            $availableActionNames[] = $action->getName();
         }
-        throw new Exception('Unknown action type: ' . $request->input('type'));
+
+        if (!in_array($actionName, $availableActionNames)) {
+            throw new GameException(
+                "Action '{$action::getName()}' is not available. Available actions are: " . implode(', ', $availableActionNames),
+                403
+            );
+        }
+
+        switch ($actionName) {
+            case FoldAction::getName():
+                return new FoldAction();
+            case CheckAction::getName():
+                return new CheckAction();
+            case CallAction::getName():
+                return new CallAction();
+            case BetAction::getName():
+                return new BetAction();
+        }
     }
 }

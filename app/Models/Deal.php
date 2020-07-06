@@ -29,7 +29,7 @@ class Deal
     )
     {
         $this->config = $config;
-        $this->round = new Round($playerCollection, $config->getBigBlind());
+        $this->round = new Round($playerCollection, $config);
         $deck = Deck::getFull();
         $this->players = $playerCollection;
         foreach ($this->players as $player) {
@@ -42,11 +42,6 @@ class Deal
             $this->players->setNextSmallBlind();
             $this->players->setNextDealer();
         }
-        $bigBlindId = $this->players->getBigBlind()->getId();
-        $smallBlindId = $this->players->getSmallBlind()->getId();
-
-        $this->round->bet($smallBlindId, $config->getSmallBlind());
-        $this->round->bet($bigBlindId, $config->getBigBlind());
     }
 
     public function getStatus(): int
@@ -59,9 +54,9 @@ class Deal
         return $this->round;
     }
 
-    public function getPot(): ?int
+    public function getPot(): int
     {
-        return isset($this->pot) ? $this->pot + $this->round->getPot() : null;
+        return isset($this->pot) ? $this->pot + $this->round->getPot() : $this->round->getPot();
     }
 
     public function getWinners(): ?PlayerCollection
@@ -90,7 +85,7 @@ class Deal
             return;
         } else if ($this->round->shouldEnd() && $this->status != self::STATUS_RIVER) {
             $this->pot = isset($this->pot) ? $this->pot + $this->round->getPot() : $this->round->getPot();
-            $this->round = new Round($this->players, $this->config->getBigBlind());
+            $this->round = new Round($this->players, $this->config);
             $this->updateStatus();
             return;
         }

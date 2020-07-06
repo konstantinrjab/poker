@@ -19,7 +19,6 @@ use App\Models\User;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Event;
-use Str;
 
 class GameController extends Controller
 {
@@ -156,8 +155,8 @@ class GameController extends Controller
         if ($game->getPlayers()->getActivePlayer()->getId() != $request->input('userId')) {
             throw new GameException('It is not you turn');
         }
-        $action = ActionFactory::get($request);
-        $action->updateGame($game);
+        $action = ActionFactory::get($request, $game);
+        $action->updateGame($game, $request);
 
         $game->getDeal()->onAfterUpdate();
 

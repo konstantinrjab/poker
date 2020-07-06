@@ -7,16 +7,7 @@ use App\Models\Game;
 
 abstract class Action
 {
-    protected string $userId;
-    protected string $type;
-    protected ?int $value;
+    abstract public static function getName(): string;
 
-    public function __construct(UpdateGameRequest $request)
-    {
-        $this->userId = $request->input('userId');
-        $this->type = $request->input('action');
-        $this->value = $request->input('value');
-    }
-
-    abstract public function updateGame(Game $game): void;
+    abstract public function updateGame(Game $game, UpdateGameRequest $request): void;
 }

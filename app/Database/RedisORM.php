@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Abstracts;
+namespace App\Database;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Redis;

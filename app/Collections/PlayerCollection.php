@@ -26,7 +26,8 @@ class PlayerCollection extends Collection
             return $existedPlayer->getName() == $player->getName();
         });
         if (!$duplicatesByName->isEmpty()) {
-            throw new GameException('Player with this name has already been added');
+            $name = $player->getName() . ($duplicatesByName->count() + 1);
+            $player->setName($name);
         }
 
         $this->items[] = $player;

@@ -83,12 +83,21 @@ class GameController extends Controller
     public function join(string $id, JoinGameRequest $request)
     {
         $game = Game::get($id);
+        $userId = $request->input('userId');
+
+        $alreadyJoined = $game->getPlayers()->first(function (Player $existedPlayer) use ($userId) {
+            return $existedPlayer->getId() == $userId;
+        });
+
+        if ($alreadyJoined) {
+            return GameResource::make($game);
+        }
 
         if ($game->getPlayers()->count() >= $game->getConfig()->getMaxPlayersCount()) {
             throw new GameException('Game is full');
         }
 
-        $user = User::get($request->input('userId'));
+        $user = User::get($userId);
 
         $player = new Player($user->getId(), $user->getName(), $game->getConfig()->getInitialMoney());
         $game->getPlayers()->add($player);

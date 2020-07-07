@@ -174,8 +174,10 @@ class FlowTest extends TestCase
             'value' => 50
         ]);
         $game = $response->json()['data'];
-        // fix round max bet value for this case
+        // bet 50 big bling 10 - max bet is now 40
         $this->assertTrue($game['pot'] == 115);
+        $this->assertTrue($game['players'][0]['money'] == 440);
+
 
         $response = $this->put('/api/games/' . $gameId, [
             'userId' => $this->playersIds[1],

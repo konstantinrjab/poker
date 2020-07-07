@@ -18,9 +18,10 @@ class BetAction extends Action
     {
         $value = $request->input('value');
         $userId = $request->input('userId');
+        $bigBlind = $game->getConfig()->getBigBlind();
 
-        if ($value < $game->getConfig()->getBigBlind()) {
-            throw new GameException('Bet has to be greater than ' . $game->getConfig()->getBigBlind());
+        if ($value < $bigBlind) {
+            throw new GameException('Bet has to be greater than ' . $bigBlind);
         }
         $game->getDeal()->getRound()->bet($userId, $value);
     }

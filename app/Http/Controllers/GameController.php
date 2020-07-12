@@ -89,6 +89,7 @@ class GameController extends Controller
         });
 
         if ($alreadyJoined) {
+            $this->configureApp($game, $userId);
             return GameResource::make($game);
         }
 

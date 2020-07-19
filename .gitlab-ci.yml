@@ -11,7 +11,7 @@ stages:
 prod_deploy:
   stage: production
   script:
-    - ssh $SSH_USERNAME_PROD@$SSH_HOST_PROD "$BE_ROOT_PATH
+    - ssh $SSH_USERNAME_PROD@$SSH_HOST_PROD "cd $BE_ROOT_PATH
       && git reset --hard HEAD && git checkout master
       && git pull origin master
       && docker run --rm --interactive --volume $BE_ROOT_PATH:/app composer install --ignore-platform-reqs --no-scripts

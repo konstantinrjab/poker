@@ -15,8 +15,8 @@ prod_deploy:
       && git reset --hard HEAD && git checkout master
       && git pull origin master
       && docker run --rm --interactive --volume $BE_ROOT_PATH:/app composer install --ignore-platform-reqs --no-scripts
-      && docker-compose -f "docker/prod/docker-compose-prod.yml" pull
-      && docker-compose -f "docker/prod/docker-compose-prod.yml" up -d --build
+      && docker-compose -f "docker/docker-compose.yml" pull
+      && docker-compose -f "docker/docker-compose.yml" up -d --build
       && docker exec poker_php php artisan cache:clear
       && docker exec poker_php php artisan route:cache
       && docker exec poker_php php artisan config:clear

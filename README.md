@@ -14,3 +14,4 @@ DOCKER_USER=$(id -u):$(id -g) docker-compose -f "./docker/docker-compose.yml" do
 2. docker run --rm --interactive --tty --volume ${PWD}:/app composer install --ignore-platform-reqs --no-scripts
 3. docker-compose -f "./docker/docker-compose.yml" up -d --build
 4. api url http://localhost:80/
+5. if something is wrong try to clear cache docker exec poker_php bash -c "php artisan cache:clear && php artisan route:cache && php artisan config:clear && php artisan view:clear"

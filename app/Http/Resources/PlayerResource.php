@@ -69,7 +69,9 @@ class PlayerResource extends JsonResource
 
     private function isActive(): bool
     {
-        return $this->getId() == $this->getGame()->getPlayers()->getActivePlayer()->getId();
+        $activePlayer = $this->getGame()->getPlayers()->getActivePlayer();
+
+        return $activePlayer && $this->getId() == $activePlayer->getId();
     }
 
     private function getAvailableActions(): ?array

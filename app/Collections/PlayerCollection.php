@@ -50,12 +50,9 @@ class PlayerCollection extends Collection
         });
     }
 
-    public function getActivePlayer(): Player
+    public function getActivePlayer(): ?Player
     {
-        if (!isset($this->activeId)) {
-            $this->activeId = $this->first()->getId();
-        }
-        return $this->getById($this->activeId);
+        return isset($this->activeId) ? $this->getById($this->activeId): null;
     }
 
     public function getDealer(): ?Player

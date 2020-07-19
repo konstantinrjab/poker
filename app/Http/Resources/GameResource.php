@@ -11,6 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @package App\Http\Resources
  *
  * @mixin Game
+ * @property Game resource
  */
 class GameResource extends JsonResource
 {
@@ -32,10 +33,23 @@ class GameResource extends JsonResource
                 'smallBlind' => $this->getConfig()->getSmallBlind(),
                 'bigBlind' => $this->getConfig()->getBigBlind(),
             ],
+            'status' => $this->getStatus(),
             'communityCards' => $this->getDeal() ? CardAdapter::handle($this->getDeal()->showCards()) : null,
             'pot' => $this->getDeal() ? $this->getDeal()->getPot() : null,
             'players' => PlayerResource::collection($this->getPlayers()),
             'deal' => $this->getDeal() ? DealResource::make($this->getDeal()) : null,
         ];
+    }
+
+    private function getStatus(): string
+    {
+        switch ($this->resource->getStatus()):
+            case Game::STATUS_WAIT_FOR_PLAYERS:
+                return 'gathering';
+            case Game::STATUS_STARTED:
+                return 'inProgress';
+            case Game::STATUS_FINISHED:
+                return 'finished';
+        endswitch;
     }
 }

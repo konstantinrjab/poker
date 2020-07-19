@@ -19,6 +19,7 @@ use App\Models\User;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Event;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class GameController extends Controller
 {
@@ -37,7 +38,10 @@ class GameController extends Controller
             $request->input('maxPlayers')
         );
 
-        $user = User::get($request->input('userId'));
+        $user = User::get($request->input('userId'), false);
+        if (!$user) {
+            throw new UnauthorizedHttpException('', 'User with this id not found');
+        }
 
         $player = new Player($user->getId(), $user->getName(), $config->getInitialMoney());
         $game = new Game($config, $player->getId());
@@ -97,7 +101,10 @@ class GameController extends Controller
             throw new GameException('Game is full');
         }
 
-        $user = User::get($userId);
+        $user = User::get($userId, false);
+        if (!$user) {
+            throw new UnauthorizedHttpException('', 'User with this id not found');
+        }
 
         $player = new Player($user->getId(), $user->getName(), $game->getConfig()->getInitialMoney());
         $game->getPlayers()->add($player);

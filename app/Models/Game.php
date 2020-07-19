@@ -9,9 +9,9 @@ use Illuminate\Support\Str;
 
 class Game extends RedisORM
 {
-    private const STATUS_WAIT_FOR_PLAYERS = 1;
-    private const STATUS_STARTED = 2;
-    private const STATUS_END = 3;
+    public const STATUS_WAIT_FOR_PLAYERS = 1;
+    public const STATUS_STARTED = 2;
+    public const STATUS_FINISHED = 3;
 
     private string $id;
     private string $creatorId;
@@ -39,6 +39,11 @@ class Game extends RedisORM
         return $this->creatorId;
     }
 
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
+
     public function getConfig(): GameConfig
     {
         return $this->config;
@@ -54,7 +59,7 @@ class Game extends RedisORM
         if ($this->status == self::STATUS_STARTED) {
             throw new GameException('Game already started');
         }
-        if ($this->status == self::STATUS_END) {
+        if ($this->status == self::STATUS_FINISHED) {
             throw new GameException('Game was ended');
         }
         if ($this->players->count() < $this->config->getMinPlayersCount()) {
@@ -72,7 +77,7 @@ class Game extends RedisORM
 
     public function end(): void
     {
-        $this->status = self::STATUS_END;
+        $this->status = self::STATUS_FINISHED;
     }
 
     public function getDeal(): ?Deal

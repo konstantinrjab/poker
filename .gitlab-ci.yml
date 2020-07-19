@@ -21,7 +21,6 @@ prod_deploy:
       && docker exec poker_php php artisan route:cache
       && docker exec poker_php php artisan config:clear
       && docker exec poker_php php artisan view:cache
-      && docker exec poker_php php artisan migrate
       && docker exec poker_php php vendor/bin/phpunit
       && exit
       "

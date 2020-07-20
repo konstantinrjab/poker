@@ -14,7 +14,7 @@ prod_deploy:
     - ssh $SSH_USERNAME_PROD@$SSH_HOST_PROD "cd $BE_ROOT_PATH
       && git reset --hard HEAD && git checkout master
       && git pull origin master
-      && DOCKER_USER=$(id -u):$(id -g) docker-compose -f "docker/docker-compose.yml" up -d
+      && DOCKER_USER=1000:1000 docker-compose -f "docker/docker-compose.yml" up -d
       && exit
       "
   only:

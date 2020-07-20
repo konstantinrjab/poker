@@ -4,23 +4,24 @@ namespace App\Models;
 
 class GameConfig
 {
-    private const MIN_PLAYERS_COUNT = 3;
-
     private int $bigBlind;
     private int $smallBlind;
     private int $initialMoney;
     private int $maxPlayers;
+    private int $minPlayers;
 
     public function __construct(
         int $smallBlind,
         int $bigBlind,
         int $initialMoney,
+        int $minPlayers,
         int $maxPlayers
     )
     {
         $this->smallBlind = $smallBlind;
         $this->bigBlind = $bigBlind;
         $this->initialMoney = $initialMoney;
+        $this->minPlayers = $minPlayers;
         $this->maxPlayers = $maxPlayers;
     }
 
@@ -46,6 +47,6 @@ class GameConfig
 
     public function getMinPlayersCount(): int
     {
-        return self::MIN_PLAYERS_COUNT;
+        return $this->minPlayers;
     }
 }

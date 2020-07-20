@@ -35,6 +35,7 @@ class GameController extends Controller
             $request->input('smallBlind'),
             $request->input('bigBlind'),
             $request->input('initialMoney'),
+``            $request->input('minPlayers'),
             $request->input('maxPlayers')
         );
 

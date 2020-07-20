@@ -21,7 +21,6 @@ prod_deploy:
       && docker exec -u $(id -u ${USER}):$(id -g ${USER}) poker_php php artisan route:cache
       && docker exec -u $(id -u ${USER}):$(id -g ${USER}) poker_php php artisan config:clear
       && docker exec -u $(id -u ${USER}):$(id -g ${USER}) poker_php php artisan view:cache
-      && docker exec -u $(id -u ${USER}):$(id -g ${USER}) poker_php php vendor/bin/phpunit
       && exit
       "
   only:

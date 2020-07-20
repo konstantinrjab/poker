@@ -14,7 +14,14 @@ prod_deploy:
     - ssh $SSH_USERNAME_PROD@$SSH_HOST_PROD "cd $BE_ROOT_PATH
       && git reset --hard HEAD && git checkout master
       && git pull origin master
-      && DOCKER_USER=1000:1000 docker-compose -f "docker/docker-compose.yml" up -d
+      && docker run --rm --interactive --volume $BE_ROOT_PATH:/app composer install --ignore-platform-reqs --no-scripts
+      && docker-compose -f "docker/docker-compose.yml" pull
+      && DOCKER_USER=1000:1000 docker-compose -f "docker/docker-compose.yml" up -d --build
+      && docker exec -u 1000:1000 poker_php php artisan cache:clear
+      && docker exec -u 1000:1000 poker_php php artisan route:cache
+      && docker exec -u 1000:1000 poker_php php artisan config:clear
+      && docker exec -u 1000:1000 poker_php php artisan view:cache
+      && docker exec -u 1000:1000 poker_php php vendor/bin/phpunit
       && exit
       "
   only:

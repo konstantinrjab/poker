@@ -17,11 +17,11 @@ prod_deploy:
       && docker run --rm --interactive --volume $BE_ROOT_PATH:/app composer install --ignore-platform-reqs --no-scripts
       && docker-compose -f "docker/docker-compose.yml" pull
       && DOCKER_USER=$(id -u):$(id -g) docker-compose -f "docker/docker-compose.yml" up -d --build
-      && docker exec poker_php php artisan cache:clear
-      && docker exec poker_php php artisan route:cache
-      && docker exec poker_php php artisan config:clear
-      && docker exec poker_php php artisan view:cache
-      && docker exec poker_php php vendor/bin/phpunit
+      && docker exec -u $(id -u ${USER}):$(id -g ${USER}) poker_php php artisan cache:clear
+      && docker exec -u $(id -u ${USER}):$(id -g ${USER}) poker_php php artisan route:cache
+      && docker exec -u $(id -u ${USER}):$(id -g ${USER}) poker_php php artisan config:clear
+      && docker exec -u $(id -u ${USER}):$(id -g ${USER}) poker_php php artisan view:cache
+      && docker exec -u $(id -u ${USER}):$(id -g ${USER}) poker_php php vendor/bin/phpunit
       && exit
       "
   only:

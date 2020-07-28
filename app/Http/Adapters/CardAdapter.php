@@ -20,8 +20,11 @@ class CardAdapter
 
     private function getValue(Card $card): string
     {
-        if ($card->getValue() <= 10) {
+        if ($card->getValue() < 10) {
             return $card->getValue();
+        }
+        if ($card->getValue() == 10) {
+            return 'T';
         }
         if ($card->getValue() == 11) {
             return 'J';

@@ -22,12 +22,6 @@ class Round
         $this->players->setActivePlayer($this->players->getBigBlind()->getId());
         $this->players->setNextActivePlayer();
         $this->config = $config;
-
-        $bigBlindId = $this->players->getBigBlind()->getId();
-        $smallBlindId = $this->players->getSmallBlind()->getId();
-
-        $this->bet($smallBlindId, $config->getSmallBlind());
-        $this->bet($bigBlindId, $config->getBigBlind());
     }
 
     public function getPlayerBet(string $playerId): int
@@ -119,5 +113,14 @@ class Round
         }
 
         return $actions;
+    }
+
+    public function initBlinds(): void
+    {
+        $bigBlindId = $this->players->getBigBlind()->getId();
+        $smallBlindId = $this->players->getSmallBlind()->getId();
+
+        $this->bet($smallBlindId, $this->config->getSmallBlind());
+        $this->bet($bigBlindId, $this->config->getBigBlind());
     }
 }

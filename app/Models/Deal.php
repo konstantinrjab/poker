@@ -7,12 +7,12 @@ use App\Collections\Deck;
 
 class Deal
 {
-    private const STATUS_PREFLOP = 1;
-    private const STATUS_FLOP = 2;
-    private const STATUS_TURN = 3;
-    private const STATUS_RIVER = 4;
-    private const STATUS_END = 5;
-    private const TABLE_CARDS_COUNT = 5;
+    public const STATUS_PREFLOP = 1;
+    public const STATUS_FLOP = 2;
+    public const STATUS_TURN = 3;
+    public const STATUS_RIVER = 4;
+    public const STATUS_END = 5;
+    public const TABLE_CARDS_COUNT = 5;
 
     private Round $round;
     private Deck $deck;
@@ -30,6 +30,8 @@ class Deal
     {
         $this->config = $config;
         $this->round = new Round($playerCollection, $config);
+        $this->round->initBlinds();
+
         $deck = Deck::getFull();
         $this->players = $playerCollection;
         foreach ($this->players as $player) {

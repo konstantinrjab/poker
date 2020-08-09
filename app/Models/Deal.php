@@ -25,7 +25,7 @@ class Deal
     public function __construct(
         PlayerCollection $playerCollection,
         GameConfig $config,
-        bool $newGame
+        bool $isNewGame
     )
     {
         $this->config = $config;
@@ -39,10 +39,8 @@ class Deal
         }
         $this->deck = $deck->take(self::TABLE_CARDS_COUNT);
         $this->status = self::STATUS_PREFLOP;
-        if (!$newGame) {
-            $this->players->setNextBigBlind();
-            $this->players->setNextSmallBlind();
-            $this->players->setNextDealer();
+        if (!$isNewGame) {
+            $this->players->moveDealer();
         }
     }
 

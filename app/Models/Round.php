@@ -11,7 +11,7 @@ use App\Models\Actions\FoldAction;
 
 class Round
 {
-    private int $maxBet;
+    private int $maxBet = 0;
     private GameConfig $config;
     private PlayerCollection $players;
     private array $bets;
@@ -22,6 +22,15 @@ class Round
         $this->players->setActivePlayer($this->players->getBigBlind()->getId());
         $this->players->setNextActivePlayer();
         $this->config = $config;
+    }
+
+    public function initBlinds(): void
+    {
+        $bigBlindId = $this->players->getBigBlind()->getId();
+        $smallBlindId = $this->players->getSmallBlind()->getId();
+
+        $this->bet($smallBlindId, $this->config->getSmallBlind());
+        $this->bet($bigBlindId, $this->config->getBigBlind());
     }
 
     public function getPlayerBet(string $playerId): int
@@ -36,7 +45,7 @@ class Round
 
     public function bet(string $playerId, int $amount): void
     {
-        if (!isset($this->maxBet)) {
+        if (!$this->maxBet) {
             $this->maxBet = $amount;
         }
         $bigBlind = $this->config->getBigBlind();
@@ -89,9 +98,6 @@ class Round
      */
     public function getAvailableActions(Player $player): array
     {
-        if (!isset($this->maxBet)) {
-            return [];
-        }
         if ($player->getIsFolded()) {
             return [];
         }
@@ -113,14 +119,5 @@ class Round
         }
 
         return $actions;
-    }
-
-    public function initBlinds(): void
-    {
-        $bigBlindId = $this->players->getBigBlind()->getId();
-        $smallBlindId = $this->players->getSmallBlind()->getId();
-
-        $this->bet($smallBlindId, $this->config->getSmallBlind());
-        $this->bet($bigBlindId, $this->config->getBigBlind());
     }
 }

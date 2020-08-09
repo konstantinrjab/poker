@@ -89,18 +89,10 @@ class PlayerCollection extends Collection
         throw new GameException('Cannot resolve next active player');
     }
 
-    public function setNextBigBlind(): void
+    public function moveDealer(): void
     {
         $this->bigBlindId = $this->getNextAfterId($this->bigBlindId)->getId();
-    }
-
-    public function setNextSmallBlind(): void
-    {
         $this->smallBlindId = $this->getNextAfterId($this->smallBlindId)->getId();
-    }
-
-    public function setNextDealer(): void
-    {
         $this->dealerId = $this->getNextAfterId($this->dealerId)->getId();
     }
 

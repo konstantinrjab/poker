@@ -18,7 +18,7 @@ class FlowTest extends TestCase
         $this->start();
         $this->preFlop();
         $this->flop();
-//        $this->turn($gameId);
+        $this->turn();
 
         $content = $this->getGame();
     }
@@ -162,8 +162,9 @@ class FlowTest extends TestCase
     }
 
     /*
-     * player 5 - call
-     * player 1 - bet (big blind 10 + raise 40)
+     * player 4 - folded
+     * player 5 - check
+     * player 1 - bet 20
      * player 2 - call
      * player 5 - call
      */
@@ -180,62 +181,63 @@ class FlowTest extends TestCase
         $this->assertTrue($game['players'][5]['money'] == 490);
 
         $this->assertTrue($game['pot'] == 40);
+        // since player 4 folded -> player 5 is active
         $this->assertTrue($game['players'][5]['isActive']);
 
         foreach ($game['players'] as $playerNumber => $player) {
             $this->assertTrue($game['players'][$playerNumber]['bet'] == 0);
         }
 
-        // player should fold or call, check is not available
         $response = $this->put('/api/games/' . $this->gameId, [
-            'userId' => $this->playersIds[4],
+            'userId' => $this->playersIds[5],
             'action' => 'check'
         ]);
-        $this->assertTrue($response->getStatusCode() == 400);
-
-        $response = $this->put('/api/games/' . $this->gameId, [
-            'userId' => $this->playersIds[4],
-            'action' => 'call'
-        ]);
-        $game = $response->json()['data'];
-        $this->assertTrue($game['players'][4]['money'] == 480);
-        $this->assertTrue($game['pot'] == 65);
-
-        $response = $this->put('/api/games/' . $this->gameId, [
-            'userId' => $this->playersIds[0],
-            'action' => 'bet',
-            'value' => 50
-        ]);
-        $game = $response->json()['data'];
-        // bet 50 big bling 10 - max bet is now 40
-        $this->assertTrue($game['pot'] == 115);
-        $this->assertTrue($game['players'][0]['money'] == 440);
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['players'][5]['money'] == 490);
+        $this->assertTrue($game['pot'] == 40);
 
         $response = $this->put('/api/games/' . $this->gameId, [
             'userId' => $this->playersIds[1],
-            'action' => 'call'
+            'action' => 'bet',
+            'value' => 15
         ]);
-        $game = $response->json()['data'];
-        $this->assertTrue($game['pot'] == 150);
+        // min bet is (bigBlind * 2) = 20
+        $this->assertTrue($response->getStatusCode() == 400);
+
+        $response = $this->put('/api/games/' . $this->gameId, [
+            'userId' => $this->playersIds[1],
+            'action' => 'bet',
+            'value' => 20
+        ]);
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['pot'] == 60);
+        $this->assertTrue($game['players'][1]['money'] == 470);
 
         $response = $this->put('/api/games/' . $this->gameId, [
             'userId' => $this->playersIds[2],
             'action' => 'call'
         ]);
-        $game = $response->json()['data'];
-        $this->assertTrue($game['pot'] == 180);
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['pot'] == 80);
 
         $response = $this->put('/api/games/' . $this->gameId, [
-            'userId' => $this->playersIds[4],
+            'userId' => $this->playersIds[3],
             'action' => 'call'
         ]);
-        $game = $response->json()['data'];
-        $this->assertTrue($game['pot'] == 210);
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['pot'] == 100);
+
+        $response = $this->put('/api/games/' . $this->gameId, [
+            'userId' => $this->playersIds[5],
+            'action' => 'call'
+        ]);
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['pot'] == 120);
     }
 
     private function turn(): void
     {
-        $game = $this->get('/api/games/' . $this->gameId . '?userId=' . $this->playersIds[0])->json()['data'];
+        $game = $this->getGame();
         $this->assertTrue($game['deal']['status'] == Deal::STATUS_TURN);
         $this->assertCount(4, $game['communityCards']);
     }

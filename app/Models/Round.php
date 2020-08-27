@@ -48,16 +48,8 @@ class Round
         if (!$this->maxBet) {
             $this->maxBet = $amount;
         }
-        $bigBlind = $this->config->getBigBlind();
-        // case for raise without blind bet before
-        if (!$this->getPlayerBet($playerId) && $amount > $bigBlind) {
-            $raiseAmount = $amount - $bigBlind;
-        } else {
-            // case for big blind
-            $raiseAmount = $amount;
-        }
-        if ($raiseAmount > $this->maxBet) {
-            $this->maxBet = $raiseAmount;
+        if ($amount > $this->maxBet) {
+            $this->maxBet = $amount;
         }
         $this->bets[$playerId] = isset($this->bets[$playerId]) ? $this->bets[$playerId] + $amount : $amount;
         $this->players->getById($playerId)->pay($amount);

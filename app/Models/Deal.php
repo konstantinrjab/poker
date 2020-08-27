@@ -4,21 +4,22 @@ namespace App\Models;
 
 use App\Collections\PlayerCollection;
 use App\Collections\Deck;
+use App\Exceptions\GameException;
 
 class Deal
 {
-    public const STATUS_PREFLOP = 1;
-    public const STATUS_FLOP = 2;
-    public const STATUS_TURN = 3;
-    public const STATUS_RIVER = 4;
-    public const STATUS_END = 5;
+    public const STATUS_PREFLOP = 'preflop';
+    public const STATUS_FLOP = 'flop';
+    public const STATUS_TURN = 'turn';
+    public const STATUS_RIVER = 'river';
+    public const STATUS_END = 'end';
     public const TABLE_CARDS_COUNT = 5;
 
     private Round $round;
     private Deck $deck;
     private PlayerCollection $players;
     private ?PlayerCollection $winners;
-    private int $status;
+    private string $status;
     private int $pot;
     private GameConfig $config;
 
@@ -44,7 +45,7 @@ class Deal
         }
     }
 
-    public function getStatus(): int
+    public function getStatus(): string
     {
         return $this->status;
     }
@@ -64,6 +65,11 @@ class Deal
         return isset($this->winners) ? $this->winners : null;
     }
 
+    public function isNeedToShowCards(): bool
+    {
+        return $this->status != self::STATUS_END;
+    }
+
     public function showCards(): Deck
     {
         if ($this->status == self::STATUS_PREFLOP) {
@@ -74,6 +80,8 @@ class Deal
             $limit = 4;
         } else if ($this->status == self::STATUS_RIVER) {
             $limit = 5;
+        } else {
+            throw new GameException('Cannot show cards for deals status: ' . $this->status);
         }
         return $this->deck->take($limit);
     }
@@ -96,26 +104,29 @@ class Deal
     {
         $this->calculateWinners();
         $this->splitPot();
+        $this->status = self::STATUS_END;
     }
 
     private function calculateWinners(): void
     {
         foreach ($this->players as $player) {
-            $playerStrengthDeck = new HandStrength($player->getHand(), $this->deck);
-            $player->setStrength($playerStrengthDeck->getStrength());
+            if (!$player->getIsFolded()) {
+                $handStrength = new HandStrength($player->getHand(), $this->deck);
+                $player->setStrength($handStrength->getStrength());
+            }
         }
         $maxStrength = $this->players->max(function (Player $player): int {
-            return $player->getStrength();
+            return (int) $player->getStrength();
         });
-        $sameStrength = $this->players->filter(function (Player $player) use ($maxStrength): bool {
+        $equalStrength = $this->players->filter(function (Player $player) use ($maxStrength): bool {
             return $player->getStrength() == $maxStrength;
         });
-        if ($sameStrength->count() == 1) {
-            $this->winners = $sameStrength;
+        if ($equalStrength->count() == 1) {
+            $this->winners = $equalStrength;
             return;
         }
         // TODO: finish logic using players heightCards
-        $this->winners = $sameStrength;
+        $this->winners = $equalStrength;
     }
 
     private function splitPot(): void

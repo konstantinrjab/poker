@@ -58,7 +58,7 @@ class Player
 
     public function getStrength(): ?int
     {
-        return $this->strength;
+        return isset($this->strength) ? $this->strength : null;
     }
 
     public function setStrength(int $strength): void

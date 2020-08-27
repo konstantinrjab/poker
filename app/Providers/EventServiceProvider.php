@@ -31,10 +31,12 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        Event::listen(GameUpdated::NAME, function (Game $game) {
-            foreach ($game->getPlayers() as $player) {
-                GameUpdated::dispatch($game, $player->getId());
-            }
-        });
+        if (env('APP_ENV', 'local') != 'local') {
+            Event::listen(GameUpdated::NAME, function (Game $game) {
+                foreach ($game->getPlayers() as $player) {
+                    GameUpdated::dispatch($game, $player->getId());
+                }
+            });
+        }
     }
 }

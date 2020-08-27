@@ -23,7 +23,7 @@ class DealResource extends JsonResource
     {
         return [
             'status' => $this->getStatus(),
-            'winners' => $this->getWinners(),
+            'winners' => $this->getWinners() ? PlayerResource::collection($this->getWinners()) : null,
         ];
     }
 }

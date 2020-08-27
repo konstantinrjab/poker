@@ -3,12 +3,21 @@
 namespace Tests\Feature;
 
 use App\Models\Deal;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Tests\TestCase;
 
 class FlowTest extends TestCase
 {
     private array $playersIds = [];
     private string $gameId;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutMiddleware(
+            ThrottleRequests::class
+        );
+    }
 
     public function testFlow()
     {
@@ -295,6 +304,15 @@ class FlowTest extends TestCase
         $this->assertTrue($game['players'][3]['money'] == 430);
     }
 
+    /*
+     * player 4 - folded
+     * player 5 - check
+     * player 1 - folded
+     * player 2 - bet 40
+     * player 3 - bet 60
+     * player 5 - fold
+     * player 2 - call
+     */
     private function river(): void
     {
         $game = $this->getGame();
@@ -306,5 +324,53 @@ class FlowTest extends TestCase
         $this->assertTrue($game['players'][4]['money'] == 500);
         $this->assertTrue($game['players'][5]['money'] == 430);
         $this->assertTrue($game['pot'] == 240);
+
+        $response = $this->put('/api/games/' . $this->gameId, [
+            'userId' => $this->playersIds[5],
+            'action' => 'check'
+        ]);
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['players'][5]['money'] == 430);
+        $this->assertTrue($game['pot'] == 240);
+
+        $response = $this->put('/api/games/' . $this->gameId, [
+            'userId' => $this->playersIds[2],
+            'action' => 'bet',
+            'value' => 40
+        ]);
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['pot'] == 280);
+        $this->assertTrue($game['players'][2]['money'] == 390);
+
+        $response = $this->put('/api/games/' . $this->gameId, [
+            'userId' => $this->playersIds[3],
+            'action' => 'bet',
+            'value' => 60
+        ]);
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['pot'] == 340);
+        $this->assertTrue($game['players'][3]['money'] == 370);
+
+        $response = $this->put('/api/games/' . $this->gameId, [
+            'userId' => $this->playersIds[5],
+            'action' => 'fold'
+        ]);
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['players'][5]['isFolded'] == true);
+        $this->assertTrue($game['players'][5]['money'] == 430);
+        $this->assertTrue($game['players'][5]['bet'] == 0);
+
+        $response = $this->put('/api/games/' . $this->gameId, [
+            'userId' => $this->playersIds[2],
+            'action' => 'call'
+        ]);
+        // game ends
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['deal']['status'] == Deal::STATUS_END);
+        $this->assertNotEmpty($game['deal']['winners']);
+
+//        $this->assertTrue($game['pot'] == 360);
+//        $this->assertTrue($game['players'][2]['money'] == 370);
+//        $this->assertTrue($game['players'][2]['bet'] == 60);
     }
 }

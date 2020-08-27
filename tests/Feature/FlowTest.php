@@ -364,13 +364,20 @@ class FlowTest extends TestCase
             'userId' => $this->playersIds[2],
             'action' => 'call'
         ]);
-        // game ends
+
+        // game ends. this values would be if it continues
+        // $this->assertTrue($game['pot'] == 360);
+        // $this->assertTrue($game['players'][2]['money'] == 370);
+        // $this->assertTrue($game['players'][2]['bet'] == 60);
+
         $game = $this->getGameFromResponse($response);
         $this->assertTrue($game['deal']['status'] == Deal::STATUS_END);
         $this->assertNotEmpty($game['deal']['winners']);
 
-//        $this->assertTrue($game['pot'] == 360);
-//        $this->assertTrue($game['players'][2]['money'] == 370);
-//        $this->assertTrue($game['players'][2]['bet'] == 60);
+        $totalMoney = 0;
+        foreach ($game['players'] as $player) {
+            $totalMoney += $player['money'];
+        }
+        $this->assertTrue($totalMoney == 5 * 500);
     }
 }

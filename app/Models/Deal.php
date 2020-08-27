@@ -131,7 +131,7 @@ class Deal
 
     private function splitPot(): void
     {
-        $amount = $this->pot / $this->winners->count();
+        $amount = $this->getPot() / $this->winners->count();
         foreach ($this->winners as $winner) {
             $winner->earn($amount);
         }

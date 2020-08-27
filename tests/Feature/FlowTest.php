@@ -19,6 +19,7 @@ class FlowTest extends TestCase
         $this->preFlop();
         $this->flop();
         $this->turn();
+        $this->river();
 
         $content = $this->getGame();
     }
@@ -153,6 +154,8 @@ class FlowTest extends TestCase
             'userId' => $this->playersIds[2],
             'action' => 'call'
         ]);
+        // TODO: player3 is BB. he can raise his bet
+
         // round ends
         $game = $this->getGameFromResponse($response);
         $this->assertTrue($game['players'][2]['money'] == 490);
@@ -166,6 +169,7 @@ class FlowTest extends TestCase
      * player 5 - check
      * player 1 - bet 20
      * player 2 - call
+     * player 3 - call
      * player 5 - call
      */
     private function flop(): void
@@ -173,7 +177,6 @@ class FlowTest extends TestCase
         $game = $this->getGame();
         $this->assertTrue($game['deal']['status'] == Deal::STATUS_FLOP);
         $this->assertCount(3, $game['communityCards']);
-        // big and small blind auto bets
         $this->assertTrue($game['players'][1]['money'] == 490);
         $this->assertTrue($game['players'][2]['money'] == 490);
         $this->assertTrue($game['players'][3]['money'] == 490);
@@ -226,6 +229,7 @@ class FlowTest extends TestCase
         ]);
         $game = $this->getGameFromResponse($response);
         $this->assertTrue($game['pot'] == 100);
+        $this->assertTrue($game['players'][1]['money'] == 470);
 
         $response = $this->put('/api/games/' . $this->gameId, [
             'userId' => $this->playersIds[5],
@@ -233,12 +237,74 @@ class FlowTest extends TestCase
         ]);
         $game = $this->getGameFromResponse($response);
         $this->assertTrue($game['pot'] == 120);
+        $this->assertTrue($game['players'][1]['money'] == 470);
     }
 
+    /*
+     * player 4 - folded
+     * player 5 - bet 40
+     * player 1 - fold
+     * player 2 - call
+     * player 3 - call
+     */
     private function turn(): void
     {
         $game = $this->getGame();
         $this->assertTrue($game['deal']['status'] == Deal::STATUS_TURN);
         $this->assertCount(4, $game['communityCards']);
+        $this->assertTrue($game['players'][1]['money'] == 470);
+        $this->assertTrue($game['players'][2]['money'] == 470);
+        $this->assertTrue($game['players'][3]['money'] == 470);
+        $this->assertTrue($game['players'][4]['money'] == 500);
+        $this->assertTrue($game['players'][5]['money'] == 470);
+        $this->assertTrue($game['pot'] == 120);
+
+        $this->assertTrue($game['players'][5]['isActive']);
+        $response = $this->put('/api/games/' . $this->gameId, [
+            'userId' => $this->playersIds[5],
+            'action' => 'bet',
+            'value' => 40
+        ]);
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['pot'] == 160);
+        $this->assertTrue($game['players'][5]['money'] == 430);
+
+        $response = $this->put('/api/games/' . $this->gameId, [
+            'userId' => $this->playersIds[1],
+            'action' => 'fold'
+        ]);
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['players'][1]['isFolded'] == true);
+        $this->assertTrue($game['players'][1]['money'] == 470);
+        $this->assertTrue($game['players'][1]['bet'] == 0);
+
+        $response = $this->put('/api/games/' . $this->gameId, [
+            'userId' => $this->playersIds[2],
+            'action' => 'call'
+        ]);
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['pot'] == 200);
+        $this->assertTrue($game['players'][2]['money'] == 430);
+
+        $response = $this->put('/api/games/' . $this->gameId, [
+            'userId' => $this->playersIds[3],
+            'action' => 'call'
+        ]);
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['pot'] == 240);
+        $this->assertTrue($game['players'][3]['money'] == 430);
+    }
+
+    private function river(): void
+    {
+        $game = $this->getGame();
+        $this->assertTrue($game['deal']['status'] == Deal::STATUS_RIVER);
+        $this->assertCount(5, $game['communityCards']);
+        $this->assertTrue($game['players'][1]['money'] == 470);
+        $this->assertTrue($game['players'][2]['money'] == 430);
+        $this->assertTrue($game['players'][3]['money'] == 430);
+        $this->assertTrue($game['players'][4]['money'] == 500);
+        $this->assertTrue($game['players'][5]['money'] == 430);
+        $this->assertTrue($game['pot'] == 240);
     }
 }

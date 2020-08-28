@@ -73,7 +73,6 @@ class GameController extends Controller
         }
 
         $this->configureApp($game, $request->input('userId'));
-        Event::dispatch(GameUpdated::NAME, $game);
 
         return GameResource::make($game);
     }

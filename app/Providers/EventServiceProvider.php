@@ -31,7 +31,7 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        if (env('APP_ENV', 'local') != 'local') {
+        if (env('SOCKETS_ENABLED', true)) {
             Event::listen(GameUpdated::NAME, function (Game $game) {
                 foreach ($game->getPlayers() as $player) {
                     GameUpdated::dispatch($game, $player->getId());

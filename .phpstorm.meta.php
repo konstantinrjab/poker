@@ -9,7 +9,6 @@ namespace PHPSTORM_META {
     override(ContainerInterface::get(),
         map([
             'game.instance' => Game::class,
-            'game.userId' => '',
         ])
     );
 }

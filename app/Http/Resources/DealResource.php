@@ -13,6 +13,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class DealResource extends JsonResource
 {
+    private string $userId;
+
+    public function __construct($resource, string $userId)
+    {
+        $this->userId = $userId;
+        parent::__construct($resource);
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -23,7 +31,7 @@ class DealResource extends JsonResource
     {
         return [
             'status' => $this->getStatus(),
-            'winners' => $this->getWinners() ? PlayerResource::collection($this->getWinners()) : null,
+            'winners' => $this->getWinners() ? PlayerResource::idCollection($this->getWinners(), $this->userId) : null,
         ];
     }
 }

@@ -15,6 +15,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class GameResource extends JsonResource
 {
+    private string $userId;
+
+    public function __construct($resource, string $userId)
+    {
+        $this->userId = $userId;
+        parent::__construct($resource);
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -36,8 +44,8 @@ class GameResource extends JsonResource
             'status' => $this->getStatus(),
             'communityCards' => $this->getDeal() && $this->getDeal()->isNeedToShowCards() ? CardAdapter::handle($this->getDeal()->showCards()) : null,
             'pot' => $this->getDeal() ? $this->getDeal()->getPot() : null,
-            'players' => PlayerResource::collection($this->getPlayers()),
-            'deal' => $this->getDeal() ? DealResource::make($this->getDeal()) : null,
+            'players' => PlayerResource::idCollection($this->getPlayers(), $this->userId),
+            'deal' => $this->getDeal() ? DealResource::make($this->getDeal(), $this->userId) : null,
         ];
     }
 

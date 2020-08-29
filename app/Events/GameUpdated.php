@@ -39,6 +39,6 @@ class GameUpdated implements ShouldBroadcast
 
     public function broadcastWith()
     {
-        return GameResource::make($this->game)->resolve();
+        return GameResource::make($this->game, $this->userId)->resolve();
     }
 }

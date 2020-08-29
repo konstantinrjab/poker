@@ -51,7 +51,7 @@ class GameController extends Controller
 
         $this->configureApp($game, $player->getId());
 
-        return GameResource::make($game);
+        return GameResource::make($game, $user->getId());
     }
 
     /**
@@ -64,9 +64,9 @@ class GameController extends Controller
     public function show(string $id, ShowGameRequest $request)
     {
         $game = Game::get($id);
-        $playerId = $request->input('userId');
-        $exists = $game->getPlayers()->first(function (Player $player) use ($playerId) {
-            return $player->getId() == $playerId;
+        $userId = $request->input('userId');
+        $exists = $game->getPlayers()->first(function (Player $player) use ($userId) {
+            return $player->getId() == $userId;
         });
         if (!$exists) {
             throw new NotFoundHttpException();
@@ -74,7 +74,7 @@ class GameController extends Controller
 
         $this->configureApp($game, $request->input('userId'));
 
-        return GameResource::make($game);
+        return GameResource::make($game, $userId);
     }
 
     /**
@@ -94,7 +94,7 @@ class GameController extends Controller
 
         if ($alreadyJoined) {
             $this->configureApp($game, $userId);
-            return GameResource::make($game);
+            return GameResource::make($game, $userId);
         }
 
         if ($game->getPlayers()->count() >= $game->getConfig()->getMaxPlayersCount()) {
@@ -113,21 +113,22 @@ class GameController extends Controller
         $this->configureApp($game, $player->getId());
         Event::dispatch(GameUpdated::NAME, $game);
 
-        return GameResource::make($game);
+        return GameResource::make($game, $userId);
     }
 
     public function ready(string $id, ReadyRequest $request)
     {
         $game = Game::get($id);
+        $userId = $request->input('userId');
         $game->getPlayers()
-            ->getById($request->input('userId'))
+            ->getById($userId)
             ->setIsReady($request->input('value'));
         $game->save();
 
         $this->configureApp($game, $request->input('userId'));
         Event::dispatch(GameUpdated::NAME, $game);
 
-        return GameResource::make($game);
+        return GameResource::make($game, $userId);
     }
 
     /**
@@ -139,15 +140,16 @@ class GameController extends Controller
     public function start(string $id, StartGameRequest $request)
     {
         $game = Game::get($id);
-        if ($game->getCreatorId() != $request->input('userId')) {
+        $userId = $request->input('userId');
+        if ($game->getCreatorId() != $userId) {
             throw new AccessDeniedHttpException('Only creator of the game can start game');
         }
         $game->start();
 
-        $this->configureApp($game, $request->input('userId'));
+        $this->configureApp($game, $userId);
         Event::dispatch(GameUpdated::NAME, $game);
 
-        return GameResource::make($game);
+        return GameResource::make($game, $userId);
     }
 
     /**
@@ -160,7 +162,8 @@ class GameController extends Controller
     {
         $game = Game::get($id);
         // TODO: add timeout logic
-        if ($game->getPlayers()->getActivePlayer()->getId() != $request->input('userId')) {
+        $userId = $request->input('userId');
+        if ($game->getPlayers()->getActivePlayer()->getId() != $userId) {
             throw new GameException('It is not you turn');
         }
         $action = ActionFactory::get($request, $game);
@@ -170,16 +173,15 @@ class GameController extends Controller
 
         $game->save();
 
-        $this->configureApp($game, $request->input('userId'));
+        $this->configureApp($game, $userId);
         Event::dispatch(GameUpdated::NAME, $game);
 
-        return GameResource::make($game);
+        return GameResource::make($game, $userId);
     }
 
     // TODO: move it to service provider if possible
     private function configureApp(Game $game, string $userId)
     {
         app()->instance('game.instance', $game);
-        app()->instance('game.userId', $userId);
     }
 }

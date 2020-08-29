@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Collections\PlayerResourceCollection;
 use App\Models\Actions\BetAction;
 use Facades\App\Http\Adapters\CardAdapter;
 use App\Models\Game;
@@ -16,6 +17,23 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class PlayerResource extends JsonResource
 {
+    private string $userId;
+
+    public function setUserId(string $userId)
+    {
+        $this->userId = $userId;
+        return $this;
+    }
+
+    public static function idCollection($resource, $userId): PlayerResourceCollection
+    {
+        return tap(new PlayerResourceCollection($resource, static::class, $userId), function ($collection) use ($userId) {
+            if (property_exists(static::class, 'preserveKeys')) {
+                $collection->preserveKeys = (new static([], $userId))->preserveKeys === true;
+            }
+        });
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -25,10 +43,9 @@ class PlayerResource extends JsonResource
     public function toArray($request)
     {
         $game = $this->getGame();
-        $userId = $this->getUserId();
 
         return [
-            'id' => $this->when($this->getId() == app('game.userId'), $this->getId()),
+            'id' => $this->when($this->getId() == $this->userId, $this->getId()),
             'name' => $this->getName(),
             'money' => $this->getMoney(),
             'bet' => $game->getDeal() ? $game->getDeal()->getRound()->getPlayerBet($this->getId()) : null,
@@ -39,7 +56,7 @@ class PlayerResource extends JsonResource
             'isBigBlind' => $this->isBigBlind(),
             'isSmallBlind' => $this->isSmallBlind(),
             'isActive' => $this->isActive(),
-            'holeCards' => $this->getId() == $userId && $this->getHand() ? CardAdapter::handle($this->getHand()) : [],
+            'holeCards' => $this->getId() == $this->userId && $this->getHand() ? CardAdapter::handle($this->getHand()) : [],
             'availableActions' => $this->getAvailableActions(),
         ];
     }
@@ -84,9 +101,10 @@ class PlayerResource extends JsonResource
 
         $result = [];
         foreach ($actions as $action) {
+            $arrayActon = [];
             $arrayActon['type'] = $action::getName();
-            if ($actions instanceof BetAction) {
-                $arrayActon['options'] = [
+            if ($action instanceof BetAction) {
+                $arrayActon += [
                     'min' => $game->getConfig()->getBigBlind(),
                     'max' => $this->resource->getMoney()
                 ];
@@ -100,10 +118,5 @@ class PlayerResource extends JsonResource
     private function getGame(): Game
     {
         return app()->get('game.instance');
-    }
-
-    private function getUserId(): string
-    {
-        return app()->get('game.userId');
     }
 }

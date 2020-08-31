@@ -107,7 +107,8 @@ class Round
         }
         $actions[] = new FoldAction();
 
-        if ($this->getPlayerBet($player->getId()) == $this->maxBet) {
+        $betEqualsMaxBet = $this->getPlayerBet($player->getId()) == $this->maxBet;
+        if ($betEqualsMaxBet) {
             $actions[] = new CheckAction();
         }
 
@@ -118,7 +119,7 @@ class Round
             $actions[] = new BetAction();
         }
 
-        if ($player->getMoney() >= $amountToCall) {
+        if (!$betEqualsMaxBet && $player->getMoney() >= $amountToCall) {
             $actions[] = new CallAction();
         }
 

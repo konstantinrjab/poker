@@ -26,6 +26,9 @@ abstract class FlowTest extends TestCase
         $response = $this->post('/api/register', [
             'name' => 'creatorName',
         ]);
+        if (!isset($response->json()['data']['id'])) {
+            throw new Exception('Invalid game state: ' . var_export($response->json()['data'], true));
+        }
         $response = $this->post('/api/games', [
             'userId' => $response->json()['data']['id'],
             'minPlayers' => 2,
@@ -34,6 +37,9 @@ abstract class FlowTest extends TestCase
             'smallBlind' => 5,
             'initialMoney' => 500,
         ]);
+        if (!isset($response->json()['data']['id'])) {
+            throw new Exception('Invalid game state: ' . var_export($response->json()['data'], true));
+        }
         $this->gameId = $response->json()['data']['id'];
         $this->assertIsString($this->gameId);
         $this->playersIds[1] = $response->json()['data']['players'][0]['id'];

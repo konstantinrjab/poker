@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models\Actions\Abstracts;
+namespace App\Entities\Actions;
 
 use App\Http\Requests\UpdateGameRequest;
-use App\Models\Game;
+use App\Entities\Game;
 
 abstract class Action
 {

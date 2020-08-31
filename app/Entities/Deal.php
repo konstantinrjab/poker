@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Entities;
 
-use App\Collections\PlayerCollection;
-use App\Collections\Deck;
+use App\Entities\Collections\PlayerCollection;
+use App\Entities\Collections\Deck;
 use App\Exceptions\GameException;
 
 class Deal

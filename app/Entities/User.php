@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Entities;
 
-use App\Database\RedisORM;
+use App\Entities\Database\RedisORM;
 use Illuminate\Support\Str;
 
 class User extends RedisORM

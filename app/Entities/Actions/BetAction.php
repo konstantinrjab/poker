@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models\Actions;
+namespace App\Entities\Actions;
 
 use App\Exceptions\GameException;
 use App\Http\Requests\UpdateGameRequest;
-use App\Models\Actions\Abstracts\Action;
-use App\Models\Game;
+use App\Entities\Actions\Action;
+use App\Entities\Game;
 
 class BetAction extends Action
 {

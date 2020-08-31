@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Entities;
 
-use App\Collections\Deck;
+use App\Entities\Collections\Deck;
 
 class HandStrength
 {

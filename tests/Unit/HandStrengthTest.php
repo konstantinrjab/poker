@@ -2,10 +2,10 @@
 
 namespace Tests\Unit;
 
-use App\Collections\Deck;
-use App\Models\Card;
-use App\Models\Hand;
-use App\Models\HandStrength;
+use App\Entities\Collections\Deck;
+use App\Entities\Card;
+use App\Entities\Hand;
+use App\Entities\HandStrength;
 use PHPUnit\Framework\TestCase;
 
 class HandStrengthTest extends TestCase

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Deal;
+use App\Entities\Deal;
 
 class AllFoldPlayerTest extends FlowTest
 {

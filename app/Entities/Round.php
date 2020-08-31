@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Entities;
 
-use App\Collections\PlayerCollection;
-use App\Models\Actions\Abstracts\Action;
-use App\Models\Actions\BetAction;
-use App\Models\Actions\CallAction;
-use App\Models\Actions\CheckAction;
-use App\Models\Actions\FoldAction;
+use App\Entities\Collections\PlayerCollection;
+use App\Entities\Actions\Action;
+use App\Entities\Actions\BetAction;
+use App\Entities\Actions\CallAction;
+use App\Entities\Actions\CheckAction;
+use App\Entities\Actions\FoldAction;
 
 class Round
 {

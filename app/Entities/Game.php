@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Entities;
 
-use App\Collections\PlayerCollection;
-use App\Database\RedisORM;
+use App\Entities\Collections\PlayerCollection;
+use App\Entities\Database\RedisORM;
 use App\Exceptions\GameException;
 use Illuminate\Support\Str;
 

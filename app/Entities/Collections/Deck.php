@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Collections;
+namespace App\Entities\Collections;
 
-use App\Models\Card;
-use App\Models\Hand;
+use App\Entities\Card;
+use App\Entities\Hand;
 use Illuminate\Support\Collection;
 
 class Deck extends Collection

@@ -2,7 +2,7 @@
 
 namespace PHPSTORM_META {
 
-    use App\Models\Game;
+    use App\Entities\Game;
     use phpDocumentor\Reflection\Types\Integer;
     use Psr\Container\ContainerInterface;
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Collections;
+namespace App\Entities\Collections;
 
 use App\Exceptions\GameException;
-use App\Models\Player;
+use App\Entities\Player;
 use Illuminate\Support\Collection;
 
 /**

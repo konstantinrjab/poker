@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Actions\BetAction;
-use App\Models\Actions\Factories\ActionFactory;
+use App\Entities\Actions\BetAction;
+use App\Entities\Actions\ActionFactory;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateGameRequest extends FormRequest

@@ -3,10 +3,10 @@
 namespace App\Http\Resources;
 
 use App\Http\Resources\Collections\PlayerResourceCollection;
-use App\Models\Actions\BetAction;
+use App\Entities\Actions\BetAction;
 use Facades\App\Http\Adapters\CardAdapter;
-use App\Models\Game;
-use App\Models\Player;
+use App\Entities\Game;
+use App\Entities\Player;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**

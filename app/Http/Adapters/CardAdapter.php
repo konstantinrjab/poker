@@ -2,7 +2,7 @@
 
 namespace App\Http\Adapters;
 
-use App\Models\Card;
+use App\Entities\Card;
 use Illuminate\Support\Collection;
 use Exception;
 

@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use Facades\App\Http\Adapters\CardAdapter;
-use App\Models\Game;
+use App\Entities\Game;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**

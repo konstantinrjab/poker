@@ -88,23 +88,29 @@ class Deal
 
     public function onAfterUpdate(): void
     {
-        if ($this->round->shouldEnd() && $this->status == self::STATUS_RIVER) {
+        $lastTurnReached = $this->round->shouldEnd() && $this->status == self::STATUS_RIVER;
+
+        if ($lastTurnReached || $this->round->isOnlyOnePlayerNotFolded()) {
             $this->end();
-            return;
         } else if ($this->round->shouldEnd() && $this->status != self::STATUS_RIVER) {
-            $this->pot = isset($this->pot) ? $this->pot + $this->round->getPot() : $this->round->getPot();
-            $this->round = new Round($this->players, $this->config);
-            $this->updateStatus();
-            return;
+            $this->startNextRound();
+        } else {
+            $this->players->setNextActivePlayer();
         }
-        $this->players->setNextActivePlayer();
     }
 
     private function end(): void
     {
         $this->calculateWinners();
         $this->splitPot();
-        $this->status = self::STATUS_END;
+        $this->updateStatus();
+    }
+
+    private function startNextRound(): void
+    {
+        $this->pot = isset($this->pot) ? $this->pot + $this->round->getPot() : $this->round->getPot();
+        $this->round = new Round($this->players, $this->config);
+        $this->updateStatus();
     }
 
     private function calculateWinners(): void

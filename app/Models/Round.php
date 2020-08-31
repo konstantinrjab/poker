@@ -84,6 +84,18 @@ class Round
         return true;
     }
 
+    public function isOnlyOnePlayerNotFolded(): bool
+    {
+        $notFoldedCount = 0;
+        foreach ($this->players as $player) {
+            if (!$player->getIsFolded()) {
+                $notFoldedCount++;
+            }
+        }
+
+        return $notFoldedCount === 1;
+    }
+
     /**
      * @param Player $player
      * @return Action[]

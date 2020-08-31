@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Tests\TestCase;
+use Exception;
 
 abstract class FlowTest extends TestCase
 {
@@ -52,6 +53,9 @@ abstract class FlowTest extends TestCase
 
     protected function setPlayersOffset(array $game): array
     {
+        if (!isset($game['players'])) {
+            throw new Exception('Invalid game state: ' . var_export($game, true));
+        }
         $players = array_combine(
             array_map(function ($key) {
                 return ++$key;

@@ -16,10 +16,15 @@ class Round
     private PlayerCollection $players;
     private array $bets;
 
-    public function __construct(PlayerCollection $players, GameConfig $config)
+    public function __construct(PlayerCollection $players, GameConfig $config, bool $isPreFlop)
     {
         $this->players = $players;
-        $this->players->setActivePlayer($this->players->getBigBlind()->getId());
+        if ($isPreFlop) {
+            $playerId = $this->players->getBigBlind()->getId();
+        } else {
+            $playerId = $this->players->getDealer()->getId();
+        }
+        $this->players->setActivePlayer($playerId);
         $this->players->setNextActivePlayer();
         $this->config = $config;
     }

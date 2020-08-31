@@ -74,12 +74,12 @@ class AllFoldPlayerTest extends FlowTest
     }
 
     /*
+     * player 1 - folded
      * player 4 - folded
      * player 5 - folded
-     * player 1 - folded
+     *
      * player 2 - fold
      * player 3 - do nothing, winner
-     * player 5 - folded
      */
     private function flop(): void
     {

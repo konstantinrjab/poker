@@ -30,7 +30,7 @@ class Deal
     )
     {
         $this->config = $config;
-        $this->round = new Round($playerCollection, $config);
+        $this->round = new Round($playerCollection, $config, true);
         $this->round->initBlinds();
 
         $deck = Deck::getFull();
@@ -109,7 +109,7 @@ class Deal
     private function startNextRound(): void
     {
         $this->pot = isset($this->pot) ? $this->pot + $this->round->getPot() : $this->round->getPot();
-        $this->round = new Round($this->players, $this->config);
+        $this->round = new Round($this->players, $this->config, false);
         $this->updateStatus();
     }
 

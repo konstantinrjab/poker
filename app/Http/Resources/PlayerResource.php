@@ -29,7 +29,7 @@ class PlayerResource extends JsonResource
     {
         return tap(new PlayerResourceCollection($resource, static::class, $userId), function ($collection) use ($userId) {
             if (property_exists(static::class, 'preserveKeys')) {
-                $collection->preserveKeys = (new static([], $userId))->preserveKeys === true;
+                $collection->preserveKeys = (new static([]))->preserveKeys === true;
             }
         });
     }

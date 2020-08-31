@@ -4,6 +4,8 @@ namespace App\Exceptions;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Mail\Message;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
@@ -16,7 +18,7 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        GameException::class,
     ];
 
     /**
@@ -32,21 +34,49 @@ class Handler extends ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * @param  \Throwable  $exception
+     * @param \Throwable $exception
      * @return void
      *
      * @throws \Exception
      */
     public function report(Throwable $exception)
     {
+        if (!env('APP_ENV' != 'local') && $this->shouldReport($exception)) {
+            $url = '-';
+            if (isset($_SERVER['HTTP_HOST']) && isset($_SERVER['REQUEST_URI'])) {
+                $url = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            }
+
+            $data = [
+                'data' => [
+                    'Message' => $exception->getMessage(),
+                    'File' => $exception->getFile(),
+                    'Line' => $exception->getLine(),
+                    'Code' => $exception->getCode(),
+                    'Previous' => $exception->getPrevious(),
+                    'DateTime' => date('Y-m-d H:i:s'),
+                    'Url' => $url,
+                    'Trace' => $exception->getTraceAsString(),
+                ]
+            ];
+
+            $emails = explode(',', env('EXCEPTION_EMAILS'));
+
+            foreach ($emails as $email) {
+                Mail::send('emails.exception', $data, function (Message $message) use ($email) {
+                    $message->to($email, env('MAIL_FROM_ADDRESS'))->subject('Exception on ' . env('APP_NAME'));
+                });
+            }
+        }
+
         parent::report($exception);
     }
 
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Throwable  $exception
+     * @param \Illuminate\Http\Request $request
+     * @param \Throwable $exception
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws \Throwable

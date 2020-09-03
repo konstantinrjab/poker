@@ -57,17 +57,17 @@ class RaiseTest extends FlowTest
         $response = $this->put('/api/games/' . $this->gameId, [
             'userId' => $this->playersIds[5],
             'action' => 'bet',
-            'value' => 15
+            'value' => 20
         ]);
         $this->assertTrue($response->getStatusCode() == 400);
 
         $response = $this->put('/api/games/' . $this->gameId, [
             'userId' => $this->playersIds[5],
             'action' => 'bet',
-            'value' => 20
+            'value' => 30
         ]);
         $game = $this->getGameFromResponse($response);
-        $this->assertTrue($game['players'][5]['money'] == 480);
-        $this->assertTrue($game['pot'] == 55);
+        $this->assertTrue($game['players'][5]['money'] == 470);
+        $this->assertTrue($game['pot'] == 65);
     }
 }

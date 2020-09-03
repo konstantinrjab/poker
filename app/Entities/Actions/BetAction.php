@@ -18,7 +18,7 @@ class BetAction extends Action
         $bigBlindAmount = $game->getConfig()->getBigBlind();
         $minRaise = $bigBlindAmount * 2;
         $maxBet = $game->getDeal()->getRound()->getMaxBet();
-        if ($minRaise < $maxBet) {
+        if ($minRaise <= $maxBet) {
             $minRaise = $maxBet + $bigBlindAmount;
         }
 

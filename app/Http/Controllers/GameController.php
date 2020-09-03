@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\GameUpdated;
 use App\Exceptions\GameException;
 use App\Http\Requests\CreateGameRequest;
 use App\Http\Requests\JoinGameRequest;
@@ -18,7 +17,6 @@ use App\Entities\Player;
 use App\Entities\User;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Event;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class GameController extends Controller
@@ -49,8 +47,6 @@ class GameController extends Controller
         $game->getPlayers()->add($player);
         $game->save();
 
-        $this->configureApp($game, $player->getId());
-
         return GameResource::make($game, $user->getId());
     }
 
@@ -72,8 +68,6 @@ class GameController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $this->configureApp($game, $request->input('userId'));
-
         return GameResource::make($game, $userId);
     }
 
@@ -93,7 +87,6 @@ class GameController extends Controller
         });
 
         if ($alreadyJoined) {
-            $this->configureApp($game, $userId);
             return GameResource::make($game, $userId);
         }
 
@@ -110,9 +103,6 @@ class GameController extends Controller
         $game->getPlayers()->add($player);
         $game->save();
 
-        $this->configureApp($game, $player->getId());
-        Event::dispatch(GameUpdated::NAME, $game);
-
         return GameResource::make($game, $userId);
     }
 
@@ -120,13 +110,13 @@ class GameController extends Controller
     {
         $game = Game::get($id);
         $userId = $request->input('userId');
-        $game->getPlayers()
-            ->getById($userId)
-            ->setIsReady($request->input('value'));
-        $game->save();
+        $player = $game->getPlayers()->getById($userId);
+        if ($player->getIsFolded()) {
+            throw new GameException('Folded player cannot change ready status');
+        }
 
-        $this->configureApp($game, $request->input('userId'));
-        Event::dispatch(GameUpdated::NAME, $game);
+        $player->setIsReady($request->input('value'));
+        $game->save();
 
         return GameResource::make($game, $userId);
     }
@@ -145,9 +135,7 @@ class GameController extends Controller
             throw new AccessDeniedHttpException('Only creator of the game can start game');
         }
         $game->start();
-
-        $this->configureApp($game, $userId);
-        Event::dispatch(GameUpdated::NAME, $game);
+        $game->save();
 
         return GameResource::make($game, $userId);
     }
@@ -170,18 +158,8 @@ class GameController extends Controller
         $action->updateGame($game, $request);
 
         $game->getDeal()->onAfterUpdate();
-
         $game->save();
 
-        $this->configureApp($game, $userId);
-        Event::dispatch(GameUpdated::NAME, $game);
-
         return GameResource::make($game, $userId);
-    }
-
-    // TODO: move it to service provider if possible
-    private function configureApp(Game $game, string $userId)
-    {
-        app()->instance('game.instance', $game);
     }
 }

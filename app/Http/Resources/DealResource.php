@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Entities\Deal;
+use App\Entities\Game;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -14,10 +15,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class DealResource extends JsonResource
 {
     private string $userId;
+    private Game $game;
 
-    public function __construct($resource, string $userId)
+    public function __construct($resource, string $userId, Game $game)
     {
         $this->userId = $userId;
+        $this->game = $game;
         parent::__construct($resource);
     }
 
@@ -31,7 +34,7 @@ class DealResource extends JsonResource
     {
         return [
             'status' => $this->getStatus(),
-            'winners' => $this->getWinners() ? PlayerResource::idCollection($this->getWinners(), $this->userId) : null,
+            'winners' => $this->getWinners() ? PlayerResource::idCollection($this->getWinners(), $this->userId, $this->game) : null,
         ];
     }
 }

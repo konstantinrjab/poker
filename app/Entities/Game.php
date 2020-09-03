@@ -4,8 +4,10 @@ namespace App\Entities;
 
 use App\Entities\Collections\PlayerCollection;
 use App\Entities\Database\RedisORM;
+use App\Events\GameUpdated;
 use App\Exceptions\GameException;
 use Illuminate\Support\Str;
+use Event;
 
 class Game extends RedisORM
 {
@@ -72,7 +74,6 @@ class Game extends RedisORM
         }
         $this->deal = new Deal($this->players, $this->config, true);
         $this->status = self::STATUS_STARTED;
-        $this->save();
     }
 
     public function end(): void
@@ -88,5 +89,10 @@ class Game extends RedisORM
     protected static function getKey(): string
     {
         return 'game';
+    }
+
+    protected function afterSave(): void
+    {
+        Event::dispatch(GameUpdated::NAME, $this);
     }
 }

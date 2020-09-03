@@ -18,16 +18,23 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class PlayerResource extends JsonResource
 {
     private string $userId;
+    private Game $game;
 
-    public function setUserId(string $userId)
+    public function setUserId(string $userId): self
     {
         $this->userId = $userId;
         return $this;
     }
 
-    public static function idCollection($resource, $userId): PlayerResourceCollection
+    public function setGame(Game $game): self
     {
-        return tap(new PlayerResourceCollection($resource, static::class, $userId), function ($collection) use ($userId) {
+        $this->game = $game;
+        return $this;
+    }
+
+    public static function idCollection($resource, string $userId, Game $game): PlayerResourceCollection
+    {
+        return tap(new PlayerResourceCollection($resource, static::class, $userId, $game), function ($collection) use ($userId) {
             if (property_exists(static::class, 'preserveKeys')) {
                 $collection->preserveKeys = (new static([]))->preserveKeys === true;
             }
@@ -42,13 +49,11 @@ class PlayerResource extends JsonResource
      */
     public function toArray($request)
     {
-        $game = $this->getGame();
-
         return [
             'id' => $this->when($this->getId() == $this->userId, $this->getId()),
             'name' => $this->getName(),
             'money' => $this->getMoney(),
-            'bet' => $game->getDeal() ? $game->getDeal()->getRound()->getPlayerBet($this->getId()) : null,
+            'bet' => $this->game->getDeal() ? $this->game->getDeal()->getRound()->getPlayerBet($this->getId()) : null,
             'isReadyToStart' => $this->getIsReady(),
             'isFolded' => $this->getIsFolded(),
             'isCreator' => $this->isCreator(),
@@ -63,38 +68,38 @@ class PlayerResource extends JsonResource
 
     private function isCreator(): bool
     {
-        return $this->getId() == $this->getGame()->getCreatorId();
+        return $this->getId() == $this->game->getCreatorId();
     }
 
     private function isDealer(): bool
     {
-        $dealer = $this->getGame()->getPlayers()->getDealer();
+        $dealer = $this->game->getPlayers()->getDealer();
         return $dealer && $this->getId() == $dealer->getId();
     }
 
     private function isSmallBlind(): bool
     {
-        $smallBlind = $this->getGame()->getPlayers()->getSmallBlind();
+        $smallBlind = $this->game->getPlayers()->getSmallBlind();
         return $smallBlind && $this->getId() == $smallBlind->getId();
     }
 
     private function isBigBlind(): bool
     {
-        $bigBlind = $this->getGame()->getPlayers()->getBigBlind();
+        $bigBlind = $this->game->getPlayers()->getBigBlind();
         return $bigBlind && $this->getId() == $bigBlind->getId();
     }
 
     private function isActive(): bool
     {
-        $activePlayer = $this->getGame()->getPlayers()->getActivePlayer();
+        $activePlayer = $this->game->getPlayers()->getActivePlayer();
 
         return $activePlayer && $this->getId() == $activePlayer->getId();
     }
 
     private function getAvailableActions(): ?array
     {
-        $game = $this->getGame();
-        $actions = $game->getDeal() && $game->getDeal()->getRound() ? $game->getDeal()->getRound()->getAvailableActions($this->resource) : null;
+        $deal = $this->game->getDeal();
+        $actions = $deal && $deal->getRound() ? $deal->getRound()->getAvailableActions($this->resource) : null;
         if (!$actions) {
             return null;
         }
@@ -104,7 +109,7 @@ class PlayerResource extends JsonResource
             $arrayActon = [];
             $arrayActon['type'] = $action::getName();
             if ($action instanceof BetAction) {
-                $minRaise = BetAction::getMinBet($game);
+                $minRaise = BetAction::getMinBet($this->game);
                 $arrayActon += [
                     'min' => $minRaise,
                     'max' => $this->resource->getMoney()
@@ -114,10 +119,5 @@ class PlayerResource extends JsonResource
         }
 
         return $result;
-    }
-
-    private function getGame(): Game
-    {
-        return app()->get('game.instance');
     }
 }

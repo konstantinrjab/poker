@@ -2,7 +2,7 @@
 
 namespace App\Entities;
 
-use App\Exceptions\GameException;
+use Exception;
 
 class Player
 {
@@ -74,7 +74,7 @@ class Player
     public function pay(int $amount): void
     {
         if ($amount > $this->money) {
-            throw new GameException("Player {$this->id} doesn't have enough money");
+            throw new Exception("Player {$this->id} doesn't have enough money");
         }
         $this->money -= $amount;
     }

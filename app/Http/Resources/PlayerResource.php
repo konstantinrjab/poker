@@ -104,8 +104,9 @@ class PlayerResource extends JsonResource
             $arrayActon = [];
             $arrayActon['type'] = $action::getName();
             if ($action instanceof BetAction) {
+                $minRaise = BetAction::getMinBet($game);
                 $arrayActon += [
-                    'min' => $game->getConfig()->getBigBlind(),
+                    'min' => $minRaise,
                     'max' => $this->resource->getMoney()
                 ];
             }

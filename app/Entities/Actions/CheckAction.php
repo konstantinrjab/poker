@@ -3,7 +3,6 @@
 namespace App\Entities\Actions;
 
 use App\Http\Requests\UpdateGameRequest;
-use App\Entities\Actions\Action;
 use App\Entities\Game;
 
 class CheckAction extends Action
@@ -15,6 +14,7 @@ class CheckAction extends Action
 
     public function updateGame(Game $game, UpdateGameRequest $request): void
     {
-
+        $userId = $request->input('userId');
+        $game->getDeal()->getRound()->bet($userId, 0);
     }
 }

@@ -38,7 +38,7 @@ class ActionFactory
 
         if (!in_array($actionName, $availableActionNames)) {
             throw new GameException(
-                "Action $actionName is not available. Available actions are: " . implode(', ', $availableActionNames),
+                "Action `$actionName` is not available. Available actions are: " . implode(', ', $availableActionNames),
                 403
             );
         }

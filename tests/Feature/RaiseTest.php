@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Entities\Deal;
 
+// raise amount checks
 class RaiseTest extends FlowTest
 {
     public function testFlow()

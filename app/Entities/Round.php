@@ -74,10 +74,6 @@ class Round
 
     public function shouldEnd(): bool
     {
-        if (!isset($this->bets)) {
-            return false;
-        }
-
         foreach ($this->players as $player) {
             if ($player->getIsFolded()) {
                 continue;

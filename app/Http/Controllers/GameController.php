@@ -111,9 +111,6 @@ class GameController extends Controller
         $game = Game::get($id);
         $userId = $request->input('userId');
         $player = $game->getPlayers()->getById($userId);
-        if ($player->getIsFolded()) {
-            throw new GameException('Folded player cannot change ready status');
-        }
 
         $player->setIsReady($request->input('value'));
         $game->save();

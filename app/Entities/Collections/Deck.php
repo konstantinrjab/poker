@@ -3,7 +3,6 @@
 namespace App\Entities\Collections;
 
 use App\Entities\Card;
-use App\Entities\Hand;
 use Illuminate\Support\Collection;
 
 class Deck extends Collection
@@ -22,7 +21,7 @@ class Deck extends Collection
     public function getHand(): Hand
     {
         $cards = [];
-        foreach (range(1, Hand::CARD_LIMIT) as $cardCount) {
+        for ($cardCount = 1; $cardCount <= Hand::CARDS_COUNT; $cardCount++) {
             $cards[] = $this->shift();
         }
         return new Hand($cards);

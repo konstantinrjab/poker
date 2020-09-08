@@ -3,27 +3,15 @@
 namespace App\Entities;
 
 use App\Entities\Collections\Deck;
+use App\Entities\Collections\Hand;
 
 class HandStrength
 {
-    private int $strength = 0;
+    private array $strength = [];
 
     private Hand $hand;
     private Deck $dealDeck;
     private Deck $mergedDeck;
-
-    private const HANDS = [
-        'High Card',
-        'Pair',
-        'Two Pair',
-        'Three of a Kind',
-        'Straight',
-        'Flush',
-        'Full House',
-        'Quads',
-        'Straight Flush',
-        'Royal Flush'
-    ];
 
     public function __construct(Hand $hand, Deck $deck)
     {
@@ -32,7 +20,7 @@ class HandStrength
         $this->mergedDeck = $deck->merge($hand);
     }
 
-    public function getStrength(): int
+    public function getStrength(): array
     {
         $this->checkHeightCard();
         $this->checkPair();
@@ -46,28 +34,30 @@ class HandStrength
 
 //        $this->checkRoyalFlush();
 
+        rsort($this->strength);
+
         return $this->strength;
     }
 
     public function checkHeightCard(): void
     {
-        $maxValue = $this->mergedDeck->max(function (Card $card): int {
-            return $card->getValue();
-        });
-        $this->strength = $maxValue;
+        // TODO: figure out the rules and fix it. it doesn't work in a right way
+        foreach ($this->hand as $card) {
+            $this->strength[] = $card->getValue();
+        }
     }
 
     private function checkPair(): void
     {
         $baseStrength = 100;
-        $countsByValues = [];
+        $hasValues = [];
 
         foreach ($this->mergedDeck as $card) {
             $pairStrength = $baseStrength + $card->getValue();
-            if (!empty($countsByValues[$card->getValue()]) && $this->strength < $pairStrength) {
-                $this->strength = $pairStrength;
+            if (!empty($hasValues[$card->getValue()])) {
+                $this->strength[] = $pairStrength;
             }
-            $countsByValues[$card->getValue()] = true;
+            $hasValues[$card->getValue()] = true;
         }
     }
 
@@ -75,7 +65,6 @@ class HandStrength
     {
         $baseStrength = 200;
         $countsByValues = [];
-        $pairsCount = 0;
 
         foreach ($this->mergedDeck as $card) {
             if (!isset($countsByValues[$card->getValue()])) {
@@ -84,23 +73,19 @@ class HandStrength
                 $countsByValues[$card->getValue()]++;
             }
         }
-        foreach ($countsByValues as $value) {
-            if ($value >= 2) {
-                $pairsCount++;
+        $pairsByValues = [];
+        foreach ($countsByValues as $value => $count) {
+            if ($count >= 2) {
+                $pairsByValues[] = $value;
             }
         }
-        if ($pairsCount < 2) {
+        if (count($pairsByValues) < 2) {
             return;
         }
 
-        foreach ($countsByValues as $value => $count) {
-            if ($count < 2) {
-                continue;
-            }
+        foreach ($pairsByValues as $value) {
             $pairStrength = $baseStrength + $value;
-            if ($value >= 2 && $this->strength < $pairStrength) {
-                $this->strength = $pairStrength;
-            }
+            $this->strength[] = $pairStrength;
         }
     }
 
@@ -118,8 +103,8 @@ class HandStrength
         }
         foreach ($countsByValues as $value => $count) {
             $combinationStrength = $baseStrength + $value;
-            if ($count >= 3 && $this->strength < $combinationStrength) {
-                $this->strength = $combinationStrength;
+            if ($count >= 3) {
+                $this->strength[] = $combinationStrength;
             }
         }
     }
@@ -154,7 +139,7 @@ class HandStrength
                 }
             }
             if ($consecutiveCount == 5) {
-                $this->strength = $baseStrength + $card->getValue();
+                $this->strength[] = $baseStrength + $card->getValue();
             }
         }
     }
@@ -177,7 +162,7 @@ class HandStrength
                 $highestValueWithSuit = $deck->first(function (Card $card) use ($suit): bool {
                     return $card->getSuit() == $suit;
                 });
-                $this->strength = $baseStrength + $highestValueWithSuit->getValue();
+                $this->strength[] = $baseStrength + $highestValueWithSuit->getValue();
             }
         }
     }
@@ -200,9 +185,7 @@ class HandStrength
             if ($count >= $nextCount && $firstPart) {
                 // TODO: add logic for different values in combination
                 $combinationStrength = $baseStrength + $value;
-                if ($this->strength < $combinationStrength) {
-                    $this->strength = $combinationStrength;
-                }
+                $this->strength[] = $combinationStrength;
             }
             if ($count == 2) {
                 $nextCount = 3;
@@ -228,8 +211,8 @@ class HandStrength
         }
         foreach ($countsByValues as $value => $count) {
             $combinationStrength = $baseStrength + $value;
-            if ($count >= 4 && $this->strength < $combinationStrength) {
-                $this->strength = $combinationStrength;
+            if ($count >= 4) {
+                $this->strength[] = $combinationStrength;
             }
         }
     }
@@ -265,7 +248,7 @@ class HandStrength
                 }
             }
             if ($consecutiveCount == 5) {
-                $this->strength = $baseStrength + $card->getValue();
+                $this->strength[] = $baseStrength + $card->getValue();
             }
         }
     }

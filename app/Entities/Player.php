@@ -2,6 +2,7 @@
 
 namespace App\Entities;
 
+use App\Entities\Collections\Hand;
 use Exception;
 
 class Player
@@ -10,7 +11,7 @@ class Player
     private string $name;
     private int $money;
     private ?Hand $hand;
-    private int $strength;
+    private array $strength = [];
     private bool $isReady = false;
     private bool $isFolded = false;
 
@@ -56,12 +57,12 @@ class Player
         $this->hand = $hand;
     }
 
-    public function getStrength(): ?int
+    public function getStrength(): array
     {
-        return isset($this->strength) ? $this->strength : null;
+        return $this->strength;
     }
 
-    public function setStrength(int $strength): void
+    public function setStrength(array $strength): void
     {
         $this->strength = $strength;
     }

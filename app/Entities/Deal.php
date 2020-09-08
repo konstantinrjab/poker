@@ -4,7 +4,8 @@ namespace App\Entities;
 
 use App\Entities\Collections\PlayerCollection;
 use App\Entities\Collections\Deck;
-use App\Exceptions\GameException;
+use Exception;
+use Facades\App\Entities\WinnerDetector;
 
 class Deal
 {
@@ -81,7 +82,7 @@ class Deal
         } else if ($this->status == self::STATUS_RIVER) {
             $limit = 5;
         } else {
-            throw new GameException('Cannot show cards for deals status: ' . $this->status);
+            throw new Exception('Cannot show cards for deals status: ' . $this->status);
         }
         return $this->deck->take($limit);
     }
@@ -101,7 +102,7 @@ class Deal
 
     private function end(): void
     {
-        $this->calculateWinners();
+        $this->winners = WinnerDetector::detect($this->deck, $this->players);
         $this->splitPot();
         $this->updateStatus();
     }
@@ -111,28 +112,6 @@ class Deal
         $this->pot = isset($this->pot) ? $this->pot + $this->round->getPot() : $this->round->getPot();
         $this->round = new Round($this->players, $this->config, false);
         $this->updateStatus();
-    }
-
-    private function calculateWinners(): void
-    {
-        foreach ($this->players as $player) {
-            if (!$player->getIsFolded()) {
-                $handStrength = new HandStrength($player->getHand(), $this->deck);
-                $player->setStrength($handStrength->getStrength());
-            }
-        }
-        $maxStrength = $this->players->max(function (Player $player): int {
-            return (int) $player->getStrength();
-        });
-        $equalStrength = $this->players->filter(function (Player $player) use ($maxStrength): bool {
-            return $player->getStrength() == $maxStrength;
-        });
-        if ($equalStrength->count() == 1) {
-            $this->winners = $equalStrength;
-            return;
-        }
-        // TODO: finish logic using players heightCards
-        $this->winners = $equalStrength;
     }
 
     private function splitPot(): void

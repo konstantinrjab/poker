@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Entities\Collections\Deck;
 use App\Entities\Card;
-use App\Entities\Hand;
+use App\Entities\Collections\Hand;
 use App\Entities\HandStrength;
 use PHPUnit\Framework\TestCase;
 
@@ -23,7 +23,7 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Diamond', 10));
         $deck->add(new Card('Heart', 11));
         $strength = new HandStrength($hand, $deck);
-        $this->assertTrue($strength->getStrength() == 102);
+        $this->assertTrue(max($strength->getStrength()) == 102);
     }
 
     public function testTwoPairs()
@@ -39,7 +39,7 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Diamond', 10));
         $deck->add(new Card('Heart', 11));
         $strength = new HandStrength($hand, $deck);
-        $this->assertTrue($strength->getStrength() == 203);
+        $this->assertTrue(max($strength->getStrength()) == 203);
     }
 
     public function testThreeOfAKind()
@@ -55,7 +55,7 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Diamond', 2));
         $deck->add(new Card('Heart', 11));
         $strength = new HandStrength($hand, $deck);
-        $this->assertTrue($strength->getStrength() == 302);
+        $this->assertTrue(max($strength->getStrength()) == 302);
     }
 
     public function testSimpleStraight()
@@ -71,14 +71,14 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Diamond', 2));
         $deck->add(new Card('Heart', 11));
         $strength = new HandStrength($hand, $deck);
-        $this->assertTrue($strength->getStrength() == 402);
+        $this->assertTrue(max($strength->getStrength()) == 402);
     }
 
 //    public function testStraightFromAce()
 //    {
 //        // TODO: add this method
-//    }
 
+//    }
 
     public function testFlush()
     {
@@ -94,7 +94,7 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Club', 9));
         $deck->add(new Card('Club', 11));
         $strength = new HandStrength($hand, $deck);
-        $this->assertTrue($strength->getStrength() == 511);
+        $this->assertTrue(max($strength->getStrength()) == 511);
     }
 
     public function testFourOfAKind()
@@ -110,7 +110,7 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Diamond', 10));
         $deck->add(new Card('Heart', 11));
         $strength = new HandStrength($hand, $deck);
-        $this->assertTrue($strength->getStrength() == 710);
+        $this->assertTrue(max($strength->getStrength()) == 710);
     }
 
     public function testFullHouse()
@@ -126,9 +126,8 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Diamond', 10));
         $deck->add(new Card('Heart', 11));
         $strength = new HandStrength($hand, $deck);
-        $this->assertTrue($strength->getStrength() == 603);
+        $this->assertTrue(max($strength->getStrength()) == 603);
     }
-
 
     public function testStraightFlush()
     {
@@ -143,6 +142,6 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Diamond', 2));
         $deck->add(new Card('Heart', 11));
         $strength = new HandStrength($hand, $deck);
-        $this->assertTrue($strength->getStrength() == 804);
+        $this->assertTrue(max($strength->getStrength()) == 804);
     }
 }

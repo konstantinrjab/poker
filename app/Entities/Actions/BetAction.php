@@ -4,7 +4,7 @@ namespace App\Entities\Actions;
 
 use App\Exceptions\GameException;
 use App\Http\Requests\UpdateGameRequest;
-use App\Entities\Game;
+use App\Entities\Database\Game\Game;
 
 class BetAction extends Action
 {
@@ -25,6 +25,11 @@ class BetAction extends Action
         return $minRaise;
     }
 
+    /**
+     * @param Game $game
+     * @param UpdateGameRequest $request
+     * @throws GameException
+     */
     public function updateGame(Game $game, UpdateGameRequest $request): void
     {
         $value = $request->input('value');

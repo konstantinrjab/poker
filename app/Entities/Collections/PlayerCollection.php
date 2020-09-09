@@ -3,7 +3,7 @@
 namespace App\Entities\Collections;
 
 use App\Exceptions\GameException;
-use App\Entities\Player;
+use App\Entities\Database\Game\Player;
 use Illuminate\Support\Collection;
 
 /**

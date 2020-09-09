@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Entities\Deal;
+use App\Entities\Database\Game\Deal;
 
 // raise amount checks
 class RaiseTest extends FlowTest

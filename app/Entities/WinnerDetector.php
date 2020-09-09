@@ -34,7 +34,7 @@ class WinnerDetector extends Facade
     }
 
     /**
-     * @param Player[] $players
+     * @param  \App\Entities\Database\Game\Player[] $players
      * @param int $availableIterations
      * @return array
      */

@@ -5,8 +5,8 @@ namespace App\Http\Resources;
 use App\Http\Resources\Collections\PlayerResourceCollection;
 use App\Entities\Actions\BetAction;
 use Facades\App\Http\Adapters\CardAdapter;
-use App\Entities\Game;
-use App\Entities\Player;
+use App\Entities\Database\Game\Game;
+use App\Entities\Database\Game\Player;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**

@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Collections;
 
-use App\Entities\Game;
+use App\Entities\Database\Game\Game;
 use App\Http\Resources\PlayerResource;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 

@@ -3,8 +3,7 @@
 namespace App\Entities\Actions;
 
 use App\Http\Requests\UpdateGameRequest;
-use App\Entities\Actions\Action;
-use App\Entities\Game;
+use App\Entities\Database\Game\Game;
 
 class CallAction extends Action
 {

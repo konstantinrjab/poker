@@ -4,12 +4,7 @@ namespace App\Entities\Actions;
 
 use App\Exceptions\GameException;
 use App\Http\Requests\UpdateGameRequest;
-use App\Entities\Actions\Action;
-use App\Entities\Actions\BetAction;
-use App\Entities\Actions\CallAction;
-use App\Entities\Actions\CheckAction;
-use App\Entities\Actions\FoldAction;
-use App\Entities\Game;
+use App\Entities\Database\Game\Game;
 
 class ActionFactory
 {
@@ -26,6 +21,12 @@ class ActionFactory
         ];
     }
 
+    /**
+     * @param UpdateGameRequest $request
+     * @param Game $game
+     * @return Action
+     * @throws GameException
+     */
     public static function get(UpdateGameRequest $request, Game $game): Action
     {
         $player = $game->getPlayers()->getById($request->input('userId'));

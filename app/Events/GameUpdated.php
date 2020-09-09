@@ -3,7 +3,7 @@
 namespace App\Events;
 
 use App\Http\Resources\GameResource;
-use App\Entities\Game;
+use App\Entities\Database\Game\Game;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;

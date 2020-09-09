@@ -3,8 +3,9 @@
 namespace App\Http\Resources;
 
 use Facades\App\Http\Adapters\CardAdapter;
-use App\Entities\Game;
+use App\Entities\Database\Game\Game;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Exception;
 
 /**
  * Class GameResource
@@ -58,6 +59,8 @@ class GameResource extends JsonResource
                 return 'inProgress';
             case Game::STATUS_FINISHED:
                 return 'finished';
+            default:
+                throw new Exception('Invalid status: ' . $this->resource->getStatus());
         endswitch;
     }
 }

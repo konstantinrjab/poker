@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entities\Database\Game\Deal;
 use App\Exceptions\GameException;
 use App\Http\Requests\CreateGameRequest;
 use App\Http\Requests\JoinGameRequest;
@@ -11,10 +12,10 @@ use App\Http\Requests\StartGameRequest;
 use App\Http\Requests\UpdateGameRequest;
 use App\Http\Resources\GameResource;
 use App\Entities\Actions\ActionFactory;
-use App\Entities\Game;
-use App\Entities\GameConfig;
-use App\Entities\Player;
-use App\Entities\User;
+use App\Entities\Database\Game\Game;
+use App\Entities\Database\Game\GameConfig;
+use App\Entities\Database\Game\Player;
+use App\Entities\Database\User;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -150,6 +151,9 @@ class GameController extends Controller
         $userId = $request->input('userId');
         if ($game->getPlayers()->getActivePlayer()->getId() != $userId) {
             throw new GameException('It is not you turn');
+        }
+        if ($game->getDeal()->getStatus() == Deal::STATUS_END) {
+            throw new GameException('Deal ended');
         }
         $action = ActionFactory::get($request, $game);
         $action->updateGame($game, $request);

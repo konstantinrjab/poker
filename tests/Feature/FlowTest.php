@@ -31,7 +31,7 @@ abstract class FlowTest extends TestCase
         }
         $response = $this->post('/api/games', [
             'userId' => $response->json()['data']['id'],
-            'minPlayers' => 2,
+            'minPlayers' => 3,
             'maxPlayers' => 5,
             'bigBlind' => 10,
             'smallBlind' => 5,

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entities;
+namespace App\Entities\Database\Game;
 
 use App\Entities\Collections\PlayerCollection;
 use App\Entities\Database\RedisORM;
@@ -11,13 +11,13 @@ use Event;
 
 class Game extends RedisORM
 {
-    public const STATUS_WAIT_FOR_PLAYERS = 1;
-    public const STATUS_STARTED = 2;
-    public const STATUS_FINISHED = 3;
+    public const STATUS_WAIT_FOR_PLAYERS = 'waiting';
+    public const STATUS_STARTED = 'started';
+    public const STATUS_FINISHED = 'finished';
 
     private string $id;
     private string $creatorId;
-    private int $status;
+    private string $status;
     private Deal $deal;
     private PlayerCollection $players;
     private GameConfig $config;
@@ -41,7 +41,7 @@ class Game extends RedisORM
         return $this->creatorId;
     }
 
-    public function getStatus(): int
+    public function getStatus(): string
     {
         return $this->status;
     }
@@ -58,11 +58,8 @@ class Game extends RedisORM
 
     public function start(): void
     {
-        if ($this->status == self::STATUS_STARTED) {
-            throw new GameException('Game already started');
-        }
-        if ($this->status == self::STATUS_FINISHED) {
-            throw new GameException('Game was ended');
+        if ($this->status != self::STATUS_WAIT_FOR_PLAYERS) {
+            throw new GameException('Cannot start game with status: ' . $this->status);
         }
         if ($this->players->count() < $this->config->getMinPlayersCount()) {
             throw new GameException('There is not enough players to start the game');
@@ -74,11 +71,6 @@ class Game extends RedisORM
         }
         $this->deal = new Deal($this->players, $this->config, true);
         $this->status = self::STATUS_STARTED;
-    }
-
-    public function end(): void
-    {
-        $this->status = self::STATUS_FINISHED;
     }
 
     public function getDeal(): ?Deal

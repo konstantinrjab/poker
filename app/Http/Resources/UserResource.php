@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Entities\User;
+use App\Entities\Database\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**

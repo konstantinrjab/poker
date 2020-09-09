@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Entities\Deal;
+use App\Entities\Database\Game\Deal;
 
 // new round starts when everyone makes check
 class AllPlayersCheckedTest extends FlowTest

@@ -2,6 +2,7 @@
 
 namespace App\Entities\Collections;
 
+use App\Entities\Database\Game\GameConfig;
 use App\Exceptions\GameException;
 use App\Entities\Database\Game\Player;
 use Illuminate\Support\Collection;
@@ -89,11 +90,18 @@ class PlayerCollection extends Collection
         throw new GameException('Cannot resolve next active player');
     }
 
-    public function moveDealer(): void
+    public function prepareForNextDeal(GameConfig $config): void
     {
-        $this->bigBlindId = $this->getNextAfterId($this->bigBlindId)->getId();
-        $this->smallBlindId = $this->getNextAfterId($this->smallBlindId)->getId();
+        $this->filter(function (Player $player) use ($config): bool {
+            return $player->getMoney() > $config->getBigBlind();
+        });
+        foreach ($this as $player) {
+            $player->setIsFolded(false);
+        }
+
         $this->dealerId = $this->getNextAfterId($this->dealerId)->getId();
+        $this->smallBlindId = $this->getNextAfterId($this->smallBlindId)->getId();
+        $this->bigBlindId = $this->getNextAfterId($this->bigBlindId)->getId();
     }
 
     public function getNextAfterId(string $userId): Player

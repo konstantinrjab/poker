@@ -26,13 +26,11 @@ class Deal
 
     public function __construct(
         PlayerCollection $playerCollection,
-        GameConfig $config,
-        bool $isNewGame
+        GameConfig $config
     )
     {
         $this->config = $config;
         $this->round = new Round($playerCollection, $config, true);
-        $this->round->initBlinds();
 
         $deck = Deck::getFull();
         $this->players = $playerCollection;
@@ -41,9 +39,6 @@ class Deal
         }
         $this->deck = $deck->take(self::TABLE_CARDS_COUNT);
         $this->status = self::STATUS_PREFLOP;
-        if (!$isNewGame) {
-            $this->players->moveDealer();
-        }
     }
 
     public function getStatus(): string
@@ -87,27 +82,14 @@ class Deal
         return $this->deck->take($limit);
     }
 
-    public function onAfterUpdate(): void
-    {
-        $lastTurnReached = $this->round->shouldEnd() && $this->status == self::STATUS_RIVER;
-
-        if ($lastTurnReached || $this->round->isOnlyOnePlayerNotFolded()) {
-            $this->end();
-        } else if ($this->round->shouldEnd() && $this->status != self::STATUS_RIVER) {
-            $this->startNextRound();
-        } else {
-            $this->players->setNextActivePlayer();
-        }
-    }
-
-    private function end(): void
+    public function end(): void
     {
         $this->winners = WinnerDetector::detect($this->deck, $this->players);
         $this->splitPot();
         $this->updateStatus();
     }
 
-    private function startNextRound(): void
+    public function startNextRound(): void
     {
         $this->pot = isset($this->pot) ? $this->pot + $this->round->getPot() : $this->round->getPot();
         $this->round = new Round($this->players, $this->config, false);
@@ -120,6 +102,7 @@ class Deal
         foreach ($this->winners as $winner) {
             $winner->earn($amount);
         }
+        $this->pot = 0;
     }
 
     private function updateStatus(): void

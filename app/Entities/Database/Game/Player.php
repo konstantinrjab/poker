@@ -90,8 +90,8 @@ class Player
         return $this->isFolded;
     }
 
-    public function fold(): void
+    public function setIsFolded(bool $isFolded): void
     {
-        $this->isFolded = true;
+        $this->isFolded = $isFolded;
     }
 }

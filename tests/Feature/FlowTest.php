@@ -104,7 +104,7 @@ abstract class FlowTest extends TestCase
             'userId' => 'incorrectUserId'
         ]);
         $this->get('/api/games/' . $this->gameId);
-        $this->assertTrue($response->status() == 403);
+        $this->assertTrue($response->status() == 400);
 
         $response = $this->put('/api/games/' . $this->gameId . '/start', [
             'userId' => $this->playersIds[1]

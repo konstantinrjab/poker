@@ -22,6 +22,8 @@ class Game extends RedisORM
     private PlayerCollection $players;
     private GameConfig $config;
 
+    private bool $dispatchUpdatedEvent = true;
+
     public function __construct(GameConfig $config, string $creatorId)
     {
         $this->creatorId = $creatorId;
@@ -58,7 +60,7 @@ class Game extends RedisORM
 
     public function start(): void
     {
-        if ($this->status != self::STATUS_WAIT_FOR_PLAYERS) {
+        if ($this->status == self::STATUS_FINISHED) {
             throw new GameException('Cannot start game with status: ' . $this->status);
         }
         if ($this->players->count() < $this->config->getMinPlayersCount()) {
@@ -69,8 +71,9 @@ class Game extends RedisORM
                 throw new GameException('Player ' . $player->getId() . ' is not ready yet');
             }
         }
-        $this->deal = new Deal($this->players, $this->config, true);
+        $this->deal = new Deal($this->players, $this->config);
         $this->status = self::STATUS_STARTED;
+        $this->deal->getRound()->initBlinds();
     }
 
     public function getDeal(): ?Deal
@@ -78,13 +81,37 @@ class Game extends RedisORM
         return isset($this->deal) ? $this->deal : null;
     }
 
+    public function onAfterUpdate(): void
+    {
+        $deal = $this->getDeal();
+
+        $lastTurnReached = $deal->getRound()->shouldEnd() && $deal->getStatus() == Deal::STATUS_RIVER;
+
+        if ($lastTurnReached || $deal->getRound()->isOnlyOnePlayerNotFolded()) {
+            $deal->end();
+        } else if ($deal->getRound()->shouldEnd() && $deal->getStatus() != Deal::STATUS_RIVER) {
+            $deal->startNextRound();
+        } else {
+            $this->players->setNextActivePlayer();
+        }
+    }
+
+    public function createNewDeal()
+    {
+        $this->players->prepareForNextDeal($this->getConfig());
+        $this->deal = new Deal($this->players, $this->getConfig());
+    }
+
     protected static function getKey(): string
     {
         return 'game';
     }
 
-    protected function afterSave(): void
+    public function save(bool $dispatchUpdatedEvent = true)
     {
-        Event::dispatch(GameUpdated::NAME, $this);
+        parent::save();
+        if ($dispatchUpdatedEvent) {
+            Event::dispatch(GameUpdated::NAME, $this);
+        }
     }
 }

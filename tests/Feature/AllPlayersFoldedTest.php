@@ -101,6 +101,8 @@ class AllPlayersFoldedTest extends FlowTest
         ]);
         $game = $this->getGameFromResponse($response);
         $this->assertTrue($game['players'][2]['money'] == 490);
-        $this->assertTrue($game['pot'] == 20);
+        $this->assertTrue($game['players'][3]['money'] == 510);
+        $this->assertTrue($game['pot'] == 0);
+        $this->assertNotEmpty($game['deal']['winners']);
     }
 }

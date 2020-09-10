@@ -50,7 +50,7 @@ class PlayerResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->when($this->getId() == $this->userId, $this->getId()),
+            'id' => $this->getId(),
             'name' => $this->getName(),
             'money' => $this->getMoney(),
             'bet' => $this->game->getDeal() ? $this->game->getDeal()->getRound()->getPlayerBet($this->getId()) : null,

@@ -16,6 +16,6 @@ class FoldAction extends Action
     {
         $userId = $request->input('userId');
 
-        $game->getPlayers()->getById($userId)->fold();
+        $game->getPlayers()->getById($userId)->setIsFolded(true);
     }
 }

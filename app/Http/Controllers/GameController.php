@@ -16,7 +16,6 @@ use App\Entities\Database\Game\Game;
 use App\Entities\Database\Game\GameConfig;
 use App\Entities\Database\Game\Player;
 use App\Entities\Database\User;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -129,8 +128,10 @@ class GameController extends Controller
     {
         $game = Game::get($id);
         $userId = $request->input('userId');
-        if ($game->getCreatorId() != $userId) {
-            throw new AccessDeniedHttpException('Only creator of the game can start game');
+
+        $canStartGamePlayerId = $game->getPlayers()->getDealer() ? $game->getPlayers()->getDealer()->getId() : $game->getCreatorId();
+        if ($canStartGamePlayerId != $userId) {
+            throw new GameException('You cannot start game');
         }
         $game->start();
         $game->save();
@@ -158,9 +159,17 @@ class GameController extends Controller
         $action = ActionFactory::get($request, $game);
         $action->updateGame($game, $request);
 
-        $game->getDeal()->onAfterUpdate();
+        $game->onAfterUpdate();
         $game->save();
 
-        return GameResource::make($game, $userId);
+        if ($game->getDeal()->getStatus() == Deal::STATUS_END) {
+            $response = GameResource::make(clone $game, $userId);
+            $game->createNewDeal();
+            $game->save(false);
+        } else {
+            $response = GameResource::make($game, $userId);
+        }
+
+        return $response;
     }
 }

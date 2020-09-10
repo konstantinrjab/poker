@@ -21,11 +21,5 @@ abstract class RedisORM
     public function save()
     {
         Redis::set(static::getKey() . ':' . $this->getId(), serialize($this));
-        $this->afterSave();
-    }
-
-    protected function afterSave(): void
-    {
-
     }
 }

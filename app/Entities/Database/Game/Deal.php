@@ -9,6 +9,7 @@ use Facades\App\Entities\WinnerDetector;
 
 class Deal
 {
+    public const STATUS_CREATED = 'created';
     public const STATUS_PREFLOP = 'preflop';
     public const STATUS_FLOP = 'flop';
     public const STATUS_TURN = 'turn';
@@ -20,7 +21,7 @@ class Deal
     private Deck $deck;
     private PlayerCollection $players;
     private ?PlayerCollection $winners;
-    private string $status;
+    private string $status = self::STATUS_CREATED;
     private int $pot;
     private GameConfig $config;
 
@@ -38,6 +39,10 @@ class Deal
             $player->setHand($deck->getHand());
         }
         $this->deck = $deck->take(self::TABLE_CARDS_COUNT);
+    }
+
+    public function start(): void
+    {
         $this->status = self::STATUS_PREFLOP;
     }
 
@@ -68,7 +73,7 @@ class Deal
 
     public function showCards(): Deck
     {
-        if ($this->status == self::STATUS_PREFLOP) {
+        if (in_array($this->status, [self::STATUS_CREATED, self::STATUS_PREFLOP])) {
             $limit = 0;
         } else if ($this->status == self::STATUS_FLOP) {
             $limit = 3;
@@ -107,6 +112,11 @@ class Deal
 
     private function updateStatus(): void
     {
+        if (isset($this->winners) && !$this->winners->isEmpty()) {
+            $this->status = self::STATUS_END;
+            return;
+        }
+
         if ($this->status == self::STATUS_PREFLOP) {
             $this->status = self::STATUS_FLOP;
         } else if ($this->status == self::STATUS_FLOP) {

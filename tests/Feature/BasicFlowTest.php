@@ -287,6 +287,9 @@ class BasicFlowTest extends FlowTest
 
     private function startNewDeal(): void
     {
+        $game = $this->getGame();
+        $this->assertTrue($game['deal']['status'] == Deal::STATUS_CREATED);
+
         $response = $this->put('/api/games/' . $this->gameId . '/start', [
             'userId' => $this->playersIds[1]
         ]);

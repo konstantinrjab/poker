@@ -73,9 +73,9 @@ abstract class FlowTest extends TestCase
         return $game;
     }
 
-    protected function join(): void
+    protected function join(int $playersCount = 5): void
     {
-        for ($userNumber = 2; $userNumber <= 5; $userNumber++) {
+        for ($userNumber = 2; $userNumber <= $playersCount; $userNumber++) {
             $response = $this->post('/api/register', [
                 'name' => 'player_' . $userNumber,
             ]);
@@ -89,7 +89,7 @@ abstract class FlowTest extends TestCase
 
     protected function setReady(): void
     {
-        for ($userNumber = 1; $userNumber <= 5; $userNumber++) {
+        for ($userNumber = 1; $userNumber <= count($this->playersIds); $userNumber++) {
             $response = $this->put('/api/games/' . $this->gameId . '/ready', [
                 'userId' => $this->playersIds[$userNumber],
                 'value' => true

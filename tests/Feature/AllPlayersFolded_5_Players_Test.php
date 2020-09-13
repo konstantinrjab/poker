@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Entities\Database\Game\Deal;
 
 // game finished after 4 of 5 players make fold. winner is the last player
-class AllPlayersFoldedTest extends FlowTest
+class AllPlayersFolded_5_Players_Test extends FlowTest
 {
     public function testFlow()
     {
@@ -104,5 +104,13 @@ class AllPlayersFoldedTest extends FlowTest
         $this->assertTrue($game['players'][3]['money'] == 510);
         $this->assertTrue($game['pot'] == 0);
         $this->assertNotEmpty($game['deal']['winners']);
+
+        $game = $this->getGame();
+        $this->assertTrue($game['deal']['status'] == Deal::STATUS_CREATED);
+
+        $response = $this->put('/api/games/' . $this->gameId . '/start', [
+            'userId' => $this->playersIds[2]
+        ]);
+        $this->assertTrue($response->status() == 200);
     }
 }

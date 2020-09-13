@@ -163,7 +163,8 @@ class GameController extends Controller
         $game->save();
 
         if ($game->getDeal()->getStatus() == Deal::STATUS_END) {
-            $response = GameResource::make(clone $game, $userId);
+            $responseGame = unserialize(serialize($game));
+            $response = GameResource::make($responseGame, $userId);
             $game->createNewDeal();
             $game->save(false);
         } else {

@@ -2,6 +2,7 @@
 
 namespace App\Entities\Actions;
 
+use App\Entities\Database\Game\Round;
 use App\Http\Requests\UpdateGameRequest;
 use App\Entities\Database\Game\Game;
 
@@ -16,10 +17,16 @@ class CallAction extends Action
     {
         $userId = $request->input('userId');
 
-        $maxBet = $game->getDeal()->getRound()->getMaxBet();
-        $amountToCall = $maxBet - $game->getDeal()->getRound()->getPlayerBet($userId);
+        $amountToCall = static::getAmountToCall($game->getDeal()->getRound(), $userId);
         if ($amountToCall) {
             $game->getDeal()->getRound()->bet($userId, $amountToCall);
         }
+    }
+
+    public static function getAmountToCall(Round $round, string $userId): int
+    {
+        $maxBet = $round->getMaxBet();
+
+        return $maxBet - $round->getPlayerBet($userId);
     }
 }

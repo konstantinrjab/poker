@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Entities\Actions\CallAction;
+use App\Entities\Database\Game\Deal;
 use App\Http\Resources\Collections\PlayerResourceCollection;
 use App\Entities\Actions\BetAction;
 use Facades\App\Http\Adapters\CardAdapter;
@@ -99,11 +101,11 @@ class PlayerResource extends JsonResource
     private function getAvailableActions(): ?array
     {
         $deal = $this->game->getDeal();
-        $actions = $deal && $deal->getRound() ? $deal->getRound()->getAvailableActions($this->resource) : null;
-        if (!$actions) {
-            return null;
+        if (!$deal || $deal->getStatus() == Deal::STATUS_END) {
+            return [];
         }
 
+        $actions = $deal->getRound()->getAvailableActions($this->resource);
         $result = [];
         foreach ($actions as $action) {
             $arrayActon = [];
@@ -113,6 +115,12 @@ class PlayerResource extends JsonResource
                 $arrayActon += [
                     'min' => $minRaise,
                     'max' => $this->resource->getMoney()
+                ];
+            }
+            if ($action instanceof CallAction) {
+                $amountToCall = CallAction::getAmountToCall($this->game->getDeal()->getRound(), $this->getId());
+                $arrayActon += [
+                    'value' => $amountToCall,
                 ];
             }
             $result[] = $arrayActon;

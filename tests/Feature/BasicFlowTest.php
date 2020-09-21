@@ -44,6 +44,15 @@ class BasicFlowTest extends FlowTest
         $this->assertTrue($game['players'][4]['money'] == 500);
         $this->assertTrue($game['players'][4]['bet'] == 0);
 
+        // check call value displayed
+        foreach ($game['players'][5]['availableActions'] as $action) {
+            if ($action['type'] == 'call') {
+                $callIsAvailable = true;
+                $this->assertTrue($action['value'] == 10);
+            }
+        }
+        $this->assertNotEmpty($callIsAvailable);
+
         $this->assertTrue($game['players'][5]['money'] == 500);
         $response = $this->put('/api/games/' . $this->gameId, [
             'userId' => $this->playersIds[5],

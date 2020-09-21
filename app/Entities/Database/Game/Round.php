@@ -113,7 +113,7 @@ class Round
             $actions[] = new CheckAction();
         }
 
-        $amountToCall = $this->maxBet - $this->getPlayerBet($player->getId());
+        $amountToCall = CallAction::getAmountToCall($this, $player->getId());
 
         // TODO: test with all in
         if ($player->getMoney() >= ($amountToCall + $this->config->getBigBlind())) {

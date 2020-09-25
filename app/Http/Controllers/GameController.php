@@ -18,6 +18,7 @@ use App\Entities\Database\Game\Player;
 use App\Entities\Database\User;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use App;
 
 class GameController extends Controller
 {
@@ -162,13 +163,13 @@ class GameController extends Controller
         $game->onAfterUpdate();
         $game->save();
 
+        $response = GameResource::make($game, $userId);
+
         if ($game->getDeal()->getStatus() == Deal::STATUS_END) {
-            $responseGame = unserialize(serialize($game));
-            $response = GameResource::make($responseGame, $userId);
-            $game->createNewDeal();
-            $game->save(false);
-        } else {
-            $response = GameResource::make($game, $userId);
+            App::terminating(function() use ($game) {
+                $game->createNewDeal();
+                $game->save();
+            });
         }
 
         return $response;

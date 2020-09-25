@@ -106,11 +106,6 @@ class AllPlayersFolded_5_Players_Test extends FlowTest
         $this->assertNotEmpty($game['deal']['winners']);
 
         $game = $this->getGame();
-        $this->assertTrue($game['deal']['status'] == Deal::STATUS_CREATED);
-
-        $response = $this->put('/api/games/' . $this->gameId . '/start', [
-            'userId' => $this->playersIds[2]
-        ]);
-        $this->assertTrue($response->status() == 200);
+        $this->assertTrue($game['deal']['status'] == Deal::STATUS_PREFLOP);
     }
 }

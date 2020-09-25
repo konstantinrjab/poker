@@ -16,7 +16,7 @@ class BasicFlowTest extends FlowTest
         $this->flop();
         $this->turn();
         $this->river();
-        $this->startNewDeal();
+        $this->newDealStarted();
 
         $content = $this->getGame();
     }
@@ -294,22 +294,8 @@ class BasicFlowTest extends FlowTest
         $this->assertTrue($totalMoney == 5 * 500);
     }
 
-    private function startNewDeal(): void
+    private function newDealStarted(): void
     {
-        $game = $this->getGame();
-        $this->assertTrue($game['deal']['status'] == Deal::STATUS_CREATED);
-
-        $response = $this->put('/api/games/' . $this->gameId . '/start', [
-            'userId' => $this->playersIds[1]
-        ]);
-        $this->get('/api/games/' . $this->gameId);
-        $this->assertTrue($response->status() == 400);
-
-        $response = $this->put('/api/games/' . $this->gameId . '/start', [
-            'userId' => $this->playersIds[2]
-        ]);
-        $this->assertTrue($response->status() == 200);
-
         $game = $this->getGame();
         $this->assertTrue($game['deal']['status'] == Deal::STATUS_PREFLOP);
         $this->assertCount(0, $game['communityCards']);

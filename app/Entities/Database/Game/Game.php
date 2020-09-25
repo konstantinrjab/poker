@@ -22,8 +22,6 @@ class Game extends RedisORM
     private PlayerCollection $players;
     private GameConfig $config;
 
-    private bool $dispatchUpdatedEvent = true;
-
     public function __construct(GameConfig $config, string $creatorId)
     {
         $this->creatorId = $creatorId;
@@ -60,7 +58,7 @@ class Game extends RedisORM
 
     public function start(): void
     {
-        if ($this->status == self::STATUS_FINISHED) {
+        if ($this->status != self::STATUS_WAIT_FOR_PLAYERS) {
             throw new GameException('Cannot start game with status: ' . $this->status);
         }
         if ($this->players->count() < $this->config->getMinPlayersCount()) {
@@ -72,7 +70,6 @@ class Game extends RedisORM
             }
         }
         $this->deal = new Deal($this->players, $this->config);
-        $this->deal->start();
         $this->status = self::STATUS_STARTED;
         $this->deal->getRound()->initBlinds();
     }

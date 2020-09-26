@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Facade;
 
 class WinnerDetector extends Facade
 {
+    public const ALL_FOLDED_DESCRIPTION = 'all folded';
+
     public function detect(Deck $deck, PlayerCollection $players): PlayerCollection
     {
         $candidates = [];
@@ -19,6 +21,7 @@ class WinnerDetector extends Facade
             }
         }
         if (count($candidates) == 1) {
+            $candidates[0]->setStrengthDescription(self::ALL_FOLDED_DESCRIPTION);
             return new PlayerCollection($candidates);
         }
 
@@ -26,7 +29,10 @@ class WinnerDetector extends Facade
         foreach ($winners as $player) {
             if (!$player->getIsFolded()) {
                 $handStrength = new HandStrength($player->getHand(), $deck);
-                $player->setStrength($handStrength->getStrength());
+                $strength = $handStrength->getStrength();
+                $strengthDescription = $handStrength->getStrengthDescription();
+                $player->setStrength($strength);
+                $player->setStrengthDescription($strengthDescription);
                 $candidates[] = $player;
             }
         }

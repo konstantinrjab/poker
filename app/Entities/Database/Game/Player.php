@@ -12,6 +12,7 @@ class Player
     private int $money;
     private ?Hand $hand;
     private array $strength = [];
+    private string $strengthDescription;
     private bool $isReady = false;
     private bool $isFolded = false;
 
@@ -65,6 +66,16 @@ class Player
     public function setStrength(array $strength): void
     {
         $this->strength = $strength;
+    }
+
+    public function getStrengthDescription(): ?string
+    {
+        return isset($this->strengthDescription) ? $this->strengthDescription : null;
+    }
+
+    public function setStrengthDescription(string $description): void
+    {
+        $this->strengthDescription = $description;
     }
 
     public function getMoney(): int

@@ -23,7 +23,10 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Diamond', 10));
         $deck->add(new Card('Heart', 11));
         $strength = new HandStrength($hand, $deck);
+
         $this->assertTrue(max($strength->getStrength()) == 102);
+        $this->assertRegExp('/pair/i', $strength->getStrengthDescription());
+        $this->assertRegExp('/two/i', $strength->getStrengthDescription());
     }
 
     public function testTwoPairs()
@@ -39,7 +42,11 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Diamond', 10));
         $deck->add(new Card('Heart', 11));
         $strength = new HandStrength($hand, $deck);
+
         $this->assertTrue(max($strength->getStrength()) == 203);
+        $this->assertRegExp('/two/i', $strength->getStrengthDescription());
+        $this->assertRegExp('/pair/i', $strength->getStrengthDescription());
+        $this->assertRegExp('/three/i', $strength->getStrengthDescription());
     }
 
     public function testThreeOfAKind()
@@ -54,8 +61,11 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Heart', 5));
         $deck->add(new Card('Diamond', 2));
         $deck->add(new Card('Heart', 11));
+
         $strength = new HandStrength($hand, $deck);
         $this->assertTrue(max($strength->getStrength()) == 302);
+        $this->assertRegExp('/three of a kind/i', $strength->getStrengthDescription());
+        $this->assertRegExp('/two/i', $strength->getStrengthDescription());
     }
 
     public function testSimpleStraight()
@@ -70,8 +80,11 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Heart', 6));
         $deck->add(new Card('Diamond', 2));
         $deck->add(new Card('Heart', 11));
+
         $strength = new HandStrength($hand, $deck);
         $this->assertTrue(max($strength->getStrength()) == 402);
+        $this->assertRegExp('/straight/i', $strength->getStrengthDescription());
+        $this->assertRegExp('/two/i', $strength->getStrengthDescription());
     }
 
 //    public function testStraightFromAce()
@@ -93,8 +106,10 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Heart', 6));
         $deck->add(new Card('Club', 9));
         $deck->add(new Card('Club', 11));
+
         $strength = new HandStrength($hand, $deck);
         $this->assertTrue(max($strength->getStrength()) == 511);
+        $this->assertRegExp('/flush/i', $strength->getStrengthDescription());
     }
 
     public function testFourOfAKind()
@@ -109,8 +124,11 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Heart', 10));
         $deck->add(new Card('Diamond', 10));
         $deck->add(new Card('Heart', 11));
+
         $strength = new HandStrength($hand, $deck);
         $this->assertTrue(max($strength->getStrength()) == 710);
+        $this->assertRegExp('/four of a kind/i', $strength->getStrengthDescription());
+        $this->assertRegExp('/ten/i', $strength->getStrengthDescription());
     }
 
     public function testFullHouse()
@@ -125,8 +143,10 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Heart', 3));
         $deck->add(new Card('Diamond', 10));
         $deck->add(new Card('Heart', 11));
+
         $strength = new HandStrength($hand, $deck);
         $this->assertTrue(max($strength->getStrength()) == 603);
+        $this->assertRegExp('/full house/i', $strength->getStrengthDescription());
     }
 
     public function testStraightFlush()
@@ -141,7 +161,28 @@ class HandStrengthTest extends TestCase
         $deck->add(new Card('Club', 8));
         $deck->add(new Card('Diamond', 2));
         $deck->add(new Card('Heart', 11));
+
         $strength = new HandStrength($hand, $deck);
         $this->assertTrue(max($strength->getStrength()) == 804);
+        $this->assertRegExp('/straight flush/i', $strength->getStrengthDescription());
+    }
+
+    public function testRoyalFlush()
+    {
+        $hand = new Hand([
+            new Card('Club', 10),
+            new Card('Club', 11)
+        ]);
+        $deck = new Deck();
+        $deck->add(new Card('Club', 12));
+        $deck->add(new Card('Club', 13));
+        $deck->add(new Card('Club', 14));
+        $deck->add(new Card('Diamond', 2));
+        $deck->add(new Card('Heart', 11));
+
+        $strength = new HandStrength($hand, $deck);
+        $this->assertTrue(max($strength->getStrength()) == 900);
+        $this->assertRegExp('/flush/i', $strength->getStrengthDescription());
+        $this->assertRegExp('/royal/i', $strength->getStrengthDescription());
     }
 }

@@ -65,6 +65,7 @@ class PlayerResource extends JsonResource
             'isActive' => $this->isActive(),
             'holeCards' => $this->getId() == $this->userId && $this->getHand() ? CardAdapter::handle($this->getHand()) : [],
             'availableActions' => $this->getAvailableActions(),
+            'winningCombination' => $this->when($this->getStrengthDescription(), $this->getStrengthDescription())
         ];
     }
 

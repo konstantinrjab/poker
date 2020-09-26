@@ -7,8 +7,17 @@ use App\Entities\Collections\Hand;
 
 class HandStrength
 {
-    private array $strength = [];
+    private const PAIR_BASE = 100;
+    private const TWO_PAIRS_BASE = 200;
+    private const THREE_OF_A_KIND_BASE = 300;
+    private const STRAIGHT_BASE = 400;
+    private const FLUSH_BASE = 500;
+    private const FULL_HOUSE_BASE = 600;
+    private const FOUR_OF_A_KIND_BASE = 700;
+    private const STRAIGHT_FLUSH_BASE = 800;
+    private const FLUSH_ROYAL_BASE = 900;
 
+    private array $strength = [];
     private Hand $hand;
     private Deck $dealDeck;
     private Deck $mergedDeck;
@@ -22,6 +31,10 @@ class HandStrength
 
     public function getStrength(): array
     {
+        if ($this->strength) {
+            return $this->strength;
+        }
+
         $this->checkHeightCard();
         $this->checkPair();
         $this->checkTwoPair();
@@ -31,12 +44,44 @@ class HandStrength
         $this->checkFullHouse();
         $this->checkFourOfAKind();
         $this->checkStraightFlush();
-
-//        $this->checkRoyalFlush();
+        $this->checkRoyalFlush();
 
         rsort($this->strength);
 
         return $this->strength;
+    }
+
+    public function getStrengthDescription(): string
+    {
+        // TODO: return value of cards
+        $strength = $this->getStrength();
+        $maxStr = $strength[0];
+        $highestCard = $maxStr % 100;
+        switch ($maxStr) {
+            case $maxStr < self::PAIR_BASE:
+                return 'Height card: ' . self::valueToDescription($maxStr);
+            case $maxStr >= self::PAIR_BASE && $maxStr < self::TWO_PAIRS_BASE:
+                return 'Pair of ' . self::valueToDescription($highestCard);
+            case $maxStr >= self::TWO_PAIRS_BASE && $maxStr < self::THREE_OF_A_KIND_BASE:
+                return 'Two pairs: ' . self::valueToDescription($highestCard) . ' and ' . self::valueToDescription($strength[1] % 100);
+            case $maxStr >= self::THREE_OF_A_KIND_BASE && $maxStr < self::STRAIGHT_BASE:
+                return 'Three of a kind: ' . self::valueToDescription($highestCard);
+            case $maxStr >= self::STRAIGHT_BASE && $maxStr < self::FLUSH_BASE:
+                return 'Straight from: ' . self::valueToDescription($highestCard);
+            // TODO: add description for suite
+            case $maxStr >= self::FLUSH_BASE && $maxStr < self::FULL_HOUSE_BASE:
+                return 'Flush';
+            // TODO: add description for few values
+            case $maxStr >= self::FULL_HOUSE_BASE && $maxStr < self::FOUR_OF_A_KIND_BASE:
+                return 'Full house';
+            case $maxStr >= self::FOUR_OF_A_KIND_BASE && $maxStr < self::STRAIGHT_FLUSH_BASE:
+                return 'Four of a kind: ' . self::valueToDescription($highestCard);
+            case $maxStr >= self::STRAIGHT_FLUSH_BASE && $maxStr < self::FLUSH_ROYAL_BASE:
+                return 'Straight flush for: ' . self::valueToDescription($highestCard);
+            case $maxStr >= self::FLUSH_ROYAL_BASE:
+                return 'Flush royal';
+        }
+        throw new \Exception('Cannot determine strength description');
     }
 
     public function checkHeightCard(): void
@@ -47,9 +92,14 @@ class HandStrength
         }
     }
 
+    private static function valueToDescription(int $value): string
+    {
+        return Card::VALUES[$value];
+    }
+
     private function checkPair(): void
     {
-        $baseStrength = 100;
+        $baseStrength = self::PAIR_BASE;
         $hasValues = [];
 
         foreach ($this->mergedDeck as $card) {
@@ -63,7 +113,7 @@ class HandStrength
 
     private function checkTwoPair(): void
     {
-        $baseStrength = 200;
+        $baseStrength = self::TWO_PAIRS_BASE;
         $countsByValues = [];
 
         foreach ($this->mergedDeck as $card) {
@@ -91,7 +141,7 @@ class HandStrength
 
     private function checkThreeOfAKind(): void
     {
-        $baseStrength = 300;
+        $baseStrength = self::THREE_OF_A_KIND_BASE;
         $countsByValues = [];
 
         foreach ($this->mergedDeck as $card) {
@@ -111,7 +161,7 @@ class HandStrength
 
     private function checkStraight(): void
     {
-        $baseStrength = 400;
+        $baseStrength = self::STRAIGHT_BASE;
 
         // TODO: add starts from ace logic
         $consecutiveCount = 1;
@@ -146,7 +196,7 @@ class HandStrength
 
     public function checkFlush(): void
     {
-        $baseStrength = 500;
+        $baseStrength = self::FLUSH_BASE;
         $cardsBySuits = [];
 
         $deck = $this->mergedDeck->sortByDesc(function (Card $card): int {
@@ -169,7 +219,7 @@ class HandStrength
 
     public function checkFullHouse(): void
     {
-        $baseStrength = 600;
+        $baseStrength = self::FULL_HOUSE_BASE;
         $countsByValues = [];
 
         foreach ($this->mergedDeck as $card) {
@@ -199,7 +249,7 @@ class HandStrength
 
     private function checkFourOfAKind(): void
     {
-        $baseStrength = 700;
+        $baseStrength = self::FOUR_OF_A_KIND_BASE;
         $countsByValues = [];
 
         foreach ($this->mergedDeck as $card) {
@@ -219,7 +269,7 @@ class HandStrength
 
     public function checkStraightFlush(): void
     {
-        $baseStrength = 800;
+        $baseStrength = self::STRAIGHT_FLUSH_BASE;
 
         // TODO: add starts from ace logic
         $consecutiveCount = 1;
@@ -255,7 +305,33 @@ class HandStrength
 
     public function checkRoyalFlush(): void
     {
-        $base = 900;
-        return;
+        $deck = $this->mergedDeck->sortBy(function (Card $card): int {
+            return $card->getValue();
+        });
+
+        foreach (Card::SUITS as $suit) {
+            $cardsWithSuite = $deck->filter(function (Card $card) use ($suit): bool {
+                return $card->getSuit() == $suit;
+            });
+            if ($cardsWithSuite->count() >= 5) {
+                $suiteToTest = $cardsWithSuite->first()->getSuit();
+                break;
+            }
+        }
+        if (!isset($suiteToTest)) {
+            return;
+        }
+
+        $values = [10, 11, 12, 13, 14];
+        foreach ($values as $value) {
+            /** @var Card $cardWithValue */
+            $cardWithValue = $deck->first(function (Card $card) use ($value, $suiteToTest): bool {
+                return $card->getValue() == $value && $card->getSuit() == $suiteToTest;
+            });
+            if (!$cardWithValue) {
+                return;
+            }
+        }
+        $this->strength[] = self::FLUSH_ROYAL_BASE;
     }
 }

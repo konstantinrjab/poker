@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Entities\Database\Game\Deal;
+use App\Entities\WinnerDetector;
 
 // game finished after 4 of 5 players make fold. winner is the last player
 class AllPlayersFolded_5_Players_Test extends FlowTest
@@ -100,6 +101,7 @@ class AllPlayersFolded_5_Players_Test extends FlowTest
             'action' => 'fold'
         ]);
         $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['deal']['winners'][0]['winningCombination'] == WinnerDetector::ALL_FOLDED_DESCRIPTION);
         $this->assertTrue($game['players'][2]['money'] == 490);
         $this->assertTrue($game['players'][3]['money'] == 510);
         $this->assertTrue($game['pot'] == 0);

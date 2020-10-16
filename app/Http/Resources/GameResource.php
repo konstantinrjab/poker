@@ -46,6 +46,7 @@ class GameResource extends JsonResource
             'communityCards' => $this->getDeal() && $this->getDeal()->isNeedToShowCards() ? CardAdapter::handle($this->getDeal()->showCards()) : null,
             'pot' => $this->getDeal() ? $this->getDeal()->getPot() : null,
             'players' => PlayerResource::idCollection($this->getPlayers(), $this->userId, $this->resource),
+            'activeDealId' => $this->getDeal() ? $this->getDeal()->getId() : null,
             'deal' => $this->getDeal() ? DealResource::make($this->getDeal(), $this->userId, $this->resource) : null,
         ];
     }

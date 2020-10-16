@@ -6,6 +6,7 @@ use App\Entities\Collections\PlayerCollection;
 use App\Entities\Collections\Deck;
 use Exception;
 use Facades\App\Entities\WinnerDetector;
+use Str;
 
 class Deal
 {
@@ -16,6 +17,7 @@ class Deal
     public const STATUS_END = 'end';
     public const TABLE_CARDS_COUNT = 5;
 
+    private string $id;
     private Round $round;
     private Deck $deck;
     private PlayerCollection $players;
@@ -29,6 +31,7 @@ class Deal
         GameConfig $config
     )
     {
+        $this->id = Str::uuid();
         $this->config = $config;
         $this->round = new Round($playerCollection, $config, true);
 
@@ -38,6 +41,11 @@ class Deal
             $player->setHand($deck->getHand());
         }
         $this->deck = $deck->take(self::TABLE_CARDS_COUNT);
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
     }
 
     public function getStatus(): string

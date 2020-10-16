@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Flow;
 
 use App\Entities\Database\Game\Deal;
 

@@ -19,8 +19,8 @@ class CreateGameRequest extends FormRequest
             'userId' => 'required|string|max:50',
             'bigBlind' => 'required|int|gte:smallBlind',
             'smallBlind' => 'required|int',
-            'minPlayers' => 'required|int|min:3|max:10',
-            'maxPlayers' => 'required|int|min:3|max:10',
+            'minPlayers' => 'required|int|min:2|max:10',
+            'maxPlayers' => 'required|int|min:2|max:10',
             // TODO: write custom validator based on bigBlind
             'initialMoney' => ['required', 'int', function (string $attribute, int $value, \Closure $fail) {
                 $bigBlindAmount = $this->input('bigBlind', 0);

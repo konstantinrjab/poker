@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 
 /**
  * @method Player[] getIterator()
+ * @method Player offsetGet(int $key)
  */
 class PlayerCollection extends Collection
 {
@@ -33,12 +34,15 @@ class PlayerCollection extends Collection
 
         $this->items[] = $player;
 
-        if (!isset($this->dealerId)) {
+        if ($this->count() == 1) {
             $this->dealerId = $player->getId();
-        } else if (!isset($this->smallBlindId)) {
             $this->smallBlindId = $player->getId();
-        } else if (!isset($this->bigBlindId)) {
+        } elseif ($this->count() == 2) {
             $this->bigBlindId = $player->getId();
+        } elseif ($this->count() == 3) {
+            $this->dealerId = $this->offsetGet(0)->getId();
+            $this->smallBlindId = $this->offsetGet(1)->getId();
+            $this->bigBlindId = $this->offsetGet(2)->getId();
         }
 
         return $this;

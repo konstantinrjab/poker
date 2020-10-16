@@ -4,7 +4,7 @@ namespace Tests\Feature\Flow;
 
 use App\Entities\Database\Game\Deal;
 
-class BasicFlowTest extends FlowTest
+class BasicFlow_5_Players_Test extends FlowTest
 {
     public function testFlow()
     {

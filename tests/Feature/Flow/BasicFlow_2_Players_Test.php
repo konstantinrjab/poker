@@ -38,37 +38,28 @@ class BasicFlow_2_Players_Test extends FlowTest
         $game = $this->getGameFromResponse($response);
         $this->assertTrue($game['players'][1]['money'] == 490);
 
-        // TODO: Round round here. But should it?
+        $response = $this->put('/api/games/' . $this->gameId, [
+            'userId' => $this->playersIds[2],
+            'action' => 'bet',
+            'value' => 20,
+        ]);
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['players'][2]['money'] == 470);
+        $this->assertTrue($game['players'][2]['bet'] == 30);
+        $this->assertTrue($game['pot'] == 40);
 
-//        $this->assertTrue($game['players'][1]['bet'] == 10);
-//        $this->assertTrue($game['pot'] == 20);
-//
-//        $this->assertTrue($game['players'][2]['money'] == 490);
-//        $response = $this->put('/api/games/' . $this->gameId, [
-//            'userId' => $this->playersIds[1],
-//            'action' => 'bet',
-//            'value' => 15,
-//        ]);
-//        $game = $this->getGameFromResponse($response);
-//        $this->assertTrue($game['players'][1]['money'] == 475);
-//        $this->assertTrue($game['players'][1]['bet'] == 25);
-//
-//        $this->assertTrue($game['pot'] == 35);
-//
-//        $response = $this->put('/api/games/' . $this->gameId, [
-//            'userId' => $this->playersIds[1],
-//            'action' => 'call'
-//        ]);
-//        $this->assertTrue($game['players'][1]['money'] == 475);
-//        $this->assertTrue($game['players'][1]['bet'] == 25);
-//
-//        $this->assertTrue($game['pot'] == 50);
-//
-//        // round ends
-//        $game = $this->getGameFromResponse($response);
-//        $this->assertTrue($game['players'][1]['money'] == 475);
-//        // bet is 0 since new round starts
-//        $this->assertTrue($game['players'][2]['bet'] == 0);
-//        $this->assertTrue($game['pot'] == 40);
+        $response = $this->put('/api/games/' . $this->gameId, [
+            'userId' => $this->playersIds[1],
+            'action' => 'call'
+        ]);
+
+        // round ends
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['players'][1]['money'] == 470);
+        // bet is 0 since new round starts
+        $this->assertTrue($game['players'][1]['bet'] == 0);
+        $this->assertTrue($game['players'][2]['bet'] == 0);
+
+        // TODO: finish this flow
     }
 }

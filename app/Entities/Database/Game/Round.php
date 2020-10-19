@@ -15,6 +15,7 @@ class Round
     private GameConfig $config;
     private PlayerCollection $players;
     private array $bets;
+    private bool $bigBlindRaised = false;
 
     public function __construct(PlayerCollection $players, GameConfig $config, bool $isPreFlop)
     {
@@ -35,7 +36,7 @@ class Round
         $smallBlindId = $this->players->getSmallBlind()->getId();
 
         $this->bet($smallBlindId, $this->config->getSmallBlind());
-        $this->bet($bigBlindId, $this->config->getBigBlind());
+        $this->bet($bigBlindId, $this->config->getBigBlind(), true);
     }
 
     public function getPlayerBet(string $playerId): int
@@ -48,8 +49,11 @@ class Round
         return $this->maxBet;
     }
 
-    public function bet(string $playerId, int $amount): void
+    public function bet(string $playerId, int $amount, bool $bigBlindInitial = false): void
     {
+        if ($playerId == $this->players->getBigBlind()->getId() && !$bigBlindInitial) {
+            $this->bigBlindRaised = true;
+        }
         if (!$this->maxBet) {
             $this->maxBet = $amount;
         }
@@ -74,6 +78,9 @@ class Round
 
     public function shouldEnd(): bool
     {
+        if (!$this->players->getBigBlind()->getIsFolded() && !$this->bigBlindRaised) {
+            return false;
+        }
         foreach ($this->players as $player) {
             if ($player->getIsFolded()) {
                 continue;

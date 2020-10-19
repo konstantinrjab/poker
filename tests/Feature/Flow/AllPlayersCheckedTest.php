@@ -26,6 +26,7 @@ class AllPlayersCheckedTest extends FlowTest
      * player 5 - call
      * player 1 - call
      * player 2 - call
+     * player 3 - check
      */
     private function preFlop(): void
     {
@@ -69,13 +70,20 @@ class AllPlayersCheckedTest extends FlowTest
             'userId' => $this->playersIds[2],
             'action' => 'call'
         ]);
-        // TODO: player3 is BB. he can raise his bet
-
-        // round ends
         $game = $this->getGameFromResponse($response);
         $this->assertTrue($game['players'][2]['money'] == 490);
+        $this->assertTrue($game['players'][2]['bet'] == 10);
+        $this->assertTrue($game['pot'] == 40);
+
+        $response = $this->put('/api/games/' . $this->gameId, [
+            'userId' => $this->playersIds[3],
+            'action' => 'check'
+        ]);
+        // round ends
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['players'][3]['money'] == 490);
         // bet is 0 since new round starts
-        $this->assertTrue($game['players'][2]['bet'] == 0);
+        $this->assertTrue($game['players'][3]['bet'] == 0);
         $this->assertTrue($game['pot'] == 40);
     }
 

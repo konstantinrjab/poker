@@ -70,7 +70,6 @@ class Game extends RedisORM
         }
         $this->deal = new Deal($this->players, $this->config);
         $this->status = self::STATUS_STARTED;
-        $this->deal->getRound()->initBlinds();
     }
 
     public function getDeal(): ?Deal

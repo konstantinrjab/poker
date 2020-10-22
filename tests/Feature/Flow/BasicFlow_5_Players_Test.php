@@ -309,6 +309,9 @@ class BasicFlow_5_Players_Test extends FlowTest
         $this->assertTrue($game['deal']['status'] == Deal::STATUS_PREFLOP);
         $this->assertCount(0, $game['communityCards']);
 
+        // blinds made their bets
+        $this->assertTrue($game['pot'] == 15);
+
         $totalMoney = $game['pot'];
         foreach ($game['players'] as $player) {
             $totalMoney += $player['money'];

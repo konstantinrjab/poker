@@ -41,6 +41,7 @@ class Deal
             $player->setHand($deck->getHand());
         }
         $this->deck = $deck->take(self::TABLE_CARDS_COUNT);
+        $this->getRound()->initBlinds();
     }
 
     public function getId(): string

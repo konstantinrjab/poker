@@ -25,8 +25,8 @@ class HandStrengthTest extends TestCase
         $strength = new HandStrength($hand, $deck);
 
         $this->assertTrue(max($strength->getStrength()) == 102);
-        $this->assertRegExp('/pair/i', $strength->getStrengthDescription());
-        $this->assertRegExp('/two/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/pair/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/two/i', $strength->getStrengthDescription());
     }
 
     public function testTwoPairs()
@@ -44,9 +44,9 @@ class HandStrengthTest extends TestCase
         $strength = new HandStrength($hand, $deck);
 
         $this->assertTrue(max($strength->getStrength()) == 203);
-        $this->assertRegExp('/two/i', $strength->getStrengthDescription());
-        $this->assertRegExp('/pair/i', $strength->getStrengthDescription());
-        $this->assertRegExp('/three/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/two/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/pair/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/three/i', $strength->getStrengthDescription());
     }
 
     public function testThreeOfAKind()
@@ -64,8 +64,8 @@ class HandStrengthTest extends TestCase
 
         $strength = new HandStrength($hand, $deck);
         $this->assertTrue(max($strength->getStrength()) == 302);
-        $this->assertRegExp('/three of a kind/i', $strength->getStrengthDescription());
-        $this->assertRegExp('/two/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/three of a kind/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/two/i', $strength->getStrengthDescription());
     }
 
     public function testSimpleStraight()
@@ -83,8 +83,8 @@ class HandStrengthTest extends TestCase
 
         $strength = new HandStrength($hand, $deck);
         $this->assertTrue(max($strength->getStrength()) == 402);
-        $this->assertRegExp('/straight/i', $strength->getStrengthDescription());
-        $this->assertRegExp('/two/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/straight/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/two/i', $strength->getStrengthDescription());
     }
 
 //    public function testStraightFromAce()
@@ -109,7 +109,7 @@ class HandStrengthTest extends TestCase
 
         $strength = new HandStrength($hand, $deck);
         $this->assertTrue(max($strength->getStrength()) == 511);
-        $this->assertRegExp('/flush/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/flush/i', $strength->getStrengthDescription());
     }
 
     public function testFourOfAKind()
@@ -127,8 +127,8 @@ class HandStrengthTest extends TestCase
 
         $strength = new HandStrength($hand, $deck);
         $this->assertTrue(max($strength->getStrength()) == 710);
-        $this->assertRegExp('/four of a kind/i', $strength->getStrengthDescription());
-        $this->assertRegExp('/ten/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/four of a kind/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/ten/i', $strength->getStrengthDescription());
     }
 
     public function testFullHouse()
@@ -146,7 +146,7 @@ class HandStrengthTest extends TestCase
 
         $strength = new HandStrength($hand, $deck);
         $this->assertTrue(max($strength->getStrength()) == 603);
-        $this->assertRegExp('/full house/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/full house/i', $strength->getStrengthDescription());
     }
 
     public function testStraightFlush()
@@ -164,7 +164,7 @@ class HandStrengthTest extends TestCase
 
         $strength = new HandStrength($hand, $deck);
         $this->assertTrue(max($strength->getStrength()) == 804);
-        $this->assertRegExp('/straight flush/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/straight flush/i', $strength->getStrengthDescription());
     }
 
     public function testRoyalFlush()
@@ -182,7 +182,7 @@ class HandStrengthTest extends TestCase
 
         $strength = new HandStrength($hand, $deck);
         $this->assertTrue(max($strength->getStrength()) == 900);
-        $this->assertRegExp('/flush/i', $strength->getStrengthDescription());
-        $this->assertRegExp('/royal/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/flush/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/royal/i', $strength->getStrengthDescription());
     }
 }

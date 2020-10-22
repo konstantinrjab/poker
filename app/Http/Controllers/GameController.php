@@ -46,7 +46,7 @@ class GameController extends Controller
         $player = new Player($user->getId(), $user->getName(), $config->getInitialMoney());
         $game = new Game($config, $player->getId());
         $game->getPlayers()->add($player);
-        $game->save();
+        $game->save(false);
 
         return GameResource::make($game, $user->getId());
     }

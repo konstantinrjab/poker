@@ -4,10 +4,9 @@ namespace App\Entities\Database\Game;
 
 use App\Entities\Collections\PlayerCollection;
 use App\Entities\Database\RedisORM;
-use App\Events\GameUpdated;
 use App\Exceptions\GameException;
+use App\Dispatchable\Jobs\NotifyGameUpdated;
 use Illuminate\Support\Str;
-use Event;
 
 class Game extends RedisORM
 {
@@ -105,11 +104,11 @@ class Game extends RedisORM
         return 'game';
     }
 
-    public function save(bool $dispatchUpdatedEvent = true)
+    public function save(bool $notifyPlayers = true)
     {
         parent::save();
-        if ($dispatchUpdatedEvent) {
-            Event::dispatch(GameUpdated::NAME, $this);
+        if ($notifyPlayers) {
+            NotifyGameUpdated::dispatchAfterResponse($this);
         }
     }
 }

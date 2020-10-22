@@ -33,8 +33,9 @@ class DealResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->getId(),
             'status' => $this->getStatus(),
-            'winners' => $this->getWinners() ? PlayerResource::idCollection($this->getWinners(), $this->userId, $this->game) : null,
+            'winners' => $this->getWinners() ? PlayerResource::idCollection($this->getWinners(), $this->userId, $this->game) : [],
         ];
     }
 }

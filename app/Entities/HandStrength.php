@@ -94,6 +94,10 @@ class HandStrength
 
     private static function valueToDescription(int $value): string
     {
+        // straight from ace case
+        if ($value == 1) {
+            return Card::VALUES[14];
+        }
         return Card::VALUES[$value];
     }
 
@@ -163,7 +167,6 @@ class HandStrength
     {
         $baseStrength = self::STRAIGHT_BASE;
 
-        // TODO: add starts from ace logic
         $consecutiveCount = 1;
 
         $deck = $this->mergedDeck->sortBy(function (Card $card): int {
@@ -171,12 +174,18 @@ class HandStrength
         });
 
         foreach ($deck as $card) {
-            $consecutiveValues = [
-                $card->getValue() + 1,
-                $card->getValue() + 2,
-                $card->getValue() + 3,
-                $card->getValue() + 4,
-            ];
+            /** @var Card $card */
+            if ($card->getValue() == 14) {
+                $consecutiveValues = [2, 3, 4, 5];
+            } else {
+                $consecutiveValues = [
+                    $card->getValue() + 1,
+                    $card->getValue() + 2,
+                    $card->getValue() + 3,
+                    $card->getValue() + 4,
+                ];
+            }
+
             foreach ($consecutiveValues as $value) {
                 $cardWithNextValue = $deck->first(function (Card $card) use ($value): bool {
                     return $card->getValue() == $value;
@@ -189,7 +198,12 @@ class HandStrength
                 }
             }
             if ($consecutiveCount == 5) {
-                $this->strength[] = $baseStrength + $card->getValue();
+                if ($card->getValue() == 14) {
+                    $value = 1;
+                } else {
+                    $value = $card->getValue();
+                }
+                $this->strength[] = $baseStrength + $value;
             }
         }
     }
@@ -280,12 +294,17 @@ class HandStrength
 
         foreach ($deck as $card) {
             $suit = $card->getSuit();
-            $consecutiveValues = [
-                $card->getValue() + 1,
-                $card->getValue() + 2,
-                $card->getValue() + 3,
-                $card->getValue() + 4,
-            ];
+            /** @var Card $card */
+            if ($card->getValue() == 14) {
+                $consecutiveValues = [2, 3, 4, 5];
+            } else {
+                $consecutiveValues = [
+                    $card->getValue() + 1,
+                    $card->getValue() + 2,
+                    $card->getValue() + 3,
+                    $card->getValue() + 4,
+                ];
+            }
             foreach ($consecutiveValues as $value) {
                 $nextCard = $deck->first(function (Card $card) use ($suit, $value): bool {
                     return $card->getValue() == $value && $card->getSuit() == $suit;
@@ -298,7 +317,12 @@ class HandStrength
                 }
             }
             if ($consecutiveCount == 5) {
-                $this->strength[] = $baseStrength + $card->getValue();
+                if ($card->getValue() == 14) {
+                    $value = 1;
+                } else {
+                    $value = $card->getValue();
+                }
+                $this->strength[] = $baseStrength + $value;
             }
         }
     }

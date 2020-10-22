@@ -87,11 +87,24 @@ class HandStrengthTest extends TestCase
         $this->assertMatchesRegularExpression('/two/i', $strength->getStrengthDescription());
     }
 
-//    public function testStraightFromAce()
-//    {
-//        // TODO: add this method
+    public function testStraightFromAce()
+    {
+        $hand = new Hand([
+            new Card('Club', 2),
+            new Card('Club', 3)
+        ]);
+        $deck = new Deck();
+        $deck->add(new Card('Spade', 14));
+        $deck->add(new Card('Spade', 5));
+        $deck->add(new Card('Heart', 4));
+        $deck->add(new Card('Diamond', 9));
+        $deck->add(new Card('Heart', 11));
 
-//    }
+        $strength = new HandStrength($hand, $deck);
+        $this->assertTrue(max($strength->getStrength()) == 401);
+        $this->assertMatchesRegularExpression('/straight/i', $strength->getStrengthDescription());
+        $this->assertMatchesRegularExpression('/ace/i', $strength->getStrengthDescription());
+    }
 
     public function testFlush()
     {
@@ -149,7 +162,7 @@ class HandStrengthTest extends TestCase
         $this->assertMatchesRegularExpression('/full house/i', $strength->getStrengthDescription());
     }
 
-    public function testStraightFlush()
+    public function testSimpleStraightFlush()
     {
         $hand = new Hand([
             new Card('Club', 4),
@@ -164,6 +177,25 @@ class HandStrengthTest extends TestCase
 
         $strength = new HandStrength($hand, $deck);
         $this->assertTrue(max($strength->getStrength()) == 804);
+        $this->assertMatchesRegularExpression('/straight flush/i', $strength->getStrengthDescription());
+    }
+
+
+    public function testStraightFlushFromAce()
+    {
+        $hand = new Hand([
+            new Card('Club', 14),
+            new Card('Club', 5)
+        ]);
+        $deck = new Deck();
+        $deck->add(new Card('Club', 2));
+        $deck->add(new Card('Club', 3));
+        $deck->add(new Card('Club', 4));
+        $deck->add(new Card('Diamond', 2));
+        $deck->add(new Card('Heart', 11));
+
+        $strength = new HandStrength($hand, $deck);
+        $this->assertTrue(max($strength->getStrength()) == 801);
         $this->assertMatchesRegularExpression('/straight flush/i', $strength->getStrengthDescription());
     }
 

@@ -1,28 +1,22 @@
+image: php:7.4
+
 before_script:
-  - 'which ssh-agent || ( apt-get install -qq openssh-client )'
-  - eval $(ssh-agent -s)
-  - ssh-add <(echo "$SSH_PRIVATE_KEY")
-  - mkdir -p ~/.ssh
-  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  # Install composer dependencies
+  - wget https://composer.github.io/installer.sig -O - -q | tr -d '\n' > installer.sig
+  - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+  - php -r "if (hash_file('SHA384', 'composer-setup.php') === file_get_contents('installer.sig')) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+  - php composer-setup.php
+  - php -r "unlink('composer-setup.php'); unlink('installer.sig');"
+  - php composer.phar install
+
+cache:
+  paths:
+    - vendor/
 
 stages:
-  - production
+  - test
 
-prod_deploy:
-  stage: production
+phpunit:
+  stage: test
   script:
-    - ssh $SSH_USERNAME_PROD@$SSH_HOST_PROD "cd $BE_ROOT_PATH
-      && git reset --hard HEAD && git checkout master
-      && git pull origin master
-      && docker run --rm --interactive --volume $BE_ROOT_PATH:/app composer install --ignore-platform-reqs --no-scripts
-      && docker-compose -f "docker/docker-compose.yml" pull
-      && DOCKER_USER=1000:1000 docker-compose -f "docker/docker-compose.yml" up -d --build
-      && docker exec -u 1000:1000 poker_php php artisan cache:clear
-      && docker exec -u 1000:1000 poker_php php artisan route:cache
-      && docker exec -u 1000:1000 poker_php php artisan config:clear
-      && docker exec -u 1000:1000 poker_php php artisan view:cache
-      && docker exec -u 1000:1000 poker_php php vendor/bin/phpunit
-      && exit
-      "
-  only:
-    - master
+    - phpunit --configuration phpunit.xml

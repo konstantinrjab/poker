@@ -12,4 +12,10 @@ cache:
   paths:
     - vendor/
 
+stages:
+  - test
 
+phpunit:
+  stage: test
+  script:
+    - ls

@@ -9,6 +9,6 @@ set -xe
 #apt-get update -yqq
 #apt-get install git -yqq
 
-apk add --no-cache zip libzip-dev
+apt-get install --no-cache zip libzip-dev
 docker-php-ext-configure zip --with-libzip
 docker-php-ext-install zip

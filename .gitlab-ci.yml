@@ -18,6 +18,5 @@ stages:
 phpunit:
   stage: test
   script:
-    - cp .env.example.ci .env
     - php artisan key:generate
-    - php vendor/bin/phpunit
+    - php vendor/bin/phpunit --configuration phpunit.ci.xml

@@ -6,8 +6,8 @@
 set -xe
 
 # Install git (the php image doesn't have it) which is required by composer
-#apt-get update -yqq
-#apt-get install git -yqq
+apt-get update -yqq
+apt-get install git -yqq
 
 #apt-get install zip libzip-dev
 #docker-php-ext-configure zip --with-libzip

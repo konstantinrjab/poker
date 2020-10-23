@@ -12,10 +12,4 @@ cache:
   paths:
     - vendor/
 
-#stages:
-#  - test
-#
-#phpunit:
-#  stage: test
-#  script:
-#    - php vendor/bin/phpunit
+

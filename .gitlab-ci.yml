@@ -16,4 +16,4 @@ stages:
 phpunit:
   stage: test
   script:
-    - phpunit --configuration phpunit.xml
+    - php vendor/bin/phpunit

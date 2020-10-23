@@ -15,8 +15,11 @@ cache:
 stages:
   - test
 
+variables:
+  REDIS_PORT: 6379
+
 phpunit:
   stage: test
   script:
     - php artisan key:generate
-    - php vendor/bin/phpunit --configuration phpunit.ci.xml
+    - php vendor/bin/phpunit

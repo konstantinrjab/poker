@@ -24,6 +24,5 @@
     <server name="SESSION_DRIVER" value="array"/>
     <server name="TELESCOPE_ENABLED" value="false"/>
     <server name="SOCKETS_ENABLED" value="false"/>
-    <server name="REDIS_HOST" value="redis"/>
   </php>
 </phpunit>

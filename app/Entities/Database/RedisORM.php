@@ -20,6 +20,6 @@ abstract class RedisORM
 
     public function save()
     {
-        Redis::set(static::getKey() . ':' . $this->getId(), serialize($this));
+        Redis::set(static::getKey() . ':' . $this->getId(), serialize($this), 'EX', 3600);
     }
 }

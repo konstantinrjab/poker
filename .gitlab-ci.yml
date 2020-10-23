@@ -26,7 +26,8 @@ phpunit:
     - php artisan key:generate
     - php vendor/bin/phpunit
 
-deploy:
+deploy_production:
+  stage: deploy
   script:
     - ssh $SSH_USERNAME_PROD@$SSH_HOST_PROD "cd $BE_ROOT_PATH
       && git reset --hard HEAD && git checkout master
@@ -38,7 +39,6 @@ deploy:
       && docker exec -u 1000:1000 poker_php php artisan route:cache
       && docker exec -u 1000:1000 poker_php php artisan config:clear
       && docker exec -u 1000:1000 poker_php php artisan view:cache
-      && exit
-      "
+      && exit"
   only:
     - master

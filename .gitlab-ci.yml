@@ -1,5 +1,8 @@
 image: php:7.4
 
+services:
+  - redis:6-alpine
+
 before_script:
   - bash docker/ci/install.sh > /dev/null
   - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
@@ -18,4 +21,4 @@ stages:
 phpunit:
   stage: test
   script:
-    - ls
+    - php vendor/bin/phpunit

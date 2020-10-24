@@ -1,23 +1,24 @@
 stages:
+#  - test
   - deploy
 
-phpunit:
-  image: php:7.4
-  services:
-    - redis:6-alpine
-  stage: test
-  variables:
-    REDIS_PORT: 6379
-    REDIS_HOST: redis
-  cache:
-    paths:
-      - vendor/
-  script:
-    - bash docker/ci/install.sh > /dev/null
-    - curl -sS https://getcomposer.org/installer | php
-    - ./composer.phar install
-    - php artisan key:generate
-    - php vendor/bin/phpunit
+#phpunit:
+#  image: php:7.4
+#  services:
+#    - redis:6-alpine
+#  stage: test
+#  variables:
+#    REDIS_PORT: 6379
+#    REDIS_HOST: redis
+#  cache:
+#    paths:
+#      - vendor/
+#  script:
+#    - bash docker/ci/install.sh > /dev/null
+#    - curl -sS https://getcomposer.org/installer | php
+#    - ./composer.phar install
+#    - php artisan key:generate
+#    - php vendor/bin/phpunit
 
 deploy_production:
   image: ubuntu

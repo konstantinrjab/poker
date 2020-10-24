@@ -1,13 +1,3 @@
-image: php:7.4
-
-services:
-  - redis:6-alpine
-
-before_script:
-  - bash docker/ci/install.sh > /dev/null
-  - curl -sS https://getcomposer.org/installer | php
-  - ./composer.phar install
-
 cache:
   paths:
     - vendor/
@@ -21,14 +11,26 @@ variables:
   REDIS_HOST: redis
 
 phpunit:
+  image: php:7.4
+  services:
+    - redis:6-alpine
   stage: test
   script:
+    - bash docker/ci/install.sh > /dev/null
+    - curl -sS https://getcomposer.org/installer | php
+    - ./composer.phar install
     - php artisan key:generate
     - php vendor/bin/phpunit
 
 deploy_production:
+  image: alpine
   stage: deploy
   script:
+    - 'which ssh-agent || ( apt-get install -qq openssh-client )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
     - ssh $SSH_USERNAME_PROD@$SSH_HOST_PROD "cd $BE_ROOT_PATH
       && git reset --hard HEAD && git checkout master
       && git pull origin master

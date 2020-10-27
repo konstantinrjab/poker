@@ -166,10 +166,10 @@ class GameController extends Controller
         $response = GameResource::make($game, $userId);
 
         if ($game->getDeal()->getStatus() == Deal::STATUS_END) {
-            App::terminating(function() use ($game) {
-                $game->createNewDeal();
-                $game->save();
-            });
+            /** @var Game $clonedGame */
+            $clonedGame = unserialize(serialize($game)); // deep clone for nested objects - deal, players etc
+            $clonedGame->createNewDeal();
+            $clonedGame->save();
         }
 
         return $response;

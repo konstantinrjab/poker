@@ -4,6 +4,7 @@ namespace Tests\Feature\Flow;
 
 use App\Entities\Database\Game\Deal;
 
+// TODO: finish this flow & make full flow for 2 players
 class BasicFlow_2_Players_Test extends FlowTest
 {
     public function testFlow()
@@ -13,6 +14,7 @@ class BasicFlow_2_Players_Test extends FlowTest
         $this->setReady();
         $this->start();
         $this->preFlop();
+        $this->flop();
 
         $content = $this->getGame();
     }
@@ -59,7 +61,24 @@ class BasicFlow_2_Players_Test extends FlowTest
         // bet is 0 since new round starts
         $this->assertTrue($game['players'][1]['bet'] == 0);
         $this->assertTrue($game['players'][2]['bet'] == 0);
+    }
 
-        // TODO: finish this flow
+    public function flop()
+    {
+        $game = $this->getGame();
+        $this->assertTrue($game['deal']['status'] == Deal::STATUS_FLOP);
+        $this->assertCount(3, $game['communityCards']);
+        $this->assertTrue($game['pot'] == 60);
+
+        // TODO: check that player 2 should be active
+        $this->assertTrue($game['players'][2]['isActive']);
+
+        $response = $this->put('/api/games/' . $this->gameId, [
+            'userId' => $this->playersIds[2],
+            'action' => 'fold'
+        ]);
+        $game = $this->getGameFromResponse($response);
+        $this->assertTrue($game['players'][2]['money'] == 470);
+        $this->assertTrue($game['players'][2]['isFolded'] == true);
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Auth;
 
 class NotifyGameUpdated implements ShouldQueue
 {
@@ -30,7 +31,9 @@ class NotifyGameUpdated implements ShouldQueue
     {
         if (env('SOCKETS_ENABLED', true)) {
             foreach ($this->game->getPlayers() as $player) {
-                GameUpdated::dispatch($this->game, $player->getId());
+                if ($player->getId() != Auth::id()) {
+                    GameUpdated::dispatch($this->game, $player->getId());
+                }
             }
         }
     }

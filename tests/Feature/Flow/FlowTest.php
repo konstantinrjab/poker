@@ -3,6 +3,7 @@
 namespace Tests\Feature\Flow;
 
 use Illuminate\Routing\Middleware\ThrottleRequests;
+use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 use Exception;
 
@@ -19,6 +20,12 @@ abstract class FlowTest extends TestCase
         $this->withoutMiddleware(
             ThrottleRequests::class
         );
+    }
+
+    public function put($uri, array $data = [], array $headers = [])
+    {
+        $this->clearAuth();
+        return parent::put($uri, $data, $headers);
     }
 
     protected function create(): void
@@ -110,5 +117,15 @@ abstract class FlowTest extends TestCase
             'userId' => $this->playersIds[1]
         ]);
         $this->assertTrue($response->status() == 200);
+    }
+
+    protected function clearAuth(): void
+    {
+        // TODO: find better solution
+        $authGuard = Auth::guard('api');
+
+        $reflection = new \ReflectionProperty(get_class($authGuard), 'user');
+        $reflection->setAccessible(true);
+        $reflection->setValue($authGuard, null);
     }
 }

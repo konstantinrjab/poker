@@ -18,9 +18,9 @@ class GameResource extends JsonResource
 {
     private string $userId;
 
-    public function __construct($resource, string $userId)
+    public function __construct($resource)
     {
-        $this->userId = $userId;
+        $this->userId = \Auth::id();
         parent::__construct($resource);
     }
 

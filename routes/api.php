@@ -17,11 +17,13 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-Route::post('/games', 'GameController@store');
-Route::get('/games/{id}', 'GameController@show');
-Route::put('/games/{id}', 'GameController@update');
-Route::put('/games/{id}/join', 'GameController@join');
-Route::put('/games/{id}/start', 'GameController@start');
-Route::put('/games/{id}/ready', 'GameController@ready');
+Route::middleware('auth:api')->group(function () {
+    Route::post('/games', 'GameController@store');
+    Route::get('/games/{id}', 'GameController@show');
+    Route::put('/games/{id}', 'GameController@update');
+    Route::put('/games/{id}/join', 'GameController@join');
+    Route::put('/games/{id}/start', 'GameController@start');
+    Route::put('/games/{id}/ready', 'GameController@ready');
+});
 
 Route::post('/register', 'UsersController@register');

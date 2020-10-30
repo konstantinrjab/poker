@@ -43,7 +43,9 @@ return [
 
         'api' => [
             'driver' => 'token',
-            'provider' => 'users',
+            'provider' => 'redis',
+            'input_key' => 'userId',
+            'storage_key' => 'id',
             'hash' => false,
         ],
     ],
@@ -69,6 +71,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\User::class,
+        ],
+
+        'redis' => [
+            'driver' => 'redis',
         ],
 
         // 'users' => [

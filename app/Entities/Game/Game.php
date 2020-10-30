@@ -6,7 +6,6 @@ use App\Entities\Collections\PlayerCollection;
 use App\Entities\Database\RedisORM;
 use App\Exceptions\GameException;
 use App\Dispatchable\Jobs\NotifyGameUpdated;
-use Illuminate\Support\Str;
 
 class Game extends RedisORM
 {
@@ -14,7 +13,6 @@ class Game extends RedisORM
     public const STATUS_STARTED = 'started';
     public const STATUS_FINISHED = 'finished';
 
-    private string $id;
     private string $creatorId;
     private string $status;
     private Deal $deal;
@@ -25,14 +23,9 @@ class Game extends RedisORM
     {
         $this->creatorId = $creatorId;
         $this->players = new PlayerCollection();
-        $this->id = Str::uuid();
         $this->status = self::STATUS_WAIT_FOR_PLAYERS;
         $this->config = $config;
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
+        parent::__construct();
     }
 
     public function getCreatorId(): string
@@ -103,11 +96,8 @@ class Game extends RedisORM
         return 'game';
     }
 
-    public function save(bool $notifyPlayers = true)
+    protected function afterSave(): void
     {
-        parent::save();
-        if ($notifyPlayers) {
-            NotifyGameUpdated::dispatchAfterResponse($this);
-        }
+        NotifyGameUpdated::dispatchAfterResponse($this);
     }
 }

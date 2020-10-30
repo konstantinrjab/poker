@@ -3,7 +3,7 @@
 namespace App\Dispatchable\Jobs;
 
 use App\Dispatchable\Events\GameUpdated;
-use App\Entities\Database\Game\Game;
+use App\Entities\Game\Game;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

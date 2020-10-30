@@ -3,9 +3,9 @@
 namespace Tests\Unit;
 
 use App\Entities\Collections\Deck;
-use App\Entities\Card;
+use App\Entities\Game\Card;
 use App\Entities\Collections\Hand;
-use App\Entities\HandStrength;
+use App\Entities\Game\Services\HandStrength;
 use PHPUnit\Framework\TestCase;
 
 class HandStrengthTest extends TestCase

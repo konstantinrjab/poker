@@ -3,12 +3,12 @@
 namespace App\Http\Resources;
 
 use App\Entities\Actions\CallAction;
-use App\Entities\Database\Game\Deal;
+use App\Entities\Game\Deal;
 use App\Http\Resources\Collections\PlayerResourceCollection;
 use App\Entities\Actions\BetAction;
 use Facades\App\Http\Adapters\CardAdapter;
-use App\Entities\Database\Game\Game;
-use App\Entities\Database\Game\Player;
+use App\Entities\Game\Game;
+use App\Entities\Game\Player;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**

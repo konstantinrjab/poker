@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources;
 
-use App\Entities\Database\Game\Deal;
-use App\Entities\Database\Game\Game;
+use App\Entities\Game\Deal;
+use App\Entities\Game\Game;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**

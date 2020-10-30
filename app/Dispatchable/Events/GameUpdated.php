@@ -3,7 +3,7 @@
 namespace App\Dispatchable\Events;
 
 use App\Http\Resources\GameResource;
-use App\Entities\Database\Game\Game;
+use App\Entities\Game\Game;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;

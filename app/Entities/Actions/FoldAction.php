@@ -3,7 +3,7 @@
 namespace App\Entities\Actions;
 
 use App\Http\Requests\UpdateGameRequest;
-use App\Entities\Database\Game\Game;
+use App\Entities\Game\Game;
 
 class FoldAction extends Action
 {

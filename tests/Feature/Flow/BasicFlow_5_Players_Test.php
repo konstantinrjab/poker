@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Flow;
 
-use App\Entities\Database\Game\Deal;
+use App\Entities\Game\Deal;
 
 class BasicFlow_5_Players_Test extends FlowTest
 {

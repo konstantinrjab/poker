@@ -2,7 +2,7 @@
 
 namespace App\Http\Adapters;
 
-use App\Entities\Card;
+use App\Entities\Game\Card;
 use Illuminate\Support\Collection;
 use Exception;
 

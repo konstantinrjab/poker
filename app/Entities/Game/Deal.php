@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Entities\Database\Game;
+namespace App\Entities\Game;
 
 use App\Entities\Collections\PlayerCollection;
 use App\Entities\Collections\Deck;
 use Exception;
-use Facades\App\Entities\WinnerDetector;
+use Facades\App\Entities\Game\Services\WinnerDetector;
 use Str;
 
 class Deal

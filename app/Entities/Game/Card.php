@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entities;
+namespace App\Entities\Game;
 
 use App\Exceptions\GameException;
 

@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Entities;
+namespace App\Entities\Game\Services;
 
 use App\Entities\Collections\Deck;
 use App\Entities\Collections\Hand;
+use App\Entities\Game\Card;
 
 class HandStrength
 {

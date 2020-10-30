@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Flow;
 
-use App\Entities\Database\Game\Deal;
+use App\Entities\Game\Deal;
 
 // TODO: finish this flow & make full flow for 2 players
 class BasicFlow_2_Players_Test extends FlowTest

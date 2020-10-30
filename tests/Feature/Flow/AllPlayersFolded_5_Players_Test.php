@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Flow;
 
-use App\Entities\Database\Game\Deal;
-use App\Entities\WinnerDetector;
+use App\Entities\Game\Deal;
+use App\Entities\Game\Services\WinnerDetector;
 
 // game finished after 4 of 5 players make fold. winner is the last player
 class AllPlayersFolded_5_Players_Test extends FlowTest

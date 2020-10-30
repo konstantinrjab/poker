@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entities\Database\Game;
+namespace App\Entities\Game;
 
 use App\Entities\Collections\Hand;
 use Exception;

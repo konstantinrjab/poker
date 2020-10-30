@@ -2,7 +2,7 @@
 
 namespace App\Entities\Collections;
 
-use App\Entities\Card;
+use App\Entities\Game\Card;
 use Illuminate\Support\Collection;
 
 class Deck extends Collection

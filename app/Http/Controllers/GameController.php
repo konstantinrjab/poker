@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Database\Game\Deal;
+use App\Entities\Game\Deal;
 use App\Exceptions\GameException;
 use App\Http\Requests\CreateGameRequest;
 use App\Http\Requests\JoinGameRequest;
@@ -12,10 +12,10 @@ use App\Http\Requests\StartGameRequest;
 use App\Http\Requests\UpdateGameRequest;
 use App\Http\Resources\GameResource;
 use App\Entities\Actions\ActionFactory;
-use App\Entities\Database\Game\Game;
-use App\Entities\Database\Game\GameConfig;
-use App\Entities\Database\Game\Player;
-use App\Entities\Database\User;
+use App\Entities\Game\Game;
+use App\Entities\Game\GameConfig;
+use App\Entities\Game\Player;
+use App\Entities\User;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use App;

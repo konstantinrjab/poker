@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entities;
+namespace App\Entities\Game\Services;
 
 use App\Entities\Collections\Deck;
 use App\Entities\Collections\PlayerCollection;

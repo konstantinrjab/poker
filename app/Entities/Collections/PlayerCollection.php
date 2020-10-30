@@ -2,9 +2,9 @@
 
 namespace App\Entities\Collections;
 
-use App\Entities\Database\Game\GameConfig;
+use App\Entities\Game\GameConfig;
 use App\Exceptions\GameException;
-use App\Entities\Database\Game\Player;
+use App\Entities\Game\Player;
 use Illuminate\Support\Collection;
 
 /**
@@ -113,7 +113,6 @@ class PlayerCollection extends Collection
         $currentPlayerOffset = $this->search(function (Player $value, $key) use ($userId): bool {
             return $value->getId() == $userId;
         });
-        $nextPlayer = $this->offsetExists($currentPlayerOffset + 1) ? $this->offsetGet($currentPlayerOffset + 1) : $this->first();
-        return $nextPlayer;
+        return $this->offsetExists($currentPlayerOffset + 1) ? $this->offsetGet($currentPlayerOffset + 1) : $this->first();
     }
 }

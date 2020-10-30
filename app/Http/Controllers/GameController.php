@@ -27,6 +27,7 @@ class GameController extends Controller
      *
      * @param CreateGameRequest $request
      * @return GameResource
+     * @throws GameException
      */
     public function store(CreateGameRequest $request)
     {

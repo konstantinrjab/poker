@@ -3,9 +3,9 @@
 namespace App\Entities\Collections;
 
 use App\Entities\Game\GameConfig;
-use App\Exceptions\GameException;
 use App\Entities\Game\Player;
 use Illuminate\Support\Collection;
+use Exception;
 
 /**
  * @method Player[] getIterator()
@@ -18,10 +18,15 @@ class PlayerCollection extends Collection
     private string $smallBlindId;
     private string $bigBlindId;
 
+    /**
+     * @param Player $player
+     * @return static
+     * @throws Exception
+     */
     public function add($player)
     {
         if (!$player instanceof Player) {
-            throw new GameException('$player should be instance of Player');
+            throw new Exception('$player should be instance of Player');
         }
 
         $duplicatesByName = $this->filter(function (Player $existedPlayer) use ($player) {
@@ -91,14 +96,15 @@ class PlayerCollection extends Collection
             $this->activeId = $nextPlayer->getId();
             return;
         }
-        throw new GameException('Cannot resolve next active player');
+        throw new Exception('Cannot resolve next active player');
     }
 
     public function prepareForNextDeal(GameConfig $config): void
     {
-        $this->filter(function (Player $player) use ($config): bool {
-            return $player->getMoney() > $config->getBigBlind();
+        $this->items = $this->reject(function (Player $player, $key) use ($config): bool {
+            return $player->getMoney() < $config->getBigBlind();
         });
+
         foreach ($this as $player) {
             $player->setIsFolded(false);
         }

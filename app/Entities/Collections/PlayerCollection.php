@@ -103,7 +103,7 @@ class PlayerCollection extends Collection
     {
         $this->items = $this->reject(function (Player $player, $key) use ($config): bool {
             return $player->getMoney() < $config->getBigBlind();
-        });
+        })->items;
 
         foreach ($this as $player) {
             $player->setIsFolded(false);

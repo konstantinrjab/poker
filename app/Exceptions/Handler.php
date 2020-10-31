@@ -100,7 +100,7 @@ class Handler extends ExceptionHandler
                 $response['trace'] = $exception->getTrace();
             }
 
-            $status = 400;
+            $status = $exception->getCode() ?: 400;
 
             if ($this->isHttpException($exception)) {
                 /** @var HttpExceptionInterface $exception */

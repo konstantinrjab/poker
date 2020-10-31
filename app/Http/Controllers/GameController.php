@@ -12,9 +12,9 @@ use App\Entities\Actions\ActionFactory;
 use App\Entities\Game\Game;
 use App\Entities\Game\GameConfig;
 use App\Entities\Game\Player;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App;
 use Auth;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class GameController extends Controller
 {
@@ -57,7 +57,7 @@ class GameController extends Controller
             return $player->getId() == Auth::id();
         });
         if (!$exists) {
-            throw new NotFoundHttpException();
+            throw new AccessDeniedHttpException();
         }
 
         return GameResource::make($game);
@@ -104,7 +104,7 @@ class GameController extends Controller
     public function start(Game $game)
     {
         if ($game->getCreatorId() != Auth::id()) {
-            throw new GameException('You cannot start game');
+            throw new AccessDeniedHttpException();
         }
 
         $game->start();

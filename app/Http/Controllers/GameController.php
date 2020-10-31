@@ -5,10 +5,7 @@ namespace App\Http\Controllers;
 use App\Entities\Game\Deal;
 use App\Exceptions\GameException;
 use App\Http\Requests\CreateGameRequest;
-use App\Http\Requests\JoinGameRequest;
 use App\Http\Requests\ReadyRequest;
-use App\Http\Requests\ShowGameRequest;
-use App\Http\Requests\StartGameRequest;
 use App\Http\Requests\UpdateGameRequest;
 use App\Http\Resources\GameResource;
 use App\Entities\Actions\ActionFactory;
@@ -51,13 +48,11 @@ class GameController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param string $id
-     * @param ShowGameRequest $request
+     * @param Game $game
      * @return GameResource
      */
-    public function show(string $id, ShowGameRequest $request)
+    public function show(Game $game)
     {
-        $game = Game::get($id);
         $exists = $game->getPlayers()->first(function (Player $player) {
             return $player->getId() == Auth::id();
         });
@@ -68,16 +63,8 @@ class GameController extends Controller
         return GameResource::make($game);
     }
 
-    /**
-     * @param JoinGameRequest $request
-     * @param string $id
-     * @throws GameException
-     * @return GameResource
-     */
-    public function join(string $id, JoinGameRequest $request)
+    public function join(Game $game)
     {
-        $game = Game::get($id);
-
         $alreadyJoined = $game->getPlayers()->first(function (Player $existedPlayer) {
             return $existedPlayer->getId() == Auth::id();
         });
@@ -99,9 +86,8 @@ class GameController extends Controller
         return GameResource::make($game);
     }
 
-    public function ready(string $id, ReadyRequest $request)
+    public function ready(ReadyRequest $request, Game $game)
     {
-        $game = Game::get($id);
         $player = $game->getPlayers()->getById(Auth::id());
 
         $player->setIsReady($request->input('value'));
@@ -111,15 +97,12 @@ class GameController extends Controller
     }
 
     /**
-     * @param StartGameRequest $request
-     * @param string $id
+     * @param Game $game
      * @throws GameException
      * @return GameResource
      */
-    public function start(string $id, StartGameRequest $request)
+    public function start(Game $game)
     {
-        $game = Game::get($id);
-
         if ($game->getCreatorId() != Auth::id()) {
             throw new GameException('You cannot start game');
         }
@@ -132,13 +115,12 @@ class GameController extends Controller
 
     /**
      * @param UpdateGameRequest $request
-     * @param string $id
+     * @param Game $game
      * @return GameResource
      * @throws GameException
      */
-    public function update(string $id, UpdateGameRequest $request)
+    public function update(UpdateGameRequest $request, Game $game)
     {
-        $game = Game::get($id);
         // TODO: add timeout logic
         if ($game->getPlayers()->getActivePlayer()->getId() != Auth::id()) {
             throw new GameException('It is not you turn');

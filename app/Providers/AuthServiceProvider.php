@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Services\RedisUserProvider;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Auth;
 
@@ -26,7 +27,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Auth::provider('redis', function ($app, array $config) {
+        Auth::provider('redis', function (Application $app, array $config) {
             return new RedisUserProvider();
         });
     }

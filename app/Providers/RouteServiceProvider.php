@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Entities\Game\Game;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
@@ -30,7 +31,9 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Route::bind('game', function ($value) {
+            return Game::get($value) ?? abort(404);
+        });
 
         parent::boot();
     }

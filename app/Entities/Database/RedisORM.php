@@ -2,7 +2,6 @@
 
 namespace App\Entities\Database;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Redis;
 use Str;
 
@@ -17,12 +16,9 @@ abstract class RedisORM
         $this->id = Str::uuid();
     }
 
-    public static function get(string $id, bool $throwOnNotFound = true): ?self
+    public static function get(string $id): ?self
     {
         $entity = Redis::get(static::getKey() . ':' . $id);
-        if (!$entity && $throwOnNotFound) {
-            throw new ModelNotFoundException();
-        }
         return $entity ? unserialize($entity) : null;
     }
 

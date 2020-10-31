@@ -19,11 +19,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->group(function () {
     Route::post('/games', 'GameController@store');
-    Route::get('/games/{id}', 'GameController@show');
-    Route::put('/games/{id}', 'GameController@update');
-    Route::put('/games/{id}/join', 'GameController@join');
-    Route::put('/games/{id}/start', 'GameController@start');
-    Route::put('/games/{id}/ready', 'GameController@ready');
+    Route::get('/games/{game}', 'GameController@show');
+    Route::put('/games/{game}', 'GameController@update');
+    Route::put('/games/{game}/join', 'GameController@join');
+    Route::put('/games/{game}/start', 'GameController@start');
+    Route::put('/games/{game}/ready', 'GameController@ready');
 });
 
 Route::post('/register', 'UsersController@register');

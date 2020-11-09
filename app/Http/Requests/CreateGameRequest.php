@@ -29,6 +29,7 @@ class CreateGameRequest extends FormRequest
                     $fail($attribute . ' should be at least ' . $minInitialMoney);
                 }
             }],
+            'timeout' => 'int|min:10|max:100'
         ];
     }
 }

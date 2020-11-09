@@ -9,13 +9,15 @@ class GameConfig
     private int $initialMoney;
     private int $maxPlayers;
     private int $minPlayers;
+    private ?int $timeout;
 
     public function __construct(
         int $smallBlind,
         int $bigBlind,
         int $initialMoney,
         int $minPlayers,
-        int $maxPlayers
+        int $maxPlayers,
+        ?int $timeout
     )
     {
         $this->smallBlind = $smallBlind;
@@ -23,6 +25,7 @@ class GameConfig
         $this->initialMoney = $initialMoney;
         $this->minPlayers = $minPlayers;
         $this->maxPlayers = $maxPlayers;
+        $this->timeout = $timeout;
     }
 
     public function getSmallBlind(): int
@@ -48,5 +51,10 @@ class GameConfig
     public function getMinPlayersCount(): int
     {
         return $this->minPlayers;
+    }
+
+    public function getTimeout(): ?int
+    {
+        return $this->timeout;
     }
 }

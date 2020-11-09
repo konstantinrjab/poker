@@ -22,7 +22,7 @@ class Game extends RedisORM
     public function __construct(GameConfig $config, string $creatorId)
     {
         $this->creatorId = $creatorId;
-        $this->players = new PlayerCollection();
+        $this->players = new PlayerCollection($config->getTimeout());
         $this->status = self::STATUS_WAIT_FOR_PLAYERS;
         $this->config = $config;
         parent::__construct();

@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Services\RedisUserProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Auth;

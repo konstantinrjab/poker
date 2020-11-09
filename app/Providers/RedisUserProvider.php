@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Providers;
 
 use App\Entities\User;
 use Illuminate\Contracts\Auth\Authenticatable as UserContract;

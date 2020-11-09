@@ -32,7 +32,8 @@ class GameController extends Controller
             $request->input('bigBlind'),
             $request->input('initialMoney'),
             $request->input('minPlayers'),
-            $request->input('maxPlayers')
+            $request->input('maxPlayers'),
+            $request->input('timeout'),
         );
 
         $user = Auth::user();

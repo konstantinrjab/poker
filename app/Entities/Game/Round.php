@@ -8,9 +8,11 @@ use App\Entities\Actions\BetAction;
 use App\Entities\Actions\CallAction;
 use App\Entities\Actions\CheckAction;
 use App\Entities\Actions\FoldAction;
+use Str;
 
 class Round
 {
+    private string $id;
     private int $maxBet = 0;
     private GameConfig $config;
     private PlayerCollection $players;
@@ -19,7 +21,9 @@ class Round
 
     public function __construct(PlayerCollection $players, GameConfig $config, bool $isPreFlop)
     {
+        $this->id = Str::uuid();
         $this->players = $players;
+        $this->config = $config;
         if ($isPreFlop) {
             $playerId = $this->players->getBigBlind()->getId();
         } else {
@@ -27,7 +31,16 @@ class Round
         }
         $this->players->setActivePlayer($playerId);
         $this->players->setNextActivePlayer();
-        $this->config = $config;
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function getPlayers(): PlayerCollection
+    {
+        return $this->players;
     }
 
     public function initBlinds(): void

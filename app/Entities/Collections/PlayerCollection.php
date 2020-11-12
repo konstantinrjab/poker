@@ -17,14 +17,6 @@ class PlayerCollection extends Collection
     private string $dealerId;
     private string $smallBlindId;
     private string $bigBlindId;
-    private ?int $turnTimeout;
-    private int $lastActedTime;
-
-    public function __construct(int $turnTimeout = null, array $items = [])
-    {
-        $this->turnTimeout = $turnTimeout;
-        parent::__construct($items);
-    }
 
     /**
      * @param Player $player
@@ -91,10 +83,9 @@ class PlayerCollection extends Collection
     public function setActivePlayer(string $playerId): void
     {
         $this->activeId = $playerId;
-        $this->lastActedTime = time();
     }
 
-    public function setNextActivePlayer(): void
+    public function setNextActivePlayer(): void //should be called only from Round class. TODO: find a better solution
     {
         $nextPlayer = $this->getNextAfterId($this->activeId);
         foreach (range(0, $this->count()) as $playerNumber) {
@@ -103,7 +94,6 @@ class PlayerCollection extends Collection
                 continue;
             }
             $this->activeId = $nextPlayer->getId();
-            $this->lastActedTime = time();
             return;
         }
         throw new Exception('Cannot resolve next active player');

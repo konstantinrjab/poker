@@ -40,6 +40,7 @@ deploy_production:
       && docker exec -u 1000:1000 poker_php php artisan route:cache
       && docker exec -u 1000:1000 poker_php php artisan config:clear
       && docker exec -u 1000:1000 poker_php php artisan view:cache
+      && docker exec -u 1000:1000 poker_php_worker php artisan queue:restart
       && yes | docker system prune
       && exit"
   only:

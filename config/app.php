@@ -165,6 +165,7 @@ return [
         /*
          * Package Service Providers...
          */
+        Laravel\Horizon\HorizonServiceProvider::class,
 
         /*
          * Application Service Providers...

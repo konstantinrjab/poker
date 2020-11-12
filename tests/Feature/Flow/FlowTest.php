@@ -83,6 +83,9 @@ abstract class FlowTest extends TestCase
             $response = $this->put('/api/games/' . $this->gameId . '/join', [
                 'userId' => $response->json()['data']['id'],
             ]);
+            if ($response->status() != 200) {
+                $this->throwException(new Exception('Error in response: ' . $response->getContent()));
+            }
             $this->assertTrue($response->status() == 200);
         }
     }

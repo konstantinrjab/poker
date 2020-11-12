@@ -4,6 +4,7 @@ namespace App\Entities\Game\Services;
 
 use App\Entities\Collections\Deck;
 use App\Entities\Collections\PlayerCollection;
+use App\Entities\Game\Player;
 use Illuminate\Support\Facades\Facade;
 
 class WinnerDetector extends Facade
@@ -40,7 +41,7 @@ class WinnerDetector extends Facade
     }
 
     /**
-     * @param  \App\Entities\Database\Game\Player[] $players
+     * @param  Player[] $players
      * @param int $availableIterations
      * @return array
      */

@@ -6,6 +6,7 @@ use App\Entities\Collections\PlayerCollection;
 use App\Entities\Database\RedisORM;
 use App\Exceptions\GameException;
 use App\Dispatchable\Jobs\NotifyGameUpdated;
+use App\Jobs\CheckAndFoldInactivePlayer;
 
 class Game extends RedisORM
 {
@@ -22,7 +23,7 @@ class Game extends RedisORM
     public function __construct(GameConfig $config, string $creatorId)
     {
         $this->creatorId = $creatorId;
-        $this->players = new PlayerCollection($config->getTimeout());
+        $this->players = new PlayerCollection();
         $this->status = self::STATUS_WAIT_FOR_PLAYERS;
         $this->config = $config;
         parent::__construct();
@@ -83,6 +84,9 @@ class Game extends RedisORM
         } else {
             $this->players->setNextActivePlayer();
         }
+        CheckAndFoldInactivePlayer::dispatch($this)
+            ->onConnection('redis')
+            ->delay($this->config->getTimeout());
     }
 
     public function createNewDeal()

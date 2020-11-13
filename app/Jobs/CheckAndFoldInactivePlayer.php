@@ -41,7 +41,7 @@ class CheckAndFoldInactivePlayer implements ShouldQueue
         ) {
             $currentActivePlayer->setIsFolded(true);
             $game->onAfterUpdate();
-            $game->save();
+            $game->checkForNewDeal();
         }
     }
 }

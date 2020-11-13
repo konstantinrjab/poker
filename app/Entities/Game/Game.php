@@ -64,11 +64,19 @@ class Game extends RedisORM
         }
         $this->deal = new Deal($this->players, $this->config);
         $this->status = self::STATUS_STARTED;
+        $this->initInactivePlayerJob();
     }
 
     public function getDeal(): ?Deal
     {
         return isset($this->deal) ? $this->deal : null;
+    }
+
+    public function onBeforeUpdate(): void
+    {
+        if ($this->status == self::STATUS_FINISHED) {
+            throw new GameException('Game finished');
+        }
     }
 
     public function onAfterUpdate(): void
@@ -84,14 +92,29 @@ class Game extends RedisORM
         } else {
             $this->players->setNextActivePlayer();
         }
-        CheckAndFoldInactivePlayer::dispatch($this)
-            ->onConnection('redis')
-            ->delay($this->config->getTimeout());
+
+        $this->save();
+        $this->initInactivePlayerJob();
     }
 
-    public function createNewDeal()
+    public function checkForNewDeal(): void
     {
-        $this->players->prepareForNextDeal($this->getConfig());
+        if ($this->deal->getStatus() == Deal::STATUS_END) {
+            /** @var Game $clonedGame */
+            $clonedGame = unserialize(serialize($this)); // deep clone for nested objects - deal, players etc
+            $clonedGame->createNewDealOrEnd();
+            $clonedGame->save();
+        }
+    }
+
+    public function createNewDealOrEnd(): void
+    {
+        $this->players->kickWithoutEnoughMoney($this->getConfig()->getBigBlind());
+        if ($this->players->count() == 1) {
+            $this->status = self::STATUS_FINISHED;
+            return;
+        }
+        $this->players->prepareForNextDeal();
         $this->deal = new Deal($this->players, $this->getConfig());
     }
 
@@ -103,5 +126,12 @@ class Game extends RedisORM
     protected function afterSave(): void
     {
         NotifyGameUpdated::dispatchAfterResponse($this);
+    }
+
+    private function initInactivePlayerJob(): void
+    {
+        CheckAndFoldInactivePlayer::dispatch($this)
+            ->onConnection('redis')
+            ->delay($this->config->getTimeout());
     }
 }

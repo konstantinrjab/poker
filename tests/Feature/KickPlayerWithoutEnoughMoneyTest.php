@@ -52,7 +52,7 @@ class KickPlayerWithoutEnoughMoneyTest extends TestCase
         $game->onAfterUpdate();
         $this->assertTrue($game->getPlayers()->getById($user2->getId())->getMoney() == 0);
 
-        $game->createNewDeal();
+        $game->createNewDealOrEnd();
         $game->save();
 
         $this->assertIsObject($game->getPlayers()->getById($user1->getId()));

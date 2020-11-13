@@ -33,7 +33,7 @@ class GameController extends Controller
             $request->input('initialMoney'),
             $request->input('minPlayers'),
             $request->input('maxPlayers'),
-            25,
+            5,
         );
 
         $user = Auth::user();
@@ -129,20 +129,16 @@ class GameController extends Controller
         if ($game->getDeal()->getStatus() == Deal::STATUS_END) {
             throw new GameException('Deal ended');
         }
+        $game->onBeforeUpdate();
+
         $action = ActionFactory::get($request, $game);
         $action->updateGame($game, $request);
 
         $game->onAfterUpdate();
-        $game->save();
 
         $response = GameResource::make($game);
 
-        if ($game->getDeal()->getStatus() == Deal::STATUS_END) {
-            /** @var Game $clonedGame */
-            $clonedGame = unserialize(serialize($game)); // deep clone for nested objects - deal, players etc
-            $clonedGame->createNewDeal();
-            $clonedGame->save();
-        }
+        $game->checkForNewDeal();
 
         return $response;
     }

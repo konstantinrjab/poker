@@ -1,4 +1,4 @@
-FROM php:7.4
+FROM php:7.4-fpm
 
 RUN apt-get update && apt-get install -y supervisor
 RUN mkdir -p /var/log/supervisor
@@ -10,4 +10,11 @@ COPY php.ini $PHP_INI_DIR
 
 COPY supervisord.conf /etc/supervisord.conf
 
-ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c",  "/etc/supervisord.conf"]
+ADD start.sh /
+RUN chmod +x /start.sh
+
+CMD ["/start.sh"]
+
+EXPOSE 9000
+
+WORKDIR /var/www

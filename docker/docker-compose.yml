@@ -36,8 +36,10 @@ services:
       - ./nginx/conf.d/:/etc/nginx/conf.d
     depends_on:
       - poker_php
+      - poker_php_worker
     ports:
       - "80:80"
+      - "81:81"
       - "443:443"
 #  poker_mysql:
 #    container_name: poker_mysql

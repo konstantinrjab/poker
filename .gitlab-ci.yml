@@ -19,6 +19,8 @@ phpunit:
     - ./composer.phar install
     - php artisan key:generate
     - php vendor/bin/phpunit
+  only:
+    - master
 
 deploy_production:
   image: alpine

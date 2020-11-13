@@ -99,12 +99,15 @@ class PlayerCollection extends Collection
         throw new Exception('Cannot resolve next active player');
     }
 
-    public function prepareForNextDeal(GameConfig $config): void
+    public function kickWithoutEnoughMoney(int $bigBlind): void
     {
-        $this->items = $this->reject(function (Player $player, $key) use ($config): bool {
-            return $player->getMoney() < $config->getBigBlind();
+        $this->items = $this->reject(function (Player $player, $key) use ($bigBlind): bool {
+            return $player->getMoney() < $bigBlind;
         })->items;
+    }
 
+    public function prepareForNextDeal(): void
+    {
         foreach ($this as $player) {
             $player->setIsFolded(false);
         }

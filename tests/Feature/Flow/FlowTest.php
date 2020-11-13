@@ -36,6 +36,7 @@ abstract class FlowTest extends TestCase
             'bigBlind' => 10,
             'smallBlind' => 5,
             'initialMoney' => 500,
+            'timeout' => 10,
         ]);
         if (!isset($response->json()['data']['id'])) {
             throw new Exception('Invalid game state: ' . var_export($response->json()['data'], true));

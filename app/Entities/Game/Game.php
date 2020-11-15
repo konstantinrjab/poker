@@ -6,7 +6,7 @@ use App\Entities\Collections\PlayerCollection;
 use App\Entities\Database\RedisORM;
 use App\Exceptions\GameException;
 use App\Dispatchable\Jobs\NotifyGameUpdated;
-use App\Jobs\CheckAndFoldInactivePlayer;
+use App\Dispatchable\Jobs\CheckAndFoldInactivePlayer;
 
 class Game extends RedisORM
 {
@@ -116,6 +116,7 @@ class Game extends RedisORM
         }
         $this->players->prepareForNextDeal();
         $this->deal = new Deal($this->players, $this->getConfig());
+        $this->initInactivePlayerJob();
     }
 
     protected static function getKey(): string
@@ -125,13 +126,15 @@ class Game extends RedisORM
 
     protected function afterSave(): void
     {
-        NotifyGameUpdated::dispatchAfterResponse($this);
+        if (env('SOCKETS_ENABLED', true)) {
+            NotifyGameUpdated::dispatch($this)
+                ->delay(0);
+        }
     }
 
     private function initInactivePlayerJob(): void
     {
         CheckAndFoldInactivePlayer::dispatch($this)
-            ->onConnection('redis')
             ->delay($this->config->getTimeout());
     }
 }

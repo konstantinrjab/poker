@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Dispatchable\Jobs;
 
 use App\Entities\Game\Game;
 use Illuminate\Bus\Queueable;
@@ -31,6 +31,7 @@ class CheckAndFoldInactivePlayer implements ShouldQueue
      */
     public function handle()
     {
+        // TODO: kill game if there are no turns from user for last 10 mins
         $game = Game::get($this->game->getId());
         $currentRoundId = $game->getDeal()->getRound()->getId();
         $currentActivePlayer = $game->getPlayers()->getActivePlayer();

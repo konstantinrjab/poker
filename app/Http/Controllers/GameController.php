@@ -33,7 +33,7 @@ class GameController extends Controller
             $request->input('initialMoney'),
             $request->input('minPlayers'),
             $request->input('maxPlayers'),
-            5,
+            $request->input('timeout'),
         );
 
         $user = Auth::user();
@@ -122,7 +122,6 @@ class GameController extends Controller
      */
     public function update(UpdateGameRequest $request, Game $game)
     {
-        // TODO: add timeout logic
         if ($game->getPlayers()->getActivePlayer()->getId() != Auth::id()) {
             throw new GameException('It is not you turn');
         }

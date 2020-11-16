@@ -29,11 +29,9 @@ class NotifyGameUpdated implements ShouldQueue
      */
     public function handle()
     {
-        if (env('SOCKETS_ENABLED', true)) {
-            foreach ($this->game->getPlayers() as $player) {
-                if ($player->getId() != Auth::id()) {
-                    GameUpdated::dispatch($this->game, $player->getId());
-                }
+        foreach ($this->game->getPlayers() as $player) {
+            if ($player->getId() != Auth::id()) {
+                GameUpdated::dispatch($this->game, $player->getId());
             }
         }
     }

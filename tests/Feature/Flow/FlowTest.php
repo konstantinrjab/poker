@@ -36,6 +36,7 @@ abstract class FlowTest extends TestCase
             'bigBlind' => 10,
             'smallBlind' => 5,
             'initialMoney' => 500,
+            'timeout' => 10,
         ]);
         if (!isset($response->json()['data']['id'])) {
             throw new Exception('Invalid game state: ' . var_export($response->json()['data'], true));
@@ -83,6 +84,9 @@ abstract class FlowTest extends TestCase
             $response = $this->put('/api/games/' . $this->gameId . '/join', [
                 'userId' => $response->json()['data']['id'],
             ]);
+            if ($response->status() != 200) {
+                $this->throwException(new Exception('Error in response: ' . $response->getContent()));
+            }
             $this->assertTrue($response->status() == 200);
         }
     }

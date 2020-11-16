@@ -20,7 +20,7 @@ class KickPlayerWithoutEnoughMoneyTest extends TestCase
         $user2 = new User('username2');
         $user2->save();
 
-        $config = new GameConfig(10, 20, 20, 2, 5);
+        $config = new GameConfig(10, 20, 20, 2, 5, null);
         $game = new Game($config, $user1->getId());
 
         $player1 = new Player($user1->getId(), $user1->getName(), $game->getConfig()->getInitialMoney());
@@ -31,6 +31,9 @@ class KickPlayerWithoutEnoughMoneyTest extends TestCase
 
         $player1->setIsReady(true);
         $player2->setIsReady(true);
+        $this->app->singleton('game', function () use ($game) {
+            return $game;
+        });
         $game->start();
 
         $request = new UpdateGameRequest();
@@ -49,7 +52,7 @@ class KickPlayerWithoutEnoughMoneyTest extends TestCase
         $game->onAfterUpdate();
         $this->assertTrue($game->getPlayers()->getById($user2->getId())->getMoney() == 0);
 
-        $game->createNewDeal();
+        $game->createNewDealOrEnd();
         $game->save();
 
         $this->assertIsObject($game->getPlayers()->getById($user1->getId()));

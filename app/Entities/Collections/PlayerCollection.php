@@ -17,14 +17,6 @@ class PlayerCollection extends Collection
     private string $dealerId;
     private string $smallBlindId;
     private string $bigBlindId;
-    private ?int $turnTimeout;
-    private int $lastActedTime;
-
-    public function __construct(int $turnTimeout = null, array $items = [])
-    {
-        $this->turnTimeout = $turnTimeout;
-        parent::__construct($items);
-    }
 
     /**
      * @param Player $player
@@ -91,10 +83,9 @@ class PlayerCollection extends Collection
     public function setActivePlayer(string $playerId): void
     {
         $this->activeId = $playerId;
-        $this->lastActedTime = time();
     }
 
-    public function setNextActivePlayer(): void
+    public function setNextActivePlayer(): void //should be called only from Round class. TODO: find a better solution
     {
         $nextPlayer = $this->getNextAfterId($this->activeId);
         foreach (range(0, $this->count()) as $playerNumber) {
@@ -103,18 +94,20 @@ class PlayerCollection extends Collection
                 continue;
             }
             $this->activeId = $nextPlayer->getId();
-            $this->lastActedTime = time();
             return;
         }
         throw new Exception('Cannot resolve next active player');
     }
 
-    public function prepareForNextDeal(GameConfig $config): void
+    public function kickWithoutEnoughMoney(int $bigBlind): void
     {
-        $this->items = $this->reject(function (Player $player, $key) use ($config): bool {
-            return $player->getMoney() < $config->getBigBlind();
+        $this->items = $this->reject(function (Player $player, $key) use ($bigBlind): bool {
+            return $player->getMoney() < $bigBlind;
         })->items;
+    }
 
+    public function prepareForNextDeal(): void
+    {
         foreach ($this as $player) {
             $player->setIsFolded(false);
         }

@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Entities\Game\Game;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -32,7 +33,14 @@ class RouteServiceProvider extends ServiceProvider
     public function boot()
     {
         Route::bind('game', function ($value) {
-            return Game::get($value) ?? abort(404);
+            $game = Game::get($value);
+            if (!$game) {
+                throw new BadRequestHttpException('Game not found');
+            }
+            $this->app->singleton('game', function () use ($game) {
+                return $game;
+            });
+            return $game;
         });
 
         parent::boot();

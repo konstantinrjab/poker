@@ -13,6 +13,18 @@ services:
     volumes:
       - ../:/var/www
     user: ${DOCKER_USER}
+  poker_php_worker:
+    container_name: poker_php_worker
+    build:
+      context: ./php-worker
+    environment:
+      XDEBUG_CONFIG: "remote_host=172.17.0.1"
+      PHP_IDE_CONFIG: "serverName=Docker"
+    volumes:
+      - ../:/var/www
+      - ../storage/logs:/var/log/supervisord
+      - ./php-worker/supervisord.d:/etc/supervisord.d
+    user: ${DOCKER_USER}
   poker_nginx:
     container_name: poker_nginx
     build:
@@ -24,8 +36,10 @@ services:
       - ./nginx/conf.d/:/etc/nginx/conf.d
     depends_on:
       - poker_php
+      - poker_php_worker
     ports:
       - "80:80"
+      - "81:81"
       - "443:443"
 #  poker_mysql:
 #    container_name: poker_mysql

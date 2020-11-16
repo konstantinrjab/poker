@@ -6,6 +6,7 @@ use App\Entities\Collections\PlayerCollection;
 use App\Entities\Database\RedisORM;
 use App\Exceptions\GameException;
 use App\Dispatchable\Jobs\NotifyGameUpdated;
+use App\Dispatchable\Jobs\CheckAndFoldInactivePlayer;
 
 class Game extends RedisORM
 {
@@ -22,7 +23,7 @@ class Game extends RedisORM
     public function __construct(GameConfig $config, string $creatorId)
     {
         $this->creatorId = $creatorId;
-        $this->players = new PlayerCollection($config->getTimeout());
+        $this->players = new PlayerCollection();
         $this->status = self::STATUS_WAIT_FOR_PLAYERS;
         $this->config = $config;
         parent::__construct();
@@ -63,11 +64,19 @@ class Game extends RedisORM
         }
         $this->deal = new Deal($this->players, $this->config);
         $this->status = self::STATUS_STARTED;
+        $this->initInactivePlayerJob();
     }
 
     public function getDeal(): ?Deal
     {
         return isset($this->deal) ? $this->deal : null;
+    }
+
+    public function onBeforeUpdate(): void
+    {
+        if ($this->status == self::STATUS_FINISHED) {
+            throw new GameException('Game finished');
+        }
     }
 
     public function onAfterUpdate(): void
@@ -83,12 +92,31 @@ class Game extends RedisORM
         } else {
             $this->players->setNextActivePlayer();
         }
+
+        $this->save();
+        $this->initInactivePlayerJob();
     }
 
-    public function createNewDeal()
+    public function checkForNewDeal(): void
     {
-        $this->players->prepareForNextDeal($this->getConfig());
+        if ($this->deal->getStatus() == Deal::STATUS_END) {
+            /** @var Game $clonedGame */
+            $clonedGame = unserialize(serialize($this)); // deep clone for nested objects - deal, players etc
+            $clonedGame->createNewDealOrEnd();
+            $clonedGame->save();
+        }
+    }
+
+    public function createNewDealOrEnd(): void
+    {
+        $this->players->kickWithoutEnoughMoney($this->getConfig()->getBigBlind());
+        if ($this->players->count() == 1) {
+            $this->status = self::STATUS_FINISHED;
+            return;
+        }
+        $this->players->prepareForNextDeal();
         $this->deal = new Deal($this->players, $this->getConfig());
+        $this->initInactivePlayerJob();
     }
 
     protected static function getKey(): string
@@ -98,6 +126,15 @@ class Game extends RedisORM
 
     protected function afterSave(): void
     {
-        NotifyGameUpdated::dispatchAfterResponse($this);
+        if (env('SOCKETS_ENABLED', true)) {
+            NotifyGameUpdated::dispatch($this)
+                ->delay(0);
+        }
+    }
+
+    private function initInactivePlayerJob(): void
+    {
+        CheckAndFoldInactivePlayer::dispatch($this)
+            ->delay($this->config->getTimeout());
     }
 }
